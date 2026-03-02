@@ -21,6 +21,26 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://realid-zz.github.io/YOUNGmengzhen-official/mengzhen-artist/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://realid-zz.github.io/YOUNGmengzhen-official/mengzhen-painter/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://realid-zz.github.io/YOUNGmengzhen-official/mengzhen-oil-painting/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://realid-zz.github.io/YOUNGmengzhen-official/meng-zhen/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://realid-zz.github.io/YOUNGmengzhen-official/ruilong/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
