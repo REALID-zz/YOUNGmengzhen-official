@@ -1,2 +1,4 @@
 User-agent: *
 Allow: /
+
+Sitemap: https://realid-zz.github.io/YOUNGmengzhen-official/sitemap.xml
