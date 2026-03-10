@@ -39,11 +39,26 @@
       return `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
     }
 
+    function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
+
     function frame(){
       // ring lerp (slight trailing only)
       rx += (tx - rx) * 0.26;
       ry += (ty - ry) * 0.26;
       ring.style.transform = t2(rx, ry);
+
+      // candle flicker (subtle + organic)
+      const t = performance.now();
+      const wave = Math.sin(t / 86) * Math.sin(t / 137);
+      const rand = (Math.random() - 0.5) * 0.18;
+      const f = clamp(0.84 + 0.16 * wave + rand, 0.70, 1.02);
+      root.style.setProperty('--glowA', (0.10 + 0.10 * f).toFixed(3));
+      root.style.setProperty('--glowB', (0.06 + 0.08 * f).toFixed(3));
+      root.style.setProperty('--curA', (0.20 + 0.34 * f).toFixed(3));
+      root.style.setProperty('--curB', (0.10 + 0.22 * f).toFixed(3));
+      dot.style.opacity = (0.84 + 0.16 * f).toFixed(3);
+      ring.style.opacity = (0.78 + 0.22 * f).toFixed(3);
+
       raf = requestAnimationFrame(frame);
     }
 
