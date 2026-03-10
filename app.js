@@ -21,22 +21,27 @@
     const root = document.documentElement;
     root.classList.add('cursorOn');
 
-    const dot = document.createElement('div');
-    dot.className = 'cursorDot';
+    const flame = document.createElement('div');
+    flame.className = 'cursorFlame';
     const ring = document.createElement('div');
     ring.className = 'cursorRing';
     document.body.appendChild(ring);
-    document.body.appendChild(dot);
+    document.body.appendChild(flame);
 
     let tx = window.innerWidth * 0.3;
     let ty = window.innerHeight * 0.7;
     let rx = tx, ry = ty;
+    let ptx = tx, pty = ty;
     let raf = 0;
 
     const isHoverTarget = (el) => !!el?.closest?.('a, button, .btn, .pill, .item, summary, input, textarea');
 
     function t2(x, y){
       return `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
+    }
+    function tFlame(x, y, deg, s){
+      // tip is closer to the pointer (slight upward offset)
+      return `translate3d(${x}px, ${y}px, 0) translate(-50%, -86%) rotate(${deg}deg) scale(${s})`;
     }
 
     function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
@@ -56,7 +61,7 @@
       root.style.setProperty('--glowB', (0.10 + 0.12 * f).toFixed(3));
       root.style.setProperty('--curA', (0.28 + 0.46 * f).toFixed(3));
       root.style.setProperty('--curB', (0.18 + 0.30 * f).toFixed(3));
-      dot.style.opacity = (0.88 + 0.14 * f).toFixed(3);
+      flame.style.opacity = (0.88 + 0.14 * f).toFixed(3);
       ring.style.opacity = (0.82 + 0.18 * f).toFixed(3);
 
       raf = requestAnimationFrame(frame);
@@ -71,8 +76,14 @@
       tx = e.clientX;
       ty = e.clientY;
       setSpotlight(tx, ty);
-      // dot snaps to pointer for precise feel
-      dot.style.transform = t2(tx, ty);
+      // flame snaps to pointer (with direction tilt)
+      const dx = tx - ptx;
+      const dy = ty - pty;
+      ptx = tx; pty = ty;
+      const speed = Math.hypot(dx, dy);
+      const tilt = clamp(dx * 0.08, -10, 10) + clamp(-dy * 0.03, -6, 6);
+      const s = clamp(0.92 + speed / 220, 0.92, 1.08);
+      flame.style.transform = tFlame(tx, ty, tilt, s);
       if (!raf) raf = requestAnimationFrame(frame);
     }, { passive: true });
 
@@ -87,7 +98,7 @@
 
     // kickstart
     setSpotlight(tx, ty);
-    dot.style.transform = t2(tx, ty);
+    flame.style.transform = tFlame(tx, ty, 0, 1);
     ring.style.transform = t2(rx, ry);
     raf = requestAnimationFrame(frame);
   })();
