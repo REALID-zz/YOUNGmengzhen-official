@@ -41,7 +41,7 @@
     }
     function tFlame(x, y, deg, s){
       // tip is closer to the pointer (slight upward offset)
-      return `translate3d(${x}px, ${y}px, 0) translate(-50%, -86%) rotate(${deg}deg) scale(${s})`;
+      return `translate3d(${x}px, ${y}px, 0) translate(-50%, -92%) rotate(${deg}deg) scale(${s})`;
     }
 
     function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
