@@ -30,20 +30,20 @@
 
     let tx = window.innerWidth * 0.3;
     let ty = window.innerHeight * 0.7;
-    let x = tx, y = ty, rx = tx, ry = ty;
+    let rx = tx, ry = ty;
     let raf = 0;
 
     const isHoverTarget = (el) => !!el?.closest?.('a, button, .btn, .pill, .item, summary, input, textarea');
 
-    function frame(){
-      // lerp
-      x += (tx - x) * 0.22;
-      y += (ty - y) * 0.22;
-      rx += (tx - rx) * 0.12;
-      ry += (ty - ry) * 0.12;
+    function t2(x, y){
+      return `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
+    }
 
-      dot.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-      ring.style.transform = `translate3d(${rx}px, ${ry}px, 0)`;
+    function frame(){
+      // ring lerp (slight trailing only)
+      rx += (tx - rx) * 0.26;
+      ry += (ty - ry) * 0.26;
+      ring.style.transform = t2(rx, ry);
       raf = requestAnimationFrame(frame);
     }
 
@@ -56,6 +56,8 @@
       tx = e.clientX;
       ty = e.clientY;
       setSpotlight(tx, ty);
+      // dot snaps to pointer for precise feel
+      dot.style.transform = t2(tx, ty);
       if (!raf) raf = requestAnimationFrame(frame);
     }, { passive: true });
 
@@ -70,6 +72,8 @@
 
     // kickstart
     setSpotlight(tx, ty);
+    dot.style.transform = t2(tx, ty);
+    ring.style.transform = t2(rx, ry);
     raf = requestAnimationFrame(frame);
   })();
 
