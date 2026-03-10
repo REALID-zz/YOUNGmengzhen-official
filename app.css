@@ -204,9 +204,11 @@ a:hover{text-decoration:underline}
 .nav{display:flex; gap:12px; flex-wrap:wrap; align-items:center}
 .nav a{color:rgba(255,255,255,.82); font-size:12px}
 .nav .pill{
-  border:1px solid rgba(255,255,255,.16);
-  background: rgba(255,255,255,.06);
-  padding:8px 10px;
+  border:1px solid transparent;
+  background:
+    linear-gradient(rgba(255,255,255,.10), rgba(255,255,255,.06)) padding-box,
+    linear-gradient(135deg, rgba(154,230,255,.40), rgba(198,166,255,.30), rgba(255,215,168,.22)) border-box;
+  padding:8px 12px;
   border-radius:999px;
   box-shadow: 0 8px 30px rgba(0,0,0,.22);
 }
@@ -239,10 +241,12 @@ a:hover{text-decoration:underline}
 .metaRow{margin-top:12px; color:rgba(255,255,255,.72); font-size:13px}
 .chips{display:flex; flex-wrap:wrap; gap:8px; margin-top:16px}
 .chip{
-  border:1px solid rgba(255,255,255,.16);
-  background: rgba(0,0,0,.18);
+  border:1px solid transparent;
+  background:
+    linear-gradient(rgba(0,0,0,.18), rgba(0,0,0,.18)) padding-box,
+    linear-gradient(135deg, rgba(255,255,255,.22), rgba(154,230,255,.26), rgba(198,166,255,.18)) border-box;
   color: rgba(255,255,255,.88);
-  padding:7px 10px;
+  padding:7px 12px;
   border-radius:999px;
   font-size:12px;
   backdrop-filter: blur(10px);
@@ -250,33 +254,52 @@ a:hover{text-decoration:underline}
 .actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px}
 .btn{
   display:inline-flex; align-items:center; justify-content:center; gap:8px;
-  padding:10px 12px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,.18);
-  background: rgba(255,255,255,.07);
+  padding:10px 14px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background:
+    linear-gradient(rgba(255,255,255,.10), rgba(255,255,255,.06)) padding-box,
+    linear-gradient(135deg, rgba(255,255,255,.18), rgba(154,230,255,.30), rgba(198,166,255,.22)) border-box;
   color: rgba(255,255,255,.90);
   box-shadow: var(--shadow2);
 }
 .btnPrimary{
-  border-color: rgba(154,230,255,.45);
-  background: linear-gradient(135deg, rgba(154,230,255,.22), rgba(198,166,255,.14));
+  background:
+    linear-gradient(135deg, rgba(154,230,255,.24), rgba(198,166,255,.16)) padding-box,
+    linear-gradient(135deg, rgba(154,230,255,.58), rgba(198,166,255,.36), rgba(255,215,168,.20)) border-box;
 }
 .btnGhost{background: rgba(0,0,0,.18)}
+.btn:hover{ transform: translateY(-1px); }
+.btn:active{ transform: translateY(0px); }
 
 .card{
   border-radius: var(--radius);
-  border: 1px solid rgba(255,255,255,.12);
-  background: rgba(0,0,0,.55);
+  border: 1px solid transparent;
+  background:
+    linear-gradient(rgba(0,0,0,.52), rgba(0,0,0,.52)) padding-box,
+    linear-gradient(135deg, rgba(255,255,255,.16), rgba(154,230,255,.18), rgba(198,166,255,.14)) border-box;
   padding:16px 16px 18px;
   backdrop-filter: blur(12px);
 }
 .infoCard{
   border-radius: 16px;
-  border: 1px solid rgba(255,255,255,.14);
-  background: rgba(0,0,0,.42);
+  border: 1px solid transparent;
+  background:
+    linear-gradient(rgba(0,0,0,.40), rgba(0,0,0,.40)) padding-box,
+    linear-gradient(135deg, rgba(255,255,255,.18), rgba(154,230,255,.22), rgba(198,166,255,.16)) border-box;
   backdrop-filter: blur(14px);
   padding:14px 14px 16px;
 }
+
+.interludeSubtle{
+  min-height: 52vh;
+  box-shadow: none;
+  border-radius: 18px;
+  margin-top: 14px;
+  opacity: .92;
+}
+.interludeSubtle .interludeTitle{ font-size: 22px; letter-spacing: .08em; }
+.interludeSubtle .interludeActions{ justify-content: flex-end; }
 .k{color:rgba(255,255,255,.62); font-size:11px; letter-spacing:.16em; text-transform:uppercase}
 .infoCard ul{margin:10px 0 0; padding-left:18px; color:rgba(255,255,255,.80); line-height:1.7; font-size:13px}
 .infoCard li{margin:6px 0}
