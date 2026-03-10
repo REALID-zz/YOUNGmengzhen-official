@@ -1,0 +1,74 @@
+name: Deploy site to GitHub Pages
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Build static site (token replace)
+        shell: bash
+        run: |
+          set -euo pipefail
+          OWNER="${{ github.repository_owner }}"
+          REPO="${{ github.event.repository.name }}"
+          if [[ "$REPO" == "$OWNER.github.io" ]]; then
+            SITE_URL="https://$OWNER.github.io"
+          else
+            SITE_URL="https://$OWNER.github.io/$REPO"
+          fi
+          export SITE_URL
+          echo "SITE_URL=$SITE_URL"
+
+          rm -rf _site
+          mkdir -p _site
+          cp -R site/* _site/
+
+          python - <<'PY'
+          import os
+          import pathlib
+          site_url = os.environ.get("SITE_URL", "").strip()
+          if not site_url:
+              raise SystemExit("SITE_URL is empty")
+          root = pathlib.Path("_site")
+          for p in root.rglob("*"):
+              if not p.is_file():
+                  continue
+              if p.suffix.lower() not in {".html", ".xml", ".txt"}:
+                  continue
+              txt = p.read_text(encoding="utf-8", errors="ignore")
+              txt2 = txt.replace("__SITE_URL__", site_url)
+              if txt2 != txt:
+                  p.write_text(txt2, encoding="utf-8")
+          PY
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+

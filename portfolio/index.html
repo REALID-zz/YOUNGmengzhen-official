@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>孟臻（DCT）｜作品集 Portfolio</title>
+    <meta name="description" content="孟臻（DCT）作品集（Portfolio）。油画为核心媒介，Base EARTH / HK / LA。" />
+    <link rel="canonical" href="https://realid-zz.github.io/YOUNGmengzhen-official/portfolio/" />
+    <style>
+      :root {
+        --bg: #07080c;
+        --card: rgba(255, 255, 255, 0.06);
+        --line: rgba(255, 255, 255, 0.12);
+        --text: rgba(255, 255, 255, 0.92);
+        --muted: rgba(255, 255, 255, 0.7);
+        --accent: #9ae6ff;
+        --accent2: #c6a6ff;
+      }
+      * { box-sizing: border-box; }
+      html, body { height: 100%; }
+      body {
+        margin: 0;
+        color: var(--text);
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+        background:
+          radial-gradient(1200px 800px at 10% 10%, rgba(154, 230, 255, 0.18), transparent 60%),
+          radial-gradient(900px 600px at 85% 20%, rgba(198, 166, 255, 0.14), transparent 55%),
+          radial-gradient(700px 600px at 60% 85%, rgba(255, 255, 255, 0.06), transparent 60%),
+          var(--bg);
+      }
+      a { color: var(--accent); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .wrap { max-width: 1200px; margin: 0 auto; padding: 28px 18px 64px; }
+      .topbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+      .brand { display: flex; gap: 10px; align-items: baseline; }
+      .brand h1 { margin: 0; font-size: 18px; letter-spacing: 0.3px; }
+      .brand span { color: var(--muted); font-size: 13px; }
+      .nav { display: flex; gap: 14px; flex-wrap: wrap; }
+      .nav a { color: rgba(255,255,255,0.82); font-size: 13px; }
+
+      .hero {
+        margin-top: 16px;
+        border-radius: 18px;
+        border: 1px solid var(--line);
+        background:
+          linear-gradient(120deg, rgba(154, 230, 255, 0.14), rgba(198, 166, 255, 0.12)),
+          radial-gradient(700px 450px at 25% 30%, rgba(255,255,255,0.10), transparent 60%),
+          rgba(255,255,255,0.04);
+        overflow: hidden;
+        position: relative;
+      }
+      .hero::after{
+        content:"";
+        position:absolute; inset:-2px;
+        background: url("../assets/hero.jpg") center/cover no-repeat;
+        opacity: 0.22;
+        filter: saturate(1.05) contrast(1.05);
+        pointer-events:none;
+      }
+      .heroInner {
+        position: relative;
+        padding: 28px 22px;
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 18px;
+      }
+      @media (max-width: 860px) { .heroInner { grid-template-columns: 1fr; } }
+      .headline { margin: 0; font-size: 34px; letter-spacing: 0.2px; }
+      .sub { margin: 10px 0 0; color: rgba(255,255,255,0.76); line-height: 1.75; }
+      .chips { display:flex; flex-wrap:wrap; gap: 8px; margin-top: 14px; }
+      .chip {
+        border: 1px solid var(--line);
+        background: rgba(0,0,0,0.20);
+        color: rgba(255,255,255,0.86);
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        backdrop-filter: blur(10px);
+      }
+      .heroCard{
+        background: rgba(0,0,0,0.18);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px 14px;
+        backdrop-filter: blur(10px);
+      }
+      .k { color: rgba(255,255,255,0.62); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; }
+      .heroCard ul { margin: 10px 0 0; padding-left: 18px; color: rgba(255,255,255,0.78); line-height: 1.7; }
+      .heroCard li { margin: 6px 0; }
+
+      .sectionTitle { margin: 22px 0 10px; font-size: 14px; color: rgba(255,255,255,0.82); letter-spacing: 0.06em; }
+
+      .toolbar{
+        display:flex; justify-content:space-between; align-items:center; gap: 12px; flex-wrap: wrap;
+        margin-top: 10px;
+      }
+      .toolbar .hint{ color: var(--muted); font-size: 12px; }
+      .search {
+        display:flex; gap: 8px; align-items:center;
+        border: 1px solid var(--line);
+        background: rgba(0,0,0,0.18);
+        border-radius: 999px;
+        padding: 8px 10px;
+        min-width: 260px;
+      }
+      .search input{
+        border: 0; outline: none; background: transparent; color: rgba(255,255,255,0.9);
+        width: 100%;
+      }
+
+      .grid{
+        margin-top: 10px;
+        columns: 4 260px;
+        column-gap: 12px;
+      }
+      .item{
+        break-inside: avoid;
+        margin: 0 0 12px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: rgba(255,255,255,0.04);
+        overflow: hidden;
+        cursor: pointer;
+        transition: transform 120ms ease, border-color 120ms ease;
+      }
+      .item:hover { transform: translateY(-2px); border-color: rgba(154, 230, 255, 0.35); }
+      .thumb{
+        width: 100%;
+        aspect-ratio: 4 / 5;
+        background:
+          radial-gradient(500px 350px at 30% 30%, rgba(154,230,255,0.24), transparent 60%),
+          radial-gradient(450px 300px at 70% 60%, rgba(198,166,255,0.20), transparent 60%),
+          rgba(0,0,0,0.25);
+        display:flex; align-items:center; justify-content:center;
+        color: rgba(255,255,255,0.55);
+        font-size: 12px;
+      }
+      .thumb img{ width:100%; height:100%; object-fit: cover; display:none; }
+      .meta{ padding: 12px 12px 14px; }
+      .meta .t{ font-size: 13px; margin: 0; }
+      .meta .m{ margin: 6px 0 0; color: rgba(255,255,255,0.72); font-size: 12px; line-height: 1.55; }
+
+      .modal{
+        position: fixed; inset: 0;
+        background: rgba(0,0,0,0.72);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 18px;
+        z-index: 50;
+      }
+      .modal.open{ display:flex; }
+      .modalCard{
+        width: min(1100px, 100%);
+        max-height: min(92vh, 900px);
+        border-radius: 18px;
+        border: 1px solid rgba(255,255,255,0.14);
+        background: rgba(8,9,12,0.92);
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: 1fr 360px;
+      }
+      @media (max-width: 980px){ .modalCard{ grid-template-columns: 1fr; } }
+      .modalMedia{ background: rgba(255,255,255,0.04); display:flex; align-items:center; justify-content:center; }
+      .modalMedia img{ max-width: 100%; max-height: 70vh; display:block; }
+      .modalInfo{ padding: 14px 14px 18px; border-left: 1px solid rgba(255,255,255,0.10); }
+      @media (max-width: 980px){ .modalInfo{ border-left: 0; border-top: 1px solid rgba(255,255,255,0.10); } }
+      .modalTop{ display:flex; justify-content:space-between; align-items:center; gap: 12px; }
+      .closeBtn{
+        border: 1px solid rgba(255,255,255,0.18);
+        background: rgba(255,255,255,0.06);
+        color: rgba(255,255,255,0.88);
+        border-radius: 10px;
+        padding: 8px 10px;
+        cursor: pointer;
+      }
+      .modalInfo h2{ margin: 10px 0 0; font-size: 18px; }
+      .modalInfo p{ margin: 10px 0 0; color: rgba(255,255,255,0.74); line-height: 1.7; font-size: 13px; }
+      .footerNote{ margin-top: 18px; color: var(--muted); font-size: 12px; line-height: 1.7; }
+      .okLink{ color: rgba(255,255,255,0.82); }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="topbar">
+        <div class="brand">
+          <h1>孟臻（DCT）</h1>
+          <span>Portfolio · Oil Painting · EARTH / HK / LA</span>
+        </div>
+        <nav class="nav">
+          <a href="../mengzhen/">官方档案</a>
+          <a href="../dct/">DCT 消歧</a>
+          <a href="../ruilong/">企业页</a>
+          <a href="mailto:hihelloaikenni@gemail.com">联系</a>
+        </nav>
+      </div>
+
+      <section class="hero" aria-label="hero">
+        <div class="heroInner">
+          <div>
+            <h2 class="headline">作品集</h2>
+            <p class="sub">
+              以独特的天真视角讲述哲学情感，在明暗与氛围之间构建叙事空间。此页支持你把作品“放满”——上传作品图后会自动铺开。
+            </p>
+            <div class="chips">
+              <span class="chip">Oil Painting</span>
+              <span class="chip">Chiaroscuro</span>
+              <span class="chip">Narrative</span>
+              <span class="chip">Melancholy</span>
+              <span class="chip">Illusion</span>
+            </div>
+            <div class="footerNote">
+              主荧幕图片：把你选中的照片命名为 <span class="okLink">assets/hero.jpg</span> 上传即可自动生效。
+            </div>
+          </div>
+          <div class="heroCard">
+            <div class="k">Quick facts (public)</div>
+            <ul>
+              <li>AACYF Top 30 Under 30（Cal C 30 Under 30，2020）</li>
+              <li>Artsy / WTC / CAMAC（公开引用）</li>
+              <li>对外邮箱：hihelloaikenni@gemail.com</li>
+            </ul>
+            <div class="k" style="margin-top: 14px;">Official source</div>
+            <ul>
+              <li><a href="../mengzhen/" target="_blank" rel="noreferrer">官方信息页（同名消歧）</a></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <div class="toolbar">
+        <div class="hint">提示：作品图上传到 `assets/works/`，并在本页下方的 `portfolio/works.json` 填入信息。</div>
+        <div class="search" role="search">
+          <input id="q" placeholder="搜索作品：标题 / 年份 / 媒介…" autocomplete="off" />
+        </div>
+      </div>
+
+      <div class="sectionTitle">Works</div>
+      <div id="grid" class="grid" aria-label="works grid"></div>
+    </div>
+
+    <div id="modal" class="modal" role="dialog" aria-modal="true" aria-label="work viewer">
+      <div class="modalCard">
+        <div class="modalMedia"><img id="modalImg" alt="" /></div>
+        <div class="modalInfo">
+          <div class="modalTop">
+            <div class="k">Work</div>
+            <button id="close" class="closeBtn">关闭</button>
+          </div>
+          <h2 id="modalTitle"></h2>
+          <p id="modalMeta"></p>
+          <p id="modalDesc"></p>
+          <div class="footerNote">
+            如需我把你的作品“放满”：你把作品图放进仓库 `assets/works/`，我可以继续帮你批量生成 `works.json` 条目。
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const state = { works: [], filtered: [] };
+      const elGrid = document.getElementById('grid');
+      const elQ = document.getElementById('q');
+
+      const modal = document.getElementById('modal');
+      const modalImg = document.getElementById('modalImg');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalMeta = document.getElementById('modalMeta');
+      const modalDesc = document.getElementById('modalDesc');
+
+      function safe(s){ return (s ?? '').toString(); }
+      function matchWork(w, q){
+        const hay = [
+          w.title, w.year, w.medium, w.size, w.series, w.tags?.join(' '), w.desc
+        ].map(safe).join(' ').toLowerCase();
+        return hay.includes(q);
+      }
+
+      function render(list){
+        elGrid.innerHTML = '';
+        for (const w of list){
+          const card = document.createElement('div');
+          card.className = 'item';
+          card.tabIndex = 0;
+
+          const thumb = document.createElement('div');
+          thumb.className = 'thumb';
+          const img = document.createElement('img');
+          if (w.image){
+            img.src = w.image;
+            img.loading = 'lazy';
+            img.alt = w.title || 'work';
+            img.style.display = 'block';
+            thumb.appendChild(img);
+          } else {
+            thumb.textContent = 'No image yet';
+            thumb.appendChild(img);
+          }
+
+          const meta = document.createElement('div');
+          meta.className = 'meta';
+          const t = document.createElement('p');
+          t.className = 't';
+          t.textContent = w.title || 'Untitled';
+          const m = document.createElement('p');
+          m.className = 'm';
+          m.textContent = [w.year, w.medium, w.size].filter(Boolean).join(' · ') || '—';
+          meta.appendChild(t); meta.appendChild(m);
+
+          card.appendChild(thumb);
+          card.appendChild(meta);
+
+          function open(){
+            modal.classList.add('open');
+            modalImg.src = w.image || '';
+            modalImg.alt = w.title || 'work';
+            modalTitle.textContent = w.title || 'Untitled';
+            modalMeta.textContent = [w.year, w.medium, w.size, w.series].filter(Boolean).join(' · ');
+            modalDesc.textContent = w.desc || '';
+          }
+          card.addEventListener('click', open);
+          card.addEventListener('keydown', (e)=>{ if (e.key === 'Enter') open(); });
+          elGrid.appendChild(card);
+        }
+      }
+
+      function filter(){
+        const q = (elQ.value || '').trim().toLowerCase();
+        state.filtered = q ? state.works.filter(w => matchWork(w, q)) : state.works;
+        render(state.filtered);
+      }
+
+      document.getElementById('close').addEventListener('click', ()=> modal.classList.remove('open'));
+      modal.addEventListener('click', (e)=>{ if (e.target === modal) modal.classList.remove('open'); });
+      elQ.addEventListener('input', filter);
+
+      function titleFromFilename(name){
+        return safe(name)
+          .replace(/\.[^.]+$/, '')
+          .replace(/[_-]+/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim();
+      }
+
+      async function loadFromGithubFolder(){
+        const pagesOwner = (location.hostname || '').split('.')[0] || 'REALID-zz';
+        const repoFromPath = (location.pathname || '').split('/').filter(Boolean)[0] || 'YOUNGmengzhen-official';
+        const owners = [pagesOwner, 'REALID-zz'].filter((v, i, a) => v && a.indexOf(v) === i);
+        const refs = ['main', 'master'];
+        const repo = repoFromPath;
+        const path = 'assets/works';
+        for (const owner of owners){
+          for (const ref of refs){
+            const api = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${ref}`;
+            const r = await fetch(api, { headers: { Accept: 'application/vnd.github+json' } });
+            if (!r.ok) continue;
+            const data = await r.json();
+            if (!Array.isArray(data)) continue;
+            const list = data
+              .filter(x => x && x.type === 'file' && /\.(png|jpe?g|webp|gif)$/i.test(x.name || ''))
+              .map(x => ({
+                id: x.sha || x.name,
+                title: titleFromFilename(x.name || ''),
+                year: '',
+                medium: '',
+                size: '',
+                series: '',
+                tags: [],
+                desc: '',
+                image: x.download_url || ''
+              }));
+            if (list.length) return list;
+          }
+        }
+        return [];
+      }
+
+      async function load(){
+        // 1) 尝试读取手工元数据（可选）
+        try{
+          const r = await fetch('./works.json', { cache: 'no-store' });
+          const data = r.ok ? await r.json() : [];
+          const list = Array.isArray(data) ? data : [];
+          const hasAnyImage = list.some(x => x && x.image);
+          if (list.length && hasAnyImage){
+            state.works = list;
+            filter();
+            return;
+          }
+        } catch {}
+
+        // 2) 自动读取仓库 assets/works 文件夹里的所有图片
+        try{
+          const list = await loadFromGithubFolder();
+          if (list.length){
+            state.works = list;
+            filter();
+            return;
+          }
+        } catch {}
+
+        // 3) 兜底
+        state.works = [
+          {
+            title: '暂无作品图（请上传到 assets/works/）',
+            year: '',
+            medium: '',
+            size: '',
+            desc: '上传作品图片到仓库 assets/works/ 后，刷新本页会自动铺满。'
+          }
+        ];
+        filter();
+      }
+
+      load();
+    </script>
+  </body>
+</html>
+

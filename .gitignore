@@ -1,0 +1,10 @@
+official-kit/
+deploy/
+.cursor/
+.vscode/
+*.log
+Thumbs.db
+Desktop.ini
+site/
+site.zip
+

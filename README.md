@@ -8,6 +8,11 @@
 - “孟臻 画家/艺术家/油画”承接页：`https://realid-zz.github.io/YOUNGmengzhen-official/mengzhen/`
 - DCT 消歧页：`https://realid-zz.github.io/YOUNGmengzhen-official/dct/`
 - “姓杨 / Mengzhen Yang”消歧页：`https://realid-zz.github.io/YOUNGmengzhen-official/mengzhenyang/`
+- English landing pages:
+  - `https://realid-zz.github.io/YOUNGmengzhen-official/mengzhen-artist/`
+  - `https://realid-zz.github.io/YOUNGmengzhen-official/mengzhen-painter/`
+  - `https://realid-zz.github.io/YOUNGmengzhen-official/mengzhen-oil-painting/`
+  - `https://realid-zz.github.io/YOUNGmengzhen-official/meng-zhen/`
 
 ### 关键词（用于检索/同名消歧）
 
