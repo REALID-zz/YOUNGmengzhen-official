@@ -86,6 +86,30 @@ jobs:
                   p.write_text(txt2, encoding="utf-8")
           PY
 
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          works_dir = Path("_site/assets/works")
+          out = works_dir / "works.json"
+          if not works_dir.exists():
+              raise SystemExit("assets/works not found in _site")
+
+          exts = {".png", ".jpg", ".jpeg", ".webp", ".gif"}
+          files = []
+          for p in sorted(works_dir.iterdir()):
+              if not p.is_file():
+                  continue
+              if p.name.startswith("."):
+                  continue
+              if p.suffix.lower() not in exts:
+                  continue
+              files.append({"file": p.name})
+
+          out.write_text(json.dumps(files, ensure_ascii=False, indent=2), encoding="utf-8")
+          print("generated", out.as_posix(), "count=", len(files))
+          PY
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

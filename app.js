@@ -147,6 +147,28 @@
     render(state.filtered);
   }
 
+  async function loadFromLocalManifest() {
+    const url = `./assets/works/works.json?v=${Date.now()}`;
+    const r = await fetch(url, { cache: 'no-store' });
+    if (!r.ok) return [];
+    const data = await r.json();
+    if (!Array.isArray(data)) return [];
+    const list = data
+      .filter(x => x && typeof x.file === 'string' && x.file)
+      .map(x => ({
+        id: x.file,
+        title: titleFromFilename(x.file),
+        year: '',
+        medium: '',
+        size: '',
+        series: '',
+        tags: [],
+        desc: '',
+        image: `./assets/works/${encodeURIComponent(x.file)}`
+      }));
+    return list;
+  }
+
   async function loadFromGithubFolder() {
     const pagesOwner = (location.hostname || '').split('.')[0] || 'REALID-zz';
     const repoFromPath = (location.pathname || '').split('/').filter(Boolean)[0] || 'YOUNGmengzhen-official';
@@ -182,6 +204,15 @@
   }
 
   async function load() {
+    try {
+      const local = await loadFromLocalManifest();
+      if (local.length) {
+        state.works = local;
+        filter();
+        return;
+      }
+    } catch { /* ignore */ }
+
     try {
       const list = await loadFromGithubFolder();
       if (list.length) {
