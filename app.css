@@ -13,10 +13,10 @@
   --mx: 15vw;
   --my: 70vh;
   /* candle flicker intensities (updated by JS) */
-  --glowA: .16;
-  --glowB: .12;
-  --curA: .32;
-  --curB: .18;
+  --glowA: .22;
+  --glowB: .16;
+  --curA: .46;
+  --curB: .28;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -45,6 +45,7 @@ body{
   inset: 0;
   z-index: -2;
   background:
+    radial-gradient(280px 190px at var(--mx) var(--my), rgba(255, 240, 210, .16), transparent 62%),
     radial-gradient(820px 520px at var(--mx) var(--my), rgba(255, 214, 168, var(--glowA)), transparent 60%),
     radial-gradient(760px 520px at calc(var(--mx) + 260px) calc(var(--my) - 140px), rgba(255, 160, 122, var(--glowB)), transparent 62%),
     linear-gradient(90deg, rgba(0,0,0,.92) 0%, rgba(0,0,0,.66) 18%, rgba(0,0,0,.20) 52%, rgba(0,0,0,.58) 100%),

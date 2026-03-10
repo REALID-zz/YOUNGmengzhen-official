@@ -50,14 +50,14 @@
       // candle flicker (subtle + organic)
       const t = performance.now();
       const wave = Math.sin(t / 86) * Math.sin(t / 137);
-      const rand = (Math.random() - 0.5) * 0.18;
-      const f = clamp(0.84 + 0.16 * wave + rand, 0.70, 1.02);
-      root.style.setProperty('--glowA', (0.10 + 0.10 * f).toFixed(3));
-      root.style.setProperty('--glowB', (0.06 + 0.08 * f).toFixed(3));
-      root.style.setProperty('--curA', (0.20 + 0.34 * f).toFixed(3));
-      root.style.setProperty('--curB', (0.10 + 0.22 * f).toFixed(3));
-      dot.style.opacity = (0.84 + 0.16 * f).toFixed(3);
-      ring.style.opacity = (0.78 + 0.22 * f).toFixed(3);
+      const rand = (Math.random() - 0.5) * 0.16;
+      const f = clamp(0.92 + 0.18 * wave + rand, 0.76, 1.10);
+      root.style.setProperty('--glowA', (0.14 + 0.16 * f).toFixed(3));
+      root.style.setProperty('--glowB', (0.10 + 0.12 * f).toFixed(3));
+      root.style.setProperty('--curA', (0.28 + 0.46 * f).toFixed(3));
+      root.style.setProperty('--curB', (0.18 + 0.30 * f).toFixed(3));
+      dot.style.opacity = (0.88 + 0.14 * f).toFixed(3);
+      ring.style.opacity = (0.82 + 0.18 * f).toFixed(3);
 
       raf = requestAnimationFrame(frame);
     }
