@@ -12,6 +12,67 @@
   const modalDesc = $('modalDesc');
   const closeBtn = $('closeModal');
 
+  // Dynamic cursor + spotlight (desktop only)
+  (function initCursor(){
+    const fine = window.matchMedia?.('(pointer:fine)').matches;
+    const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (!fine || reduced) return;
+
+    const root = document.documentElement;
+    root.classList.add('cursorOn');
+
+    const dot = document.createElement('div');
+    dot.className = 'cursorDot';
+    const ring = document.createElement('div');
+    ring.className = 'cursorRing';
+    document.body.appendChild(ring);
+    document.body.appendChild(dot);
+
+    let tx = window.innerWidth * 0.3;
+    let ty = window.innerHeight * 0.7;
+    let x = tx, y = ty, rx = tx, ry = ty;
+    let raf = 0;
+
+    const isHoverTarget = (el) => !!el?.closest?.('a, button, .btn, .pill, .item, summary, input, textarea');
+
+    function frame(){
+      // lerp
+      x += (tx - x) * 0.22;
+      y += (ty - y) * 0.22;
+      rx += (tx - rx) * 0.12;
+      ry += (ty - ry) * 0.12;
+
+      dot.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      ring.style.transform = `translate3d(${rx}px, ${ry}px, 0)`;
+      raf = requestAnimationFrame(frame);
+    }
+
+    function setSpotlight(px, py){
+      root.style.setProperty('--mx', `${px}px`);
+      root.style.setProperty('--my', `${py}px`);
+    }
+
+    window.addEventListener('pointermove', (e) => {
+      tx = e.clientX;
+      ty = e.clientY;
+      setSpotlight(tx, ty);
+      if (!raf) raf = requestAnimationFrame(frame);
+    }, { passive: true });
+
+    window.addEventListener('pointerdown', () => root.classList.add('cursorHover'));
+    window.addEventListener('pointerup', () => root.classList.remove('cursorHover'));
+    window.addEventListener('pointerover', (e) => {
+      root.classList.toggle('cursorHover', isHoverTarget(e.target));
+    }, { passive: true });
+    window.addEventListener('pointerout', (e) => {
+      if (!isHoverTarget(e.relatedTarget)) root.classList.remove('cursorHover');
+    }, { passive: true });
+
+    // kickstart
+    setSpotlight(tx, ty);
+    raf = requestAnimationFrame(frame);
+  })();
+
   function safe(v) { return (v ?? '').toString(); }
   function titleFromFilename(name) {
     return safe(name)
