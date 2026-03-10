@@ -23,22 +23,16 @@
 
     const flame = document.createElement('div');
     flame.className = 'cursorFlame';
-    const ring = document.createElement('div');
-    ring.className = 'cursorRing';
-    document.body.appendChild(ring);
     document.body.appendChild(flame);
 
     let tx = window.innerWidth * 0.3;
     let ty = window.innerHeight * 0.7;
-    let rx = tx, ry = ty;
     let ptx = tx, pty = ty;
     let raf = 0;
+    let hover = false;
 
     const isHoverTarget = (el) => !!el?.closest?.('a, button, .btn, .pill, .item, summary, input, textarea');
 
-    function t2(x, y){
-      return `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
-    }
     function tFlame(x, y, deg, s){
       // tip is closer to the pointer (slight upward offset)
       return `translate3d(${x}px, ${y}px, 0) translate(-50%, -92%) rotate(${deg}deg) scale(${s})`;
@@ -47,11 +41,6 @@
     function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
 
     function frame(){
-      // ring lerp (slight trailing only)
-      rx += (tx - rx) * 0.26;
-      ry += (ty - ry) * 0.26;
-      ring.style.transform = t2(rx, ry);
-
       // candle flicker (subtle + organic)
       const t = performance.now();
       const wave = Math.sin(t / 86) * Math.sin(t / 137);
@@ -62,7 +51,6 @@
       root.style.setProperty('--curA', (0.28 + 0.46 * f).toFixed(3));
       root.style.setProperty('--curB', (0.18 + 0.30 * f).toFixed(3));
       flame.style.opacity = (0.88 + 0.14 * f).toFixed(3);
-      ring.style.opacity = (0.82 + 0.18 * f).toFixed(3);
 
       raf = requestAnimationFrame(frame);
     }
@@ -82,7 +70,8 @@
       ptx = tx; pty = ty;
       const speed = Math.hypot(dx, dy);
       const tilt = clamp(dx * 0.08, -10, 10) + clamp(-dy * 0.03, -6, 6);
-      const s = clamp(0.92 + speed / 220, 0.92, 1.08);
+      const base = clamp(0.92 + speed / 220, 0.92, 1.08);
+      const s = hover ? base * 1.08 : base;
       flame.style.transform = tFlame(tx, ty, tilt, s);
       if (!raf) raf = requestAnimationFrame(frame);
     }, { passive: true });
@@ -90,16 +79,16 @@
     window.addEventListener('pointerdown', () => root.classList.add('cursorHover'));
     window.addEventListener('pointerup', () => root.classList.remove('cursorHover'));
     window.addEventListener('pointerover', (e) => {
-      root.classList.toggle('cursorHover', isHoverTarget(e.target));
+      hover = isHoverTarget(e.target);
+      root.classList.toggle('cursorHover', hover);
     }, { passive: true });
     window.addEventListener('pointerout', (e) => {
-      if (!isHoverTarget(e.relatedTarget)) root.classList.remove('cursorHover');
+      if (!isHoverTarget(e.relatedTarget)) { hover = false; root.classList.remove('cursorHover'); }
     }, { passive: true });
 
     // kickstart
     setSpotlight(tx, ty);
     flame.style.transform = tFlame(tx, ty, 0, 1);
-    ring.style.transform = t2(rx, ry);
     raf = requestAnimationFrame(frame);
   })();
 

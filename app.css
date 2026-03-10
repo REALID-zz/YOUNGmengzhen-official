@@ -55,13 +55,6 @@ body{
 
 /* Dynamic cursor (enabled via JS by adding .cursorOn) */
 html.cursorOn, html.cursorOn * { cursor: none !important; }
-.cursorDot, .cursorRing{
-  position: fixed;
-  left: 0; top: 0;
-  pointer-events: none;
-  z-index: 9999;
-  will-change: transform;
-}
 .cursorFlame{
   position: fixed;
   left: 0; top: 0;
@@ -82,34 +75,10 @@ html.cursorOn, html.cursorOn * { cursor: none !important; }
   opacity: 0.98;
   mix-blend-mode: screen;
 }
-.cursorDot{
-  width: 7px; height: 7px;
-  border-radius: 999px;
-  background: rgba(255,255,255,.92);
-  box-shadow:
-    0 0 22px rgba(255, 214, 168, var(--curA)),
-    0 0 46px rgba(255, 160, 122, var(--curB));
-  mix-blend-mode: screen;
-}
-.cursorRing{
-  width: 34px; height: 34px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 214, 168, .30);
-  background:
-    radial-gradient(circle at 30% 30%, rgba(255,255,255,.16), transparent 55%),
-    radial-gradient(circle at 70% 70%, rgba(255, 214, 168, .12), transparent 58%);
-  box-shadow:
-    0 12px 40px rgba(0,0,0,.35),
-    0 0 42px rgba(255, 214, 168, .12);
-  backdrop-filter: blur(10px);
-  mix-blend-mode: screen;
-}
-html.cursorHover .cursorRing{
-  width: 48px; height: 48px;
-  border-color: rgba(255, 214, 168, .62);
-  box-shadow:
-    0 18px 70px rgba(0,0,0,.40),
-    0 0 70px rgba(255, 214, 168, .22);
+html.cursorHover .cursorFlame{
+  filter:
+    drop-shadow(0 0 14px rgba(255, 214, 168, calc(var(--curA) * 0.70)))
+    drop-shadow(0 0 34px rgba(255, 160, 122, calc(var(--curB) * 0.95)));
 }
 a:focus{outline:2px solid rgba(154,230,255,.55); outline-offset:2px}
 .sideNav{
