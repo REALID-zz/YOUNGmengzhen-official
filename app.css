@@ -295,16 +295,60 @@ a:hover{text-decoration:underline}
   gap:18px;
 }
 @media (max-width: 920px){ .heroInner{grid-template-columns:1fr} }
-.heroCopy{
+.glassFloat{
+  position: relative;
   border-radius: 22px;
   border: 1px solid rgba(255,255,255,.10);
   background:
-    radial-gradient(420px 260px at 18% 18%, rgba(255,255,255,.08), transparent 62%),
-    linear-gradient(180deg, rgba(0,0,0,.46), rgba(0,0,0,.22));
-  backdrop-filter: blur(12px);
+    radial-gradient(1100px 700px at 12% 2%, rgba(255,255,255,.10), transparent 58%),
+    radial-gradient(900px 620px at 92% 88%, rgba(255, 160, 122, .10), transparent 62%),
+    linear-gradient(180deg, rgba(0,0,0,.40), rgba(0,0,0,.14));
+  backdrop-filter: blur(18px) saturate(1.10);
+  -webkit-backdrop-filter: blur(18px) saturate(1.10);
   box-shadow:
-    0 18px 60px rgba(0,0,0,.18),
-    inset 0 1px 0 rgba(255,255,255,.08);
+    0 28px 90px rgba(0,0,0,.26),
+    inset 0 1px 0 rgba(255,255,255,.10);
+  overflow: hidden;
+  transform: translateZ(0);
+}
+.glassFloat::before{
+  content:"";
+  position:absolute;
+  inset:-60px;
+  background:
+    radial-gradient(360px 220px at 18% 22%, rgba(255,255,255,.10), transparent 62%),
+    radial-gradient(520px 320px at 78% 74%, rgba(255, 214, 168, .10), transparent 66%),
+    radial-gradient(560px 360px at 60% 18%, rgba(255, 160, 122, .08), transparent 68%);
+  filter: blur(18px);
+  opacity: .75;
+  pointer-events:none;
+  mix-blend-mode: screen;
+}
+.glassFloat::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity: .08;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20width%3D%27120%27%20height%3D%27120%27%20viewBox%3D%270%200%20120%20120%27%3E%3Cfilter%20id%3D%27n%27%3E%3CfeTurbulence%20type%3D%27fractalNoise%27%20baseFrequency%3D%270.9%27%20numOctaves%3D%272%27%20stitchTiles%3D%27stitch%27/%3E%3C/filter%3E%3Crect%20width%3D%27120%27%20height%3D%27120%27%20filter%3D%27url(%23n)%27%20opacity%3D%270.9%27/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+}
+@supports (-webkit-mask-image: radial-gradient(#000, transparent)){
+  .glassFloat{
+    -webkit-mask-image: radial-gradient(140% 120% at 42% 26%, #000 72%, rgba(0,0,0,.90) 84%, transparent 100%);
+            mask-image: radial-gradient(140% 120% at 42% 26%, #000 72%, rgba(0,0,0,.90) 84%, transparent 100%);
+  }
+}
+@media (prefers-reduced-motion: no-preference){
+  .glassFloat{ animation: floatY 12s ease-in-out infinite; }
+  .infoCard.glassFloat{ animation-delay: -3.5s; }
+}
+@keyframes floatY{
+  0%,100%{ transform: translate3d(0,0,0); }
+  50%{ transform: translate3d(0,-2px,0); }
+}
+.heroCopy{
   padding: 18px 18px 16px;
 }
 @media (max-width: 920px){
@@ -381,6 +425,19 @@ a:hover{text-decoration:underline}
     0 18px 60px rgba(0,0,0,.22),
     inset 0 1px 0 rgba(255,255,255,.12);
   position: relative;
+}
+.infoCard.glassFloat{
+  border-radius: 18px;
+  border-color: rgba(255,255,255,.10);
+  backdrop-filter: blur(18px) saturate(1.10);
+  -webkit-backdrop-filter: blur(18px) saturate(1.10);
+  background:
+    radial-gradient(900px 560px at 18% 10%, rgba(255,255,255,.08), transparent 62%),
+    radial-gradient(760px 520px at 92% 86%, rgba(255, 214, 168, .09), transparent 66%),
+    linear-gradient(180deg, rgba(0,0,0,.34), rgba(0,0,0,.12));
+  box-shadow:
+    0 28px 90px rgba(0,0,0,.26),
+    inset 0 1px 0 rgba(255,255,255,.10);
 }
 
 .card::before, .infoCard::before{
