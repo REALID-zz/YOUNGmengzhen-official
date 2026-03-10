@@ -162,6 +162,171 @@
     }
   }
 
+  // --- Auto reorder works by "texture"/look (no manual metadata needed) ---
+  function clamp01(n){ return Math.max(0, Math.min(1, n)); }
+
+  function rgbToHslFast(r, g, b){
+    r /= 255; g /= 255; b /= 255;
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    const d = max - min;
+    const l = (max + min) / 2;
+    let h = 0;
+    const s = d === 0 ? 0 : d / (1 - Math.abs(2 * l - 1));
+    if (d !== 0){
+      switch (max){
+        case r: h = ((g - b) / d) % 6; break;
+        case g: h = (b - r) / d + 2; break;
+        case b: h = (r - g) / d + 4; break;
+      }
+      h *= 60;
+      if (h < 0) h += 360;
+    }
+    return { h, s, l };
+  }
+
+  async function analyzeImage(url){
+    // Cache in-session to avoid recomputing on refreshes/filters
+    const key = `feat:${url}`;
+    try{
+      const cached = sessionStorage.getItem(key);
+      if (cached) return JSON.parse(cached);
+    }catch{ /* ignore */ }
+
+    const img = new Image();
+    // Same-origin images on GitHub Pages; keep safe if CORS ever changes
+    img.crossOrigin = 'anonymous';
+    img.decoding = 'async';
+    img.src = url;
+    try{
+      await img.decode();
+    }catch{
+      return null;
+    }
+
+    const size = 56;
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    if (!ctx) return null;
+
+    // cover-fit into square
+    const iw = img.naturalWidth || img.width;
+    const ih = img.naturalHeight || img.height;
+    const scale = Math.max(size / iw, size / ih);
+    const sw = size / scale;
+    const sh = size / scale;
+    const sx = (iw - sw) / 2;
+    const sy = (ih - sh) / 2;
+    ctx.drawImage(img, sx, sy, sw, sh, 0, 0, size, size);
+
+    const { data } = ctx.getImageData(0, 0, size, size);
+    const n = size * size;
+
+    let lumSum = 0, lum2Sum = 0;
+    let satSum = 0, hueX = 0, hueY = 0;
+    let edgeSum = 0;
+
+    // Luma plane for fast edge estimate
+    const lum = new Float32Array(n);
+
+    for (let i = 0; i < n; i++){
+      const o = i * 4;
+      const r = data[o], g = data[o + 1], b = data[o + 2];
+      const l = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+      lum[i] = l;
+      lumSum += l;
+      lum2Sum += l * l;
+
+      const hsl = rgbToHslFast(r, g, b);
+      satSum += hsl.s;
+      const rad = (hsl.h * Math.PI) / 180;
+      hueX += Math.cos(rad);
+      hueY += Math.sin(rad);
+    }
+
+    // edge density: average neighbor diff (right + down)
+    for (let y = 0; y < size; y++){
+      const row = y * size;
+      for (let x = 0; x < size; x++){
+        const i = row + x;
+        const v = lum[i];
+        if (x + 1 < size) edgeSum += Math.abs(v - lum[i + 1]);
+        if (y + 1 < size) edgeSum += Math.abs(v - lum[i + size]);
+      }
+    }
+
+    const lumMean = lumSum / n;
+    const lumVar = Math.max(0, lum2Sum / n - lumMean * lumMean);
+    const lumStd = Math.sqrt(lumVar);
+    const satMean = satSum / n;
+    const hue = (Math.atan2(hueY, hueX) * 180 / Math.PI + 360) % 360;
+    const edge = edgeSum / (2 * n); // normalized-ish
+
+    // Simple classifier (tuned for: mono line-art vs vivid pop vs dark painterly vs mid)
+    const isMonoish = satMean < 0.12;
+    const highContrast = lumStd > 0.20;
+    const liney = edge > 0.085;
+
+    let group = 3; // default mid
+    if (isMonoish && (highContrast || liney)) group = 0;            // B/W, ink, line drawings
+    else if (satMean > 0.30) group = 2;                             // vivid color / pop
+    else if (lumMean < 0.38) group = 1;                             // dark, moody
+    else group = 3;                                                 // soft / mid
+
+    const feat = {
+      lum: +lumMean.toFixed(4),
+      sat: +satMean.toFixed(4),
+      hue: +hue.toFixed(2),
+      con: +lumStd.toFixed(4),
+      edge: +edge.toFixed(4),
+      group
+    };
+
+    try{
+      sessionStorage.setItem(key, JSON.stringify(feat));
+    }catch{ /* ignore */ }
+    return feat;
+  }
+
+  async function reorderWorksByTexture(list){
+    const works = (list || []).filter(w => w && w.image);
+    if (works.length < 6) return list;
+
+    // Analyze in parallel (small list)
+    const feats = await Promise.all(works.map(w => analyzeImage(w.image)));
+    const featMap = new Map();
+    for (let i = 0; i < works.length; i++){
+      if (feats[i]) featMap.set(works[i].image, feats[i]);
+    }
+
+    // If too many failed, bail out
+    const ok = Array.from(featMap.values()).length;
+    if (ok < Math.max(4, Math.floor(works.length * 0.5))) return list;
+
+    // Group order: vivid → mono/ink → dark → mid (visually coherent blocks)
+    const groupOrder = { 2: 0, 0: 1, 1: 2, 3: 3 };
+
+    const get = (w) => featMap.get(w.image) || { group: 9, hue: 0, lum: 0.5, sat: 0 };
+    const sorted = [...list].sort((a, b) => {
+      const fa = a?.image ? get(a) : null;
+      const fb = b?.image ? get(b) : null;
+      if (!fa && !fb) return 0;
+      if (!fa) return 1;
+      if (!fb) return -1;
+
+      const ga = groupOrder[fa.group] ?? 9;
+      const gb = groupOrder[fb.group] ?? 9;
+      if (ga !== gb) return ga - gb;
+
+      // within group, sort by hue then luminance
+      if (fa.hue !== fb.hue) return fa.hue - fb.hue;
+      return fa.lum - fb.lum;
+    });
+    return sorted;
+  }
+
   function filter() {
     const query = (q?.value || '').trim().toLowerCase();
     state.filtered = query ? state.works.filter(w => matchWork(w, query)) : state.works;
@@ -229,7 +394,14 @@
       const local = await loadFromLocalManifest();
       if (local.length) {
         state.works = local;
-        filter();
+        filter(); // fast initial render
+        // then reorder by texture/look and rerender
+        reorderWorksByTexture(state.works).then(sorted => {
+          if (sorted && Array.isArray(sorted)) {
+            state.works = sorted;
+            filter();
+          }
+        });
         return;
       }
     } catch { /* ignore */ }
@@ -238,7 +410,13 @@
       const list = await loadFromGithubFolder();
       if (list.length) {
         state.works = list;
-        filter();
+        filter(); // fast initial render
+        reorderWorksByTexture(state.works).then(sorted => {
+          if (sorted && Array.isArray(sorted)) {
+            state.works = sorted;
+            filter();
+          }
+        });
         return;
       }
     } catch { /* ignore */ }
