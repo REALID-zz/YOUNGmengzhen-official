@@ -293,8 +293,23 @@ a:hover{text-decoration:underline}
   gap:18px;
 }
 @media (max-width: 920px){ .heroInner{grid-template-columns:1fr} }
+.heroCopy{
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,.10);
+  background:
+    radial-gradient(420px 260px at 18% 18%, rgba(255,255,255,.08), transparent 62%),
+    linear-gradient(180deg, rgba(0,0,0,.46), rgba(0,0,0,.22));
+  backdrop-filter: blur(12px);
+  box-shadow:
+    0 18px 60px rgba(0,0,0,.18),
+    inset 0 1px 0 rgba(255,255,255,.08);
+  padding: 18px 18px 16px;
+}
+@media (max-width: 920px){
+  .heroCopy{ padding: 16px 14px 14px; }
+}
 .title{margin:0; font-size:52px; letter-spacing:.2px}
-.subtitle{margin:10px 0 0; color:rgba(255,255,255,.80); line-height:1.75; font-size:15px; max-width:70ch}
+.subtitle{margin:10px 0 0; color:rgba(255,255,255,.80); line-height:1.85; font-size:15px; max-width:64ch}
 .metaRow{margin-top:12px; color:rgba(255,255,255,.72); font-size:13px}
 .chips{display:flex; flex-wrap:wrap; gap:8px; margin-top:16px}
 .chip{
