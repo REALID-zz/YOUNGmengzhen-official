@@ -69,7 +69,8 @@
       const dy = ty - pty;
       ptx = tx; pty = ty;
       const speed = Math.hypot(dx, dy);
-      const tilt = clamp(dx * 0.08, -10, 10) + clamp(-dy * 0.03, -6, 6);
+      // smaller tilt to keep click hotspot visually precise
+      const tilt = clamp(dx * 0.06, -7, 7) + clamp(-dy * 0.02, -4, 4);
       const base = clamp(0.92 + speed / 220, 0.92, 1.08);
       const s = hover ? base * 1.08 : base;
       flame.style.transform = tFlame(tx, ty, tilt, s);

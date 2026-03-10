@@ -62,6 +62,8 @@ html.cursorOn, html.cursorOn * { cursor: none !important; }
   z-index: 10000;
   width: 34px;
   height: 48px;
+  /* keep rotation/scale anchored to the real pointer hotspot */
+  transform-origin: 50% 92%;
   transform: translate3d(-999px, -999px, 0);
   will-change: transform, filter, opacity;
   background-repeat: no-repeat;
