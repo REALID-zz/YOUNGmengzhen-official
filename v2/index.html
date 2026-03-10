@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>孟臻（DCT）｜Portfolio v2</title>
+    <meta name="description" content="孟臻（DCT）独立艺术家、画家（油画）。Portfolio v2 视觉预览。" />
+    <link rel="canonical" href="https://realid-zz.github.io/YOUNGmengzhen-official/v2/" />
+    <meta name="theme-color" content="#07080c" />
+    <style>
+      :root{
+        --bg:#06070b;
+        --card:rgba(255,255,255,.06);
+        --line:rgba(255,255,255,.12);
+        --text:rgba(255,255,255,.92);
+        --muted:rgba(255,255,255,.68);
+        --accent:#9ae6ff;
+        --accent2:#c6a6ff;
+        --gold:#ffd7a8;
+        --shadow: 0 28px 80px rgba(0,0,0,.52);
+      }
+      *{box-sizing:border-box}
+      html,body{height:100%}
+      body{
+        margin:0;
+        color:var(--text);
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+        background:
+          radial-gradient(900px 520px at 12% 18%, rgba(154,230,255,.22), transparent 62%),
+          radial-gradient(820px 560px at 82% 22%, rgba(198,166,255,.18), transparent 62%),
+          radial-gradient(760px 560px at 55% 92%, rgba(255,255,255,.08), transparent 62%),
+          linear-gradient(180deg, rgba(0,0,0,.0), rgba(0,0,0,.55)),
+          var(--bg);
+        overflow-x:hidden;
+      }
+      a{color:var(--accent); text-decoration:none}
+      a:hover{text-decoration:underline}
+      .wrap{max-width:1200px; margin:0 auto; padding:28px 18px 64px}
+      .topbar{
+        position:sticky; top:0; z-index:20;
+        backdrop-filter: blur(14px);
+        background: rgba(6,7,11,.58);
+        border-bottom:1px solid rgba(255,255,255,.10);
+      }
+      .topbarInner{
+        max-width:1200px; margin:0 auto;
+        padding:12px 18px;
+        display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+      }
+      .brand{display:flex; align-items:baseline; gap:10px}
+      .brand .name{font-size:14px; letter-spacing:.2px; margin:0}
+      .brand .sub{font-size:12px; color:var(--muted)}
+      .nav{display:flex; gap:14px; flex-wrap:wrap; align-items:center}
+      .nav a{color:rgba(255,255,255,.82); font-size:12px}
+      .nav .pill{
+        border:1px solid rgba(255,255,255,.16);
+        background: rgba(255,255,255,.06);
+        padding:8px 10px;
+        border-radius:999px;
+        box-shadow: 0 8px 30px rgba(0,0,0,.26);
+      }
+
+      .hero{
+        margin-top:18px;
+        border-radius:22px;
+        border:1px solid rgba(255,255,255,.14);
+        background:
+          linear-gradient(120deg, rgba(154,230,255,.16), rgba(198,166,255,.12)),
+          radial-gradient(800px 520px at 30% 20%, rgba(255,255,255,.10), transparent 60%),
+          rgba(255,255,255,.04);
+        overflow:hidden;
+        box-shadow: var(--shadow);
+        position:relative;
+        isolation:isolate;
+      }
+      .hero::before{
+        content:"";
+        position:absolute; inset:-2px;
+        background: url("../assets/hero.jpg") center/cover no-repeat;
+        opacity:.26;
+        filter: saturate(1.08) contrast(1.06) blur(0.2px);
+        transform: scale(1.04);
+        z-index:-2;
+      }
+      .hero::after{
+        content:"";
+        position:absolute; inset:0;
+        background: radial-gradient(900px 520px at 20% 25%, rgba(0,0,0,.0), rgba(0,0,0,.52));
+        z-index:-1;
+      }
+      .heroInner{
+        padding:32px 22px 26px;
+        display:grid;
+        grid-template-columns: 1.25fr .75fr;
+        gap:18px;
+      }
+      @media (max-width: 920px){ .heroInner{grid-template-columns:1fr} }
+      .h1{margin:0; font-size:44px; letter-spacing:.2px}
+      .lead{margin:10px 0 0; color:rgba(255,255,255,.78); line-height:1.75; font-size:15px; max-width:66ch}
+      .chips{display:flex; flex-wrap:wrap; gap:8px; margin-top:16px}
+      .chip{
+        border:1px solid rgba(255,255,255,.16);
+        background: rgba(0,0,0,.20);
+        color: rgba(255,255,255,.88);
+        padding:7px 10px;
+        border-radius:999px;
+        font-size:12px;
+        backdrop-filter: blur(10px);
+      }
+      .actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px}
+      .btn{
+        display:inline-flex; align-items:center; gap:8px;
+        padding:10px 12px;
+        border-radius:12px;
+        border:1px solid rgba(255,255,255,.18);
+        background: rgba(255,255,255,.07);
+        color: rgba(255,255,255,.90);
+      }
+      .btnPrimary{
+        border-color: rgba(154,230,255,.45);
+        background: linear-gradient(135deg, rgba(154,230,255,.20), rgba(198,166,255,.16));
+        box-shadow: 0 18px 56px rgba(154,230,255,.10);
+      }
+
+      .infoCard{
+        border-radius:16px;
+        border:1px solid rgba(255,255,255,.14);
+        background: rgba(8,9,12,.42);
+        backdrop-filter: blur(14px);
+        padding:14px 14px 16px;
+      }
+      .k{color:rgba(255,255,255,.62); font-size:11px; letter-spacing:.16em; text-transform:uppercase}
+      .infoCard ul{margin:10px 0 0; padding-left:18px; color:rgba(255,255,255,.80); line-height:1.7; font-size:13px}
+      .infoCard li{margin:6px 0}
+      .note{margin-top:12px; color:rgba(255,255,255,.66); line-height:1.7; font-size:12px}
+
+      .section{
+        margin-top:18px;
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+        gap:14px;
+      }
+      @media (max-width: 920px){ .section{grid-template-columns:1fr} }
+      .card{
+        border-radius:18px;
+        border:1px solid rgba(255,255,255,.12);
+        background: rgba(255,255,255,.04);
+        padding:16px 16px 18px;
+        backdrop-filter: blur(12px);
+      }
+      .card h2{margin:0; font-size:14px; letter-spacing:.06em}
+      .card p{margin:10px 0 0; color:rgba(255,255,255,.74); line-height:1.75; font-size:13px}
+      .miniLinks{margin-top:10px; display:flex; flex-wrap:wrap; gap:10px}
+      .miniLinks a{font-size:12px; color:rgba(255,255,255,.78)}
+
+      .previewRow{
+        margin-top:14px;
+        display:flex; gap:10px; flex-wrap:wrap;
+      }
+      .previewPill{
+        border:1px solid rgba(255,255,255,.14);
+        background: rgba(0,0,0,.20);
+        color: rgba(255,255,255,.86);
+        border-radius:999px;
+        padding:8px 10px;
+        font-size:12px;
+      }
+      footer{
+        margin-top:18px;
+        color:rgba(255,255,255,.62);
+        font-size:12px;
+        line-height:1.7;
+        border-radius:16px;
+        border:1px solid rgba(255,255,255,.10);
+        background: rgba(255,255,255,.03);
+        padding:14px 14px;
+      }
+      .glowLine{
+        height:1px; width:100%;
+        background: linear-gradient(90deg, transparent, rgba(154,230,255,.50), rgba(198,166,255,.42), transparent);
+        margin-top: 10px;
+        opacity:.8;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="topbarInner">
+        <div class="brand">
+          <h1 class="name">孟臻（DCT）</h1>
+          <div class="sub">v2 视觉预览 · Artist / Painter · EARTH / HK / LA</div>
+        </div>
+        <div class="nav">
+          <a class="pill" href="./portfolio/">进入作品集</a>
+          <a href="../mengzhen/">官方档案</a>
+          <a href="../dct/">DCT 消歧</a>
+          <a href="mailto:hihelloaikenni@gemail.com">联系</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <section class="hero">
+        <div class="heroInner">
+          <div>
+            <h2 class="h1">Portfolio</h2>
+            <p class="lead">
+              以独特的天真视角讲述哲学情感，专注于绘画与当代艺术创作。在强烈的明暗对比与氛围建构中，让情绪与叙事并置，形成兼具直觉与思辨的观看体验。
+            </p>
+            <div class="chips">
+              <span class="chip">Oil Painting</span>
+              <span class="chip">Chiaroscuro</span>
+              <span class="chip">Narrative</span>
+              <span class="chip">Melancholy</span>
+              <span class="chip">Illusion</span>
+            </div>
+            <div class="actions">
+              <a class="btn btnPrimary" href="./portfolio/">看作品（自动铺满）</a>
+              <a class="btn" href="../">返回当前官网</a>
+            </div>
+            <div class="previewRow" aria-label="preview modes">
+              <span class="previewPill">风格 A：霓虹玻璃拟态（当前预览）</span>
+              <span class="previewPill">下一步可加：博物馆极简 / 电影感暗黑</span>
+            </div>
+            <div class="glowLine"></div>
+            <div class="note">
+              主荧幕图：把你选的照片上传为 <strong>assets/hero.jpg</strong>（不需要改代码）。
+            </div>
+          </div>
+          <aside class="infoCard">
+            <div class="k">Highlights (public)</div>
+            <ul>
+              <li>AACYF Top 30 Under 30（Cal C 30 Under 30，2020）</li>
+              <li>Artsy / WTC / CAMAC（公开引用）</li>
+              <li>邮箱：hihelloaikenni@gemail.com</li>
+            </ul>
+            <div class="k" style="margin-top:14px;">Statement</div>
+            <div class="note">
+              官方声明：此处的 <strong>DCT</strong> 仅为孟臻的对外英文标识/英译名（署名），与其他缩写含义无关。
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="card">
+          <h2>开源实现（我会用这些落地酷炫交互）</h2>
+          <p>
+            我会用轻量、可商用的开源前端方案做：丝滑滚动、作品大图查看、瀑布流与动效（保证 GitHub Pages 也能秒开）。
+          </p>
+          <div class="miniLinks">
+            <a href="./portfolio/">作品集预览页</a>
+            <a href="../sitemap.xml">Sitemap</a>
+            <a href="../robots.txt">Robots</a>
+          </div>
+        </div>
+        <div class="card">
+          <h2>下一步你只需要“选视觉 + 选主荧幕图”</h2>
+          <p>
+            你说“就要这种风格 A / 或改成更极简 / 或更暗黑电影感”，我就把整站统一成同一视觉体系，并把作品区做成你要的“放满作品”。
+          </p>
+          <div class="miniLinks">
+            <a href="mailto:hihelloaikenni@gemail.com">联系邮箱</a>
+            <a href="../mengzhen/">同名消歧页</a>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        本页为 v2 视觉预览。公开版口径不包含证件/住址/推荐信原文等敏感信息。
+      </footer>
+    </div>
+  </body>
+</html>
+
