@@ -163,8 +163,6 @@
   }
 
   // --- Auto reorder works by "texture"/look (no manual metadata needed) ---
-  function clamp01(n){ return Math.max(0, Math.min(1, n)); }
-
   function rgbToHslFast(r, g, b){
     r /= 255; g /= 255; b /= 255;
     const max = Math.max(r, g, b);
@@ -264,30 +262,81 @@
     const hue = (Math.atan2(hueY, hueX) * 180 / Math.PI + 360) % 360;
     const edge = edgeSum / (2 * n); // normalized-ish
 
-    // Simple classifier (tuned for: mono line-art vs vivid pop vs dark painterly vs mid)
-    const isMonoish = satMean < 0.12;
-    const highContrast = lumStd > 0.20;
-    const liney = edge > 0.085;
-
-    let group = 3; // default mid
-    if (isMonoish && (highContrast || liney)) group = 0;            // B/W, ink, line drawings
-    else if (satMean > 0.30) group = 2;                             // vivid color / pop
-    else if (lumMean < 0.38) group = 1;                             // dark, moody
-    else group = 3;                                                 // soft / mid
-
     const feat = {
       lum: +lumMean.toFixed(4),
       sat: +satMean.toFixed(4),
       hue: +hue.toFixed(2),
       con: +lumStd.toFixed(4),
       edge: +edge.toFixed(4),
-      group
     };
 
     try{
       sessionStorage.setItem(key, JSON.stringify(feat));
     }catch{ /* ignore */ }
     return feat;
+  }
+
+  function dist2(a, b){
+    const de = a.edge - b.edge;
+    const ds = a.sat - b.sat;
+    const dl = a.lum - b.lum;
+    const dc = a.con - b.con;
+    // weighted: edge + sat matter most for "texture"
+    return (de * de) * 1.8 + (ds * ds) * 1.6 + (dl * dl) * 1.0 + (dc * dc) * 0.9;
+  }
+
+  function meanOf(list){
+    const n = list.length || 1;
+    let edge = 0, sat = 0, lum = 0, con = 0, hueX = 0, hueY = 0;
+    for (const f of list){
+      edge += f.edge; sat += f.sat; lum += f.lum; con += f.con;
+      const rad = (f.hue * Math.PI) / 180;
+      hueX += Math.cos(rad);
+      hueY += Math.sin(rad);
+    }
+    const hue = (Math.atan2(hueY, hueX) * 180 / Math.PI + 360) % 360;
+    return { edge: edge / n, sat: sat / n, lum: lum / n, con: con / n, hue };
+  }
+
+  function pickInitCentroids(feats, k){
+    // deterministic seeds to avoid "random" regrouping across refresh:
+    // 1) min edge (soft/painterly), 2) max edge (liney), 3) max sat (vivid), 4) min lum (dark)
+    const by = (key, dir) => [...feats].sort((a, b) => dir * (a[key] - b[key]))[0];
+    const c = [];
+    c.push(by('edge', +1));
+    c.push(by('edge', -1));
+    if (k >= 3) c.push(by('sat', -1));
+    if (k >= 4) c.push(by('lum', +1));
+    return c.slice(0, k).map(x => ({ ...x }));
+  }
+
+  function kmeans(feats, k){
+    const n = feats.length;
+    if (n === 0) return { assign: [], centroids: [] };
+    const kk = Math.max(2, Math.min(k, n));
+    let centroids = pickInitCentroids(feats, kk);
+    let assign = new Array(n).fill(0);
+
+    for (let iter = 0; iter < 8; iter++){
+      let changed = false;
+      // assign
+      for (let i = 0; i < n; i++){
+        let best = 0;
+        let bestD = Infinity;
+        for (let j = 0; j < kk; j++){
+          const d = dist2(feats[i], centroids[j]);
+          if (d < bestD){ bestD = d; best = j; }
+        }
+        if (assign[i] !== best){ assign[i] = best; changed = true; }
+      }
+      if (!changed && iter > 0) break;
+
+      // update
+      const buckets = Array.from({ length: kk }, () => []);
+      for (let i = 0; i < n; i++) buckets[assign[i]].push(feats[i]);
+      centroids = buckets.map((b, idx) => b.length ? meanOf(b) : centroids[idx]);
+    }
+    return { assign, centroids };
   }
 
   async function reorderWorksByTexture(list){
@@ -305,10 +354,34 @@
     const ok = Array.from(featMap.values()).length;
     if (ok < Math.max(4, Math.floor(works.length * 0.5))) return list;
 
-    // Group order: vivid → mono/ink → dark → mid (visually coherent blocks)
-    const groupOrder = { 2: 0, 0: 1, 1: 2, 3: 3 };
+    const feats = works
+      .map(w => ({ w, f: featMap.get(w.image) }))
+      .filter(x => x.f)
+      .map(x => x.f);
 
-    const get = (w) => featMap.get(w.image) || { group: 9, hue: 0, lum: 0.5, sat: 0 };
+    const { assign, centroids } = kmeans(feats, 4);
+    // Map image -> cluster id (feats order matches works.filter(w.image))
+    const featImages = works.filter(w => featMap.get(w.image)).map(w => w.image);
+    const clusterOfImage = new Map();
+    for (let i = 0; i < featImages.length; i++){
+      clusterOfImage.set(featImages[i], assign[i] ?? 0);
+    }
+
+    // Rank clusters by "look": painterly/soft first, then dark, then line-art, then vivid graphic.
+    const ranks = centroids.map((c) => {
+      const edgeHigh = c.edge > 0.095;
+      const satHigh = c.sat > 0.26;
+      const dark = c.lum < 0.38;
+      const lineArt = edgeHigh && c.sat < 0.18;
+      const vividGraphic = edgeHigh && satHigh;
+      if (lineArt) return 2;
+      if (vividGraphic) return 3;
+      if (dark) return 1;
+      return 0; // soft/painterly
+    });
+
+    const get = (w) => featMap.get(w.image) || { edge: 0, sat: 0, hue: 0, lum: 0.5, con: 0 };
+
     const sorted = [...list].sort((a, b) => {
       const fa = a?.image ? get(a) : null;
       const fb = b?.image ? get(b) : null;
@@ -316,13 +389,17 @@
       if (!fa) return 1;
       if (!fb) return -1;
 
-      const ga = groupOrder[fa.group] ?? 9;
-      const gb = groupOrder[fb.group] ?? 9;
-      if (ga !== gb) return ga - gb;
+      const ca = clusterOfImage.get(a.image) ?? 9;
+      const cb = clusterOfImage.get(b.image) ?? 9;
+      const ra = ranks[ca] ?? 9;
+      const rb = ranks[cb] ?? 9;
+      if (ra !== rb) return ra - rb;
+      if (ca !== cb) return ca - cb;
 
-      // within group, sort by hue then luminance
+      // within cluster: hue → luminance → edge (keeps similar feel together)
       if (fa.hue !== fb.hue) return fa.hue - fb.hue;
-      return fa.lum - fb.lum;
+      if (fa.lum !== fb.lum) return fa.lum - fb.lum;
+      return fa.edge - fb.edge;
     });
     return sorted;
   }
