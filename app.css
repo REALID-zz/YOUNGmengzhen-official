@@ -565,10 +565,10 @@ a:hover{text-decoration:underline}
   --deskGreen: #ADCB41;
   display:inline-flex;
   align-items:center;
-  justify-content:center;
+  justify-content:flex-start;
   gap: 8px;
-  height: 30px;
-  padding: 6px 12px 6px 10px;
+  height: 32px;
+  padding: 7px 14px 7px 12px;
   border-radius: 999px;
   border: 1px solid rgba(173, 203, 65, .35);
   background: rgba(0,0,0,.18);
@@ -578,7 +578,7 @@ a:hover{text-decoration:underline}
     0 16px 48px rgba(0,0,0,.22),
     0 0 22px rgba(173, 203, 65, .10);
   color: rgba(173, 203, 65, .96);
-  letter-spacing: .02em;
+  letter-spacing: .18em;
   cursor: pointer;
   user-select: none;
 }
@@ -595,7 +595,8 @@ a:hover{text-decoration:underline}
   display:inline;
   font-size: 12px;
   line-height: 1;
-  font-weight: 600;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 .deskBtn:hover{ transform: translateY(-1px); }
 .deskBtn:active{ transform: translateY(0px); }
