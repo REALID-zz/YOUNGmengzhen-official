@@ -566,105 +566,41 @@ a:hover{text-decoration:underline}
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  gap: 0;
-  width: 66px;
-  height: 66px;
-  padding: 0;
+  gap: 8px;
+  height: 30px;
+  padding: 6px 12px 6px 10px;
   border-radius: 999px;
-  border: 1px solid rgba(255,255,255,.10);
-  background:
-    radial-gradient(34px 28px at 28% 26%, rgba(255,255,255,.10), transparent 60%),
-    radial-gradient(46px 34px at 72% 78%, rgba(173, 203, 65, .08), transparent 64%),
-    rgba(0,0,0,.10);
-  backdrop-filter: blur(16px) saturate(1.06);
-  -webkit-backdrop-filter: blur(16px) saturate(1.06);
+  border: 1px solid rgba(173, 203, 65, .35);
+  background: rgba(0,0,0,.18);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   box-shadow:
-    0 20px 70px rgba(0,0,0,.26),
-    0 0 40px rgba(173, 203, 65, .12),
-    inset 0 1px 0 rgba(255,255,255,.08);
-  color: rgba(255,255,255,.92);
-  letter-spacing: .18em;
+    0 16px 48px rgba(0,0,0,.22),
+    0 0 22px rgba(173, 203, 65, .10);
+  color: rgba(173, 203, 65, .96);
+  letter-spacing: .02em;
   cursor: pointer;
   user-select: none;
 }
 .deskBtnMark{
-  width: 50px;
-  height: 50px;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
-  /* premium jewel pendant (metal + emerald glass) */
-  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2080%2080%27%3E%3Cdefs%3E%3ClinearGradient%20id%3D%27m%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%271%27%20y2%3D%271%27%3E%3Cstop%20offset%3D%270%27%20stop-color%3D%27%23F5F6F7%27%20stop-opacity%3D%270.95%27/%3E%3Cstop%20offset%3D%270.45%27%20stop-color%3D%27%23B8BCC3%27%20stop-opacity%3D%270.95%27/%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%23FFFFFF%27%20stop-opacity%3D%270.9%27/%3E%3C/linearGradient%3E%3CradialGradient%20id%3D%27g%27%20cx%3D%2735%25%27%20cy%3D%2728%25%27%20r%3D%2770%25%27%3E%3Cstop%20offset%3D%270%27%20stop-color%3D%27%23F2FFB8%27%20stop-opacity%3D%270.95%27/%3E%3Cstop%20offset%3D%270.38%27%20stop-color%3D%27%23ADCB41%27%20stop-opacity%3D%270.92%27/%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%233E5A12%27%20stop-opacity%3D%270.88%27/%3E%3C/radialGradient%3E%3C/defs%3E%3Cpath%20d%3D%27M18%2024%20C28%2010%2052%2010%2062%2024%27%20fill%3D%27none%27%20stroke%3D%27url(%23m)%27%20stroke-width%3D%276.5%27%20stroke-linecap%3D%27round%27%20opacity%3D%270.92%27/%3E%3Cpath%20d%3D%27M40%2027%20c3%200%205%202%205%204%20c0%203-2%205-5%205%20c-3%200-5-2-5-5%20c0-2%202-4%205-4z%27%20fill%3D%27%23FFFFFF%27%20opacity%3D%270.55%27/%3E%3Cpath%20d%3D%27M40%2032%20C47%2032%2053%2038%2053%2046%20C53%2057%2045%2064%2040%2068%20C35%2064%2027%2057%2027%2046%20C27%2038%2033%2032%2040%2032%20Z%27%20fill%3D%27url(%23g)%27%20stroke%3D%27url(%23m)%27%20stroke-width%3D%274.5%27%20stroke-linejoin%3D%27round%27%20opacity%3D%270.98%27/%3E%3Cpath%20d%3D%27M33%2040%20L40%2036%20L47%2040%20L44%2050%20L40%2058%20L36%2050%20Z%27%20fill%3D%27%23FFFFFF%27%20opacity%3D%270.20%27/%3E%3Cpath%20d%3D%27M30%2044%20C31%2040%2035%2037%2039%2037%20C35%2041%2033%2046%2031%2049%20Z%27%20fill%3D%27%23FFFFFF%27%20opacity%3D%270.35%27/%3E%3C/svg%3E");
-  filter:
-    drop-shadow(0 10px 18px rgba(0,0,0,.38))
-    drop-shadow(0 0 16px rgba(173, 203, 65, .14));
-  transform-origin: 50% 8%;
-}
-.deskBtn .deskBtnMark{
-  animation: jewelSway 3.4s ease-in-out infinite;
-}
-@media (prefers-reduced-motion: reduce){
-  .deskBtn .deskBtnMark{ animation: none; }
-}
-@keyframes jewelSway{
-  0%, 100% { transform: rotate(-2.2deg) translateY(0); }
-  50% { transform: rotate(2.8deg) translateY(1px); }
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(173, 203, 65, .90);
+  box-shadow:
+    0 0 10px rgba(173, 203, 65, .22),
+    0 0 22px rgba(173, 203, 65, .12);
 }
 .deskBtnLabel{
-  display:none;
+  display:inline;
+  font-size: 12px;
+  line-height: 1;
+  font-weight: 600;
 }
 .deskBtn:hover{ transform: translateY(-1px); }
 .deskBtn:active{ transform: translateY(0px); }
 
-.deskHint{
-  position: absolute;
-  right: 62px;
-  bottom: 10px;
-  padding: 9px 10px 9px;
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,.10);
-  background:
-    radial-gradient(140px 70px at 20% 30%, rgba(255,255,255,.08), transparent 68%),
-    rgba(0,0,0,.16);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  box-shadow:
-    0 18px 50px rgba(0,0,0,.22),
-    0 0 30px rgba(173, 203, 65, .10);
-  pointer-events: none;
-  white-space: nowrap;
-  opacity: .94;
-  transform: translateY(0);
-}
-.deskHint::after{
-  content:"";
-  position:absolute;
-  right: -7px;
-  bottom: 18px;
-  width: 12px;
-  height: 12px;
-  background: rgba(0,0,0,.18);
-  border-right: 1px solid rgba(173, 203, 65, .18);
-  border-bottom: 1px solid rgba(173, 203, 65, .18);
-  transform: rotate(-45deg);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-}
-.deskHintTitle{
-  font-size: 12px;
-  letter-spacing: .04em;
-  color: rgba(173, 203, 65, .92);
-  text-shadow: 0 0 22px rgba(173, 203, 65, .10);
-}
-.deskHintSub{
-  margin-top: 2px;
-  font-size: 11px;
-  color: rgba(255,255,255,.78);
-  letter-spacing: .02em;
-}
-@media (max-width: 520px){
-  .deskHint{ display:none; }
-}
+.deskHint{ display:none; }
 
 .deskDrawer{
   position: fixed;
