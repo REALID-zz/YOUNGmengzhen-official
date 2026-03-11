@@ -220,6 +220,40 @@
       </div>
     </div>
 
+    <!-- Desktop-like floating button for digital works -->
+    <div class="deskDock" id="deskDock" aria-label="digital works dock">
+      <button class="deskBtn" id="deskBtn" type="button" aria-label="Digital works" aria-haspopup="dialog" aria-controls="deskDrawer" aria-expanded="false">
+        <span class="deskBtnMark" aria-hidden="true"></span>
+        <span class="deskBtnLabel">DIGITAL</span>
+      </button>
+    </div>
+    <div class="deskDrawer" id="deskDrawer" hidden>
+      <div class="deskDrawerPanel" role="dialog" aria-modal="true" aria-label="Digital works">
+        <div class="deskDrawerTop">
+          <div class="k">Digital works</div>
+          <button class="closeBtn" id="closeDesk" type="button">关闭</button>
+        </div>
+        <div id="deskGrid" class="deskGrid" aria-label="digital works grid"></div>
+        <div id="deskEmpty" class="note">暂无数字作品。</div>
+      </div>
+    </div>
+
+    <div id="deskViewer" class="modal" role="dialog" aria-modal="true" aria-label="digital viewer">
+      <div class="modalCard">
+        <div class="modalMedia" id="deskViewerMedia"></div>
+        <div class="modalInfo">
+          <div class="modalTop">
+            <div class="k">Digital</div>
+            <button id="closeDeskViewer" class="closeBtn" type="button">关闭</button>
+          </div>
+          <h3 id="deskViewerTitle"></h3>
+          <p id="deskViewerMeta"></p>
+          <p id="deskViewerDesc"></p>
+          <div class="note">Tip：点击空白处或按 <strong>Esc</strong> 关闭。</div>
+        </div>
+      </div>
+    </div>
+
     <script src="./app.js" defer></script>
   </body>
 </html>

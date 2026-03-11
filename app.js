@@ -12,6 +12,229 @@
   const modalDesc = $('modalDesc');
   const closeBtn = $('closeModal');
 
+  // Desktop-like dock button for digital works
+  (function initDeskDock(){
+    const dock = $('deskDock');
+    const btn = $('deskBtn');
+    const drawer = $('deskDrawer');
+    const closeDesk = $('closeDesk');
+    const gridEl = $('deskGrid');
+    const emptyEl = $('deskEmpty');
+
+    const viewer = $('deskViewer');
+    const viewerMedia = $('deskViewerMedia');
+    const viewerTitle = $('deskViewerTitle');
+    const viewerMeta = $('deskViewerMeta');
+    const viewerDesc = $('deskViewerDesc');
+    const closeViewer = $('closeDeskViewer');
+
+    if (!dock || !btn || !drawer || !gridEl || !emptyEl) return;
+
+    const KEY = 'deskDockPos:v1';
+    const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+
+    function setDrawerOpen(open){
+      drawer.hidden = !open;
+      drawer.classList.toggle('open', open);
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (open) drawer.focus?.();
+    }
+
+    function setViewerOpen(open){
+      if (!viewer) return;
+      viewer.classList.toggle('open', open);
+      if (!open && viewerMedia) viewerMedia.innerHTML = '';
+    }
+
+    function guessKind(file){
+      const f = (file || '').toLowerCase();
+      if (/\.(mp4|webm|mov)$/i.test(f)) return 'video';
+      if (/\.(png|jpe?g|webp|gif)$/i.test(f)) return 'image';
+      return 'file';
+    }
+
+    async function loadDigital(){
+      try{
+        const r = await fetch(`./assets/digital/works.json?v=${Date.now()}`, { cache: 'no-store' });
+        if (!r.ok) return [];
+        const data = await r.json();
+        if (!Array.isArray(data)) return [];
+        return data
+          .filter(x => x && typeof x.file === 'string' && x.file)
+          .map(x => ({
+            file: x.file,
+            title: (typeof x.title === 'string' && x.title.trim()) ? x.title.trim() : titleFromFilename(x.file),
+            year: (typeof x.year === 'string' ? x.year : ''),
+            medium: (typeof x.medium === 'string' ? x.medium : ''),
+            desc: (typeof x.desc === 'string' ? x.desc : ''),
+            kind: guessKind(x.file),
+            url: `./assets/digital/${encodeURIComponent(x.file)}`
+          }));
+      } catch {
+        return [];
+      }
+    }
+
+    function openDigital(item){
+      if (!viewer || !viewerMedia) return;
+      viewerTitle.textContent = item.title || 'Digital';
+      viewerMeta.textContent = [item.year, item.medium].filter(Boolean).join(' · ');
+      viewerDesc.textContent = item.desc || '';
+      viewerMedia.innerHTML = '';
+
+      if (item.kind === 'video'){
+        const v = document.createElement('video');
+        v.src = item.url;
+        v.controls = true;
+        v.playsInline = true;
+        v.preload = 'metadata';
+        v.style.maxWidth = '100%';
+        v.style.maxHeight = '70vh';
+        viewerMedia.appendChild(v);
+      } else {
+        const img = document.createElement('img');
+        img.src = item.url;
+        img.alt = item.title || 'digital work';
+        viewerMedia.appendChild(img);
+      }
+      setViewerOpen(true);
+    }
+
+    function renderDigital(list){
+      gridEl.innerHTML = '';
+      const has = Array.isArray(list) && list.length > 0;
+      emptyEl.style.display = has ? 'none' : 'block';
+      if (!has) return;
+
+      for (const it of list){
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'deskItem';
+        b.setAttribute('aria-label', it.title || 'digital work');
+
+        const thumb = document.createElement('div');
+        thumb.className = 'deskThumb';
+
+        if (it.kind === 'video'){
+          const v = document.createElement('video');
+          v.src = it.url;
+          v.muted = true;
+          v.playsInline = true;
+          v.preload = 'metadata';
+          thumb.appendChild(v);
+        } else {
+          const img = document.createElement('img');
+          img.src = it.url;
+          img.loading = 'lazy';
+          img.alt = it.title || 'digital work';
+          thumb.appendChild(img);
+        }
+
+        const cap = document.createElement('div');
+        cap.className = 'deskCap';
+        cap.textContent = it.title || 'Digital';
+
+        b.appendChild(thumb);
+        b.appendChild(cap);
+        b.addEventListener('click', () => openDigital(it));
+        gridEl.appendChild(b);
+      }
+    }
+
+    // restore dock position
+    try{
+      const raw = localStorage.getItem(KEY);
+      if (raw){
+        const p = JSON.parse(raw);
+        if (p && typeof p.left === 'number' && typeof p.top === 'number'){
+          dock.style.left = `${p.left}px`;
+          dock.style.top = `${p.top}px`;
+          dock.style.right = 'auto';
+          dock.style.bottom = 'auto';
+        }
+      }
+    }catch{ /* ignore */ }
+
+    // dragging + snap
+    let dragging = false;
+    let moved = false;
+    let startX = 0, startY = 0, startLeft = 0, startTop = 0;
+
+    btn.addEventListener('pointerdown', (e) => {
+      // allow click + drag on fine pointers
+      dragging = true;
+      moved = false;
+      btn.setPointerCapture?.(e.pointerId);
+      const r = dock.getBoundingClientRect();
+      startX = e.clientX; startY = e.clientY;
+      startLeft = r.left; startTop = r.top;
+    });
+
+    window.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      if (!moved && (Math.abs(dx) + Math.abs(dy) > 6)) moved = true;
+      if (!moved) return;
+
+      const w = dock.offsetWidth || 0;
+      const h = dock.offsetHeight || 0;
+      const left = clamp(startLeft + dx, 10, window.innerWidth - w - 10);
+      const top = clamp(startTop + dy, 10, window.innerHeight - h - 10);
+      dock.style.left = `${left}px`;
+      dock.style.top = `${top}px`;
+      dock.style.right = 'auto';
+      dock.style.bottom = 'auto';
+    }, { passive: true });
+
+    window.addEventListener('pointerup', () => {
+      if (!dragging) return;
+      dragging = false;
+
+      const r = dock.getBoundingClientRect();
+      let left = r.left;
+      let top = r.top;
+      const snap = 18;
+      const w = r.width, h = r.height;
+
+      if (left < snap) left = 10;
+      if (top < snap) top = 10;
+      if (window.innerWidth - (left + w) < snap) left = window.innerWidth - w - 10;
+      if (window.innerHeight - (top + h) < snap) top = window.innerHeight - h - 10;
+
+      dock.style.left = `${left}px`;
+      dock.style.top = `${top}px`;
+      dock.style.right = 'auto';
+      dock.style.bottom = 'auto';
+
+      try{
+        localStorage.setItem(KEY, JSON.stringify({ left: Math.round(left), top: Math.round(top) }));
+      }catch{ /* ignore */ }
+    }, { passive: true });
+
+    btn.addEventListener('click', async () => {
+      if (moved) return; // ignore click after drag
+      const open = drawer.classList.contains('open');
+      if (!open){
+        const list = await loadDigital();
+        renderDigital(list);
+      }
+      setDrawerOpen(!open);
+    });
+
+    closeDesk?.addEventListener('click', () => setDrawerOpen(false));
+    drawer.addEventListener('click', (e) => { if (e.target === drawer) setDrawerOpen(false); });
+
+    closeViewer?.addEventListener('click', () => setViewerOpen(false));
+    viewer?.addEventListener('click', (e) => { if (e.target === viewer) setViewerOpen(false); });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      if (viewer?.classList.contains('open')) setViewerOpen(false);
+      else if (drawer.classList.contains('open')) setDrawerOpen(false);
+    });
+  })();
+
   // Dynamic cursor + spotlight (desktop only)
   (function initCursor(){
     const fine = window.matchMedia?.('(pointer:fine)').matches;
