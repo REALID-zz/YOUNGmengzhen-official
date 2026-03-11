@@ -567,8 +567,8 @@ a:hover{text-decoration:underline}
   align-items:center;
   justify-content:center;
   gap: 0;
-  width: 56px;
-  height: 56px;
+  width: 66px;
+  height: 66px;
   padding: 0;
   border-radius: 999px;
   border: 1px solid rgba(255,255,255,.12);
@@ -579,22 +579,22 @@ a:hover{text-decoration:underline}
   backdrop-filter: blur(16px) saturate(1.06);
   -webkit-backdrop-filter: blur(16px) saturate(1.06);
   box-shadow:
-    0 18px 60px rgba(0,0,0,.26),
-    0 0 26px rgba(173, 203, 65, .10),
-    inset 0 1px 0 rgba(255,255,255,.08);
+    0 22px 70px rgba(0,0,0,.30),
+    0 0 34px rgba(173, 203, 65, .14),
+    inset 0 1px 0 rgba(255,255,255,.10);
   color: rgba(255,255,255,.92);
   letter-spacing: .18em;
   cursor: pointer;
   user-select: none;
 }
 .deskBtnMark{
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
-  /* cartoon necklace + gem (matches the green stroke in your screenshot) */
-  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2064%2064%27%3E%3Cpath%20d%3D%27M12%2022%20C18%2012%2046%2012%2052%2022%27%20fill%3D%27none%27%20stroke%3D%27%231A1A1A%27%20stroke-width%3D%276%27%20stroke-linecap%3D%27round%27/%3E%3Cpath%20d%3D%27M14%2022%20C20%2014%2044%2014%2050%2022%27%20fill%3D%27none%27%20stroke%3D%27%23E6E6E6%27%20stroke-width%3D%273.5%27%20stroke-linecap%3D%27round%27%20opacity%3D%270.9%27/%3E%3Cpath%20d%3D%27M32%2024%20L40%2032%20L32%2052%20L24%2032%20Z%27%20fill%3D%27%23ADCB41%27%20stroke%3D%27%231A1A1A%27%20stroke-width%3D%274%27%20stroke-linejoin%3D%27round%27/%3E%3Cpath%20d%3D%27M32%2028%20L36%2032%20L32%2044%20L28%2032%20Z%27%20fill%3D%27%23EFFF9A%27%20opacity%3D%270.75%27/%3E%3Cpath%20d%3D%27M46%2036%20L49%2033%20L52%2036%20L49%2039%20Z%27%20fill%3D%27%23FFFFFF%27%20opacity%3D%270.8%27/%3E%3Cpath%20d%3D%27M16%2038%20L18%2036%20L20%2038%20L18%2040%20Z%27%20fill%3D%27%23FFFFFF%27%20opacity%3D%270.6%27/%3E%3C/svg%3E");
+  /* cartoon necklace pendant (clearer + more "hanging jewel") */
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2080%2080%27%3E%3Cpath%20d%3D%27M16%2026%20C26%2012%2054%2012%2064%2026%27%20fill%3D%27none%27%20stroke%3D%27%231A1A1A%27%20stroke-width%3D%278%27%20stroke-linecap%3D%27round%27/%3E%3Cpath%20d%3D%27M18%2026%20C28%2015%2052%2015%2062%2026%27%20fill%3D%27none%27%20stroke%3D%27%23F3F3F3%27%20stroke-width%3D%274%27%20stroke-linecap%3D%27round%27%20opacity%3D%270.92%27/%3E%3Ccircle%20cx%3D%2740%27%20cy%3D%2730%27%20r%3D%274%27%20fill%3D%27%23FFFFFF%27%20opacity%3D%270.9%27/%3E%3Cpath%20d%3D%27M40%2032%20C45%2032%2049%2036%2049%2042%20C49%2050%2044%2056%2040%2060%20C36%2056%2031%2050%2031%2042%20C31%2036%2035%2032%2040%2032%20Z%27%20fill%3D%27%23ADCB41%27%20stroke%3D%27%231A1A1A%27%20stroke-width%3D%275%27%20stroke-linejoin%3D%27round%27/%3E%3Cpath%20d%3D%27M40%2036%20C43%2036%2045%2038%2045%2042%20C45%2048%2042%2052%2040%2054%20C38%2052%2035%2048%2035%2042%20C35%2038%2037%2036%2040%2036%20Z%27%20fill%3D%27%23EFFF9A%27%20opacity%3D%270.78%27/%3E%3Cpath%20d%3D%27M58%2046%20L62%2042%20L66%2046%20L62%2050%20Z%27%20fill%3D%27%23FFFFFF%27%20opacity%3D%270.75%27/%3E%3Cpath%20d%3D%27M14%2050%20L17%2047%20L20%2050%20L17%2053%20Z%27%20fill%3D%27%23FFFFFF%27%20opacity%3D%270.55%27/%3E%3C/svg%3E");
   filter:
     drop-shadow(0 0 10px rgba(173, 203, 65, .18))
     drop-shadow(0 0 22px rgba(173, 203, 65, .10));
@@ -620,7 +620,7 @@ a:hover{text-decoration:underline}
     0 0 26px rgba(173, 203, 65, .10);
   pointer-events: none;
   white-space: nowrap;
-  opacity: .88;
+  opacity: .94;
   transform: translateY(0);
 }
 .deskHint::after{

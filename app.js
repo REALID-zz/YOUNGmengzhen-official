@@ -31,31 +31,48 @@
 
     if (!dock || !btn || !drawer || !gridEl || !emptyEl) return;
 
-    const KEY = 'deskDockPos:v2';
+    const KEY = 'deskDockPos:v3';
     const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
     let userPinned = false;
 
-    function withinBounds(left, top){
-      const w = dock.offsetWidth || 56;
-      const h = dock.offsetHeight || 56;
+    function deskRect(){
+      // Desk/table region derived from your hero photo composition:
+      // keep the dock on the tabletop area (right side), never off-screen.
+      const w = dock.offsetWidth || 64;
+      const h = dock.offsetHeight || 64;
+      const W = window.innerWidth;
+      const H = window.innerHeight;
+      return {
+        left: W * 0.52,
+        right: W * 0.96 - w,
+        top: H * 0.78,
+        bottom: H * 0.95 - h,
+      };
+    }
+
+    function withinDesk(left, top){
+      const r = deskRect();
       return (
         typeof left === 'number' && typeof top === 'number' &&
-        left >= 0 && top >= 0 &&
-        left <= (window.innerWidth - w) &&
-        top <= (window.innerHeight - h)
+        left >= r.left && left <= r.right &&
+        top >= r.top && top <= r.bottom
       );
     }
 
     function placeOnDesk(){
-      // "桌子"锚点：按背景构图固定在右下桌面区域（相对视口），并做边界纠偏
-      const w = dock.offsetWidth || 56;
-      const h = dock.offsetHeight || 56;
-      const ax = window.innerWidth * 0.865;
-      const ay = window.innerHeight * 0.855;
+      // Hard anchor inside the desk region.
+      const w = dock.offsetWidth || 64;
+      const h = dock.offsetHeight || 64;
+      const W = window.innerWidth;
+      const H = window.innerHeight;
+      const r = deskRect();
+      // anchor point roughly where your arrow points (right side of the tabletop)
+      const ax = W * 0.90;
+      const ay = H * 0.90;
       let left = ax - w * 0.5;
       let top = ay - h * 0.5;
-      left = clamp(left, 10, window.innerWidth - w - 10);
-      top = clamp(top, 10, window.innerHeight - h - 10);
+      left = clamp(left, r.left, r.right);
+      top = clamp(top, r.top, r.bottom);
 
       dock.style.left = `${Math.round(left)}px`;
       dock.style.top = `${Math.round(top)}px`;
@@ -217,8 +234,8 @@
       if (raw){
         const p = JSON.parse(raw);
         if (p && typeof p.left === 'number' && typeof p.top === 'number'){
-          // if saved position is out of screen (resolution changed), discard it
-          if (withinBounds(p.left, p.top)){
+          // Only accept saved position when it's still on the tabletop region.
+          if (withinDesk(p.left, p.top)){
             dock.style.left = `${p.left}px`;
             dock.style.top = `${p.top}px`;
             dock.style.right = 'auto';
@@ -226,17 +243,25 @@
             userPinned = true;
           } else {
             localStorage.removeItem(KEY);
-            placeOnDesk();
+            // Defer placement one frame so size is available.
+            requestAnimationFrame(placeOnDesk);
           }
         }
       } else {
-        placeOnDesk();
+        requestAnimationFrame(placeOnDesk);
       }
     }catch{ /* ignore */ }
 
-    // ensure always visible on resize (if user didn't manually pin it)
+    // ensure always on tabletop on resize (even if pinned)
     window.addEventListener('resize', () => {
-      if (!userPinned) placeOnDesk();
+      const r = deskRect();
+      const cur = dock.getBoundingClientRect();
+      const left = clamp(cur.left, r.left, r.right);
+      const top = clamp(cur.top, r.top, r.bottom);
+      dock.style.left = `${Math.round(left)}px`;
+      dock.style.top = `${Math.round(top)}px`;
+      dock.style.right = 'auto';
+      dock.style.bottom = 'auto';
     }, { passive: true });
 
     // dragging + snap
@@ -263,8 +288,9 @@
 
       const w = dock.offsetWidth || 0;
       const h = dock.offsetHeight || 0;
-      const left = clamp(startLeft + dx, 10, window.innerWidth - w - 10);
-      const top = clamp(startTop + dy, 10, window.innerHeight - h - 10);
+      const r = deskRect();
+      const left = clamp(startLeft + dx, r.left, r.right);
+      const top = clamp(startTop + dy, r.top, r.bottom);
       dock.style.left = `${left}px`;
       dock.style.top = `${top}px`;
       dock.style.right = 'auto';
@@ -278,13 +304,9 @@
       const r = dock.getBoundingClientRect();
       let left = r.left;
       let top = r.top;
-      const snap = 18;
-      const w = r.width, h = r.height;
-
-      if (left < snap) left = 10;
-      if (top < snap) top = 10;
-      if (window.innerWidth - (left + w) < snap) left = window.innerWidth - w - 10;
-      if (window.innerHeight - (top + h) < snap) top = window.innerHeight - h - 10;
+      const rr = deskRect();
+      left = clamp(left, rr.left, rr.right);
+      top = clamp(top, rr.top, rr.bottom);
 
       dock.style.left = `${left}px`;
       dock.style.top = `${top}px`;
