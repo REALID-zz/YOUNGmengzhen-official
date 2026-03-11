@@ -59,7 +59,7 @@
         if (!r.ok) return [];
         const data = await r.json();
         if (!Array.isArray(data)) return [];
-        return data
+        const list = data
           .filter(x => x && typeof x.file === 'string' && x.file)
           .map(x => ({
             file: x.file,
@@ -70,7 +70,47 @@
             kind: guessKind(x.file),
             url: `./assets/digital/${encodeURIComponent(x.file)}`
           }));
+        return list;
       } catch {
+        return [];
+      }
+    }
+
+    async function loadDigitalFromGithubFolder(){
+      try{
+        const pagesOwner = (location.hostname || '').split('.')[0] || 'REALID-zz';
+        const repoFromPath = (location.pathname || '').split('/').filter(Boolean)[0] || 'YOUNGmengzhen-official';
+        const owners = [pagesOwner, 'REALID-zz'].filter((v, i, a) => v && a.indexOf(v) === i);
+        const refs = ['main', 'master'];
+        const repo = repoFromPath;
+        const path = 'assets/digital';
+
+        const okExt = /\.(png|jpe?g|webp|gif|mp4|webm|mov)$/i;
+
+        for (const owner of owners){
+          for (const ref of refs){
+            const api = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${ref}`;
+            const r = await fetch(api, { headers: { Accept: 'application/vnd.github+json' } });
+            if (!r.ok) continue;
+            const data = await r.json();
+            if (!Array.isArray(data)) continue;
+            const list = data
+              .filter(x => x && x.type === 'file' && okExt.test(x.name || '') && (x.name || '') !== 'works.json')
+              .map(x => ({
+                file: x.name || '',
+                title: titleFromFilename(x.name || ''),
+                year: '',
+                medium: '',
+                desc: '',
+                kind: guessKind(x.name || ''),
+                url: x.download_url || ''
+              }))
+              .filter(x => x.file && x.url);
+            if (list.length) return list;
+          }
+        }
+        return [];
+      }catch{
         return [];
       }
     }
@@ -216,7 +256,8 @@
       if (moved) return; // ignore click after drag
       const open = drawer.classList.contains('open');
       if (!open){
-        const list = await loadDigital();
+        let list = await loadDigital();
+        if (!list.length) list = await loadDigitalFromGithubFolder();
         renderDigital(list);
       }
       setDrawerOpen(!open);
