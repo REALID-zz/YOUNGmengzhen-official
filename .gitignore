@@ -8,3 +8,8 @@ Desktop.ini
 site/
 site.zip
 
+# local media / captures
+*.mp4
+*.mov
+*.webm
+
