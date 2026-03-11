@@ -376,7 +376,14 @@
     if (!fine || reduced) return;
 
     const root = document.documentElement;
-    root.classList.add('cursorOn');
+    // Only show the flame cursor on the hero (to avoid distracting reading)
+    let enabled = true;
+    const setEnabled = (on) => {
+      enabled = !!on;
+      root.classList.toggle('cursorOn', enabled);
+      root.classList.toggle('cursorHover', false);
+    };
+    setEnabled(true);
 
     const flame = document.createElement('div');
     flame.className = 'cursorFlame';
@@ -398,6 +405,11 @@
     function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
 
     function frame(){
+      if (!enabled){
+        flame.style.opacity = '0';
+        raf = 0;
+        return;
+      }
       // candle flicker (subtle + organic)
       const t = performance.now();
       const wave = Math.sin(t / 86) * Math.sin(t / 137);
@@ -420,6 +432,7 @@
     window.addEventListener('pointermove', (e) => {
       tx = e.clientX;
       ty = e.clientY;
+      if (!enabled) return;
       setSpotlight(tx, ty);
       // flame snaps to pointer (with direction tilt)
       const dx = tx - ptx;
@@ -445,10 +458,24 @@
       if (!isHoverTarget(e.relatedTarget)) { hover = false; root.classList.remove('cursorHover'); }
     }, { passive: true });
 
+    // Enable flame only when hero is visible
+    (function enableOnHero(){
+      const hero = document.getElementById('top');
+      if (!hero || !('IntersectionObserver' in window)) return;
+      const io = new IntersectionObserver((entries) => {
+        const vis = !!entries?.[0]?.isIntersecting;
+        setEnabled(vis);
+        if (!vis){
+          flame.style.opacity = '0';
+        } else {
+          flame.style.opacity = '0.98';
+        }
+      }, { root: null, threshold: 0.08, rootMargin: '0px 0px -72% 0px' });
+      io.observe(hero);
+    })();
+
     // kickstart
-    setSpotlight(tx, ty);
     flame.style.transform = tFlame(tx, ty, 0, 1);
-    raf = requestAnimationFrame(frame);
   })();
 
   function safe(v) { return (v ?? '').toString(); }
