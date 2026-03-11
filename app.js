@@ -331,31 +331,34 @@
 
     const get = (w) => featMap.get(w.image) || { edge: 0, sat: 0, hue: 0, lum: 0.5, con: 0 };
 
-    // 1) Separate obvious line-art and vivid graphic; keep "painterly" as a coherent block.
-    const isLineArt = (f) => (f.edge > 0.095 && f.sat < 0.20 && f.con > 0.16);
-    const isVivid = (f) => (f.sat > 0.30 && !isLineArt(f));
+    // Color-first ordering:
+    // - primary: colored (higher saturation) first, then monochrome/low-sat together
+    // - within colored: hue → saturation → luminance
+    // - within mono: luminance
+    const monoCut = 0.12;
+    const sorted = [...list].sort((a, b) => {
+      const fa = a?.image ? get(a) : null;
+      const fb = b?.image ? get(b) : null;
+      if (!fa && !fb) return 0;
+      if (!fa) return 1;
+      if (!fb) return -1;
 
-    const painterly = [];
-    const vivid = [];
-    const lineart = [];
-    const restNoFeat = [];
+      const aMono = fa.sat < monoCut;
+      const bMono = fb.sat < monoCut;
+      if (aMono !== bMono) return aMono ? 1 : -1; // colored first
 
-    for (const w of list){
-      if (!w?.image){ restNoFeat.push(w); continue; }
-      const f = get(w);
-      if (!f || typeof f.edge !== 'number'){ restNoFeat.push(w); continue; }
-      if (isLineArt(f)) lineart.push(w);
-      else if (isVivid(f)) vivid.push(w);
-      else painterly.push(w);
-    }
+      if (!aMono) {
+        if (fa.hue !== fb.hue) return fa.hue - fb.hue;
+        if (fa.sat !== fb.sat) return fb.sat - fa.sat; // more vivid first
+        if (fa.lum !== fb.lum) return fa.lum - fb.lum; // darker → lighter
+        return (safe(a?.id || a?.title || '')).localeCompare(safe(b?.id || b?.title || ''));
+      }
 
-    // 2) Within each block, chain-order by nearest neighbor so similar works become adjacent.
-    const p2 = chainOrder(painterly, get);
-    const v2 = chainOrder(vivid, get);
-    const l2 = chainOrder(lineart, get);
-
-    // Order blocks: painterly → vivid → line-art (keeps painterly "texture" together like you want)
-    return [...p2, ...v2, ...l2, ...restNoFeat];
+      // mono / low-sat
+      if (fa.lum !== fb.lum) return fa.lum - fb.lum;
+      return (safe(a?.id || a?.title || '')).localeCompare(safe(b?.id || b?.title || ''));
+    });
+    return sorted;
   }
 
   function filter() {
