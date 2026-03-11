@@ -247,11 +247,12 @@
       hueX += Math.cos(rad);
       hueY += Math.sin(rad);
 
-      // dominant hue: focus on more "colorful" pixels (ignore near-gray and extreme shadows/highlights)
-      if (hsl.s > 0.18 && hsl.l > 0.08 && hsl.l < 0.92){
+      // dominant hue: focus on colorful pixels (but allow painterly low-sat color),
+      // ignore near-gray and extreme shadows/highlights
+      if (hsl.s > 0.10 && hsl.l > 0.06 && hsl.l < 0.94){
         const bin = Math.max(0, Math.min(bins - 1, Math.floor(hsl.h / 10)));
-        const mid = 1 - Math.min(1, Math.abs(hsl.l - 0.5) * 1.35); // emphasize midtones
-        const w = hsl.s * (0.35 + 0.65 * mid);
+        const mid = 1 - Math.min(1, Math.abs(hsl.l - 0.5) * 1.25); // emphasize midtones
+        const w = (hsl.s ** 1.15) * (0.32 + 0.68 * mid);
         hueW[bin] += w;
         satW[bin] += hsl.s * w;
       }
@@ -281,8 +282,8 @@
     for (let i = 0; i < bins; i++){
       if (hueW[i] > bestW){ bestW = hueW[i]; bestBin = i; }
     }
-    const hueDom = bestW > 0.25 ? (bestBin * 10 + 5) : hue; // fallback to average hue
-    const satDom = bestW > 0.25 ? (satW[bestBin] / Math.max(1e-6, hueW[bestBin])) : satMean;
+    const hueDom = bestW > 0.12 ? (bestBin * 10 + 5) : hue; // fallback to average hue
+    const satDom = bestW > 0.12 ? (satW[bestBin] / Math.max(1e-6, hueW[bestBin])) : satMean;
 
     const feat = {
       lum: +lumMean.toFixed(4),
@@ -290,6 +291,7 @@
       hue: +hue.toFixed(2),
       hueDom: +hueDom.toFixed(2),
       satDom: +satDom.toFixed(4),
+      hueStrength: +bestW.toFixed(4),
       con: +lumStd.toFixed(4),
       edge: +edge.toFixed(4),
     };
@@ -353,13 +355,13 @@
     const ok = Array.from(featMap.values()).length;
     if (ok < Math.max(4, Math.floor(works.length * 0.5))) return list;
 
-    const get = (w) => featMap.get(w.image) || { edge: 0, sat: 0, hue: 0, lum: 0.5, con: 0 };
+    const get = (w) => featMap.get(w.image) || { edge: 0, sat: 0, hue: 0, lum: 0.5, con: 0, hueStrength: 0 };
 
     // Color-first ordering:
     // - primary: colored (higher saturation) first, then monochrome/low-sat together
     // - within colored: hue → saturation → luminance
     // - within mono: luminance
-    const monoCut = 0.12;
+    const monoCut = 0.10;
     const sorted = [...list].sort((a, b) => {
       const fa = a?.image ? get(a) : null;
       const fb = b?.image ? get(b) : null;
@@ -371,9 +373,12 @@
       const bSat = (typeof fb.satDom === 'number' ? fb.satDom : fb.sat);
       const aHue = (typeof fa.hueDom === 'number' ? fa.hueDom : fa.hue);
       const bHue = (typeof fb.hueDom === 'number' ? fb.hueDom : fb.hue);
+      const aStr = (typeof fa.hueStrength === 'number' ? fa.hueStrength : 0);
+      const bStr = (typeof fb.hueStrength === 'number' ? fb.hueStrength : 0);
 
-      const aMono = aSat < monoCut;
-      const bMono = bSat < monoCut;
+      // only treat as monochrome when both saturation and hue-signal are weak
+      const aMono = (aSat < monoCut) && (aStr < 0.12);
+      const bMono = (bSat < monoCut) && (bStr < 0.12);
       if (aMono !== bMono) return aMono ? 1 : -1; // colored first
 
       if (!aMono) {
