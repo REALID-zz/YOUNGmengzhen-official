@@ -42,13 +42,22 @@
       const h = dock.offsetHeight || 64;
       const W = window.innerWidth;
       const H = window.innerHeight;
-      return {
-        // extend to left so it can sit on the tabletop near your arrow target
-        left: W * 0.02,
-        right: W * 0.96 - w,
-        top: H * 0.78,
-        bottom: H * 0.95 - h,
-      };
+      let left = W * 0.02;            // allow near-left tabletop
+      const right = W * 0.96 - w;
+      const top = H * 0.78;           // tabletop band
+      const bottom = H * 0.95 - h;
+
+      // Don't cover left side navigation (when visible on desktop)
+      const sideNav = document.querySelector('.sideNav');
+      try{
+        const visible = !!sideNav && sideNav.getClientRects().length > 0 && getComputedStyle(sideNav).display !== 'none';
+        if (visible){
+          const r = sideNav.getBoundingClientRect();
+          left = Math.max(left, r.right + 18);
+        }
+      }catch{ /* ignore */ }
+
+      return { left, right, top, bottom };
     }
 
     function withinDesk(left, top){
