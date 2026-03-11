@@ -564,6 +564,12 @@ a:hover{text-decoration:underline}
   flex-direction: column;
   align-items: flex-start;
   gap: 10px;
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+.deskDock.isHidden{
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
 }
 .deskBtn{
   --deskGreen: #ADCB41;

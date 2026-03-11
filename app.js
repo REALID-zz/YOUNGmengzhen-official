@@ -94,12 +94,16 @@
       drawer.hidden = !open;
       drawer.classList.toggle('open', open);
       btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      // Keep dock visible while drawer is open
+      dock.classList.toggle('isHidden', false);
       if (open) drawer.focus?.();
     }
 
     function setViewerOpen(open){
       if (!viewer) return;
       viewer.classList.toggle('open', open);
+      // Keep dock visible while viewer is open
+      if (open) dock.classList.toggle('isHidden', false);
       if (!open && viewerMedia) viewerMedia.innerHTML = '';
     }
 
@@ -261,6 +265,18 @@
         requestAnimationFrame(placeOnDesk);
       }
     }catch{ /* ignore */ }
+
+    // Auto-hide dock when leaving the hero (to avoid covering content)
+    (function autoHideAwayFromHero(){
+      const hero = document.getElementById('top');
+      if (!hero || !('IntersectionObserver' in window)) return;
+      const io = new IntersectionObserver((entries) => {
+        const vis = !!entries?.[0]?.isIntersecting;
+        const keep = drawer.classList.contains('open') || (viewer?.classList.contains('open'));
+        dock.classList.toggle('isHidden', (!vis) && (!keep));
+      }, { root: null, threshold: 0.06, rootMargin: '-10% 0px -70% 0px' });
+      io.observe(hero);
+    })();
 
     // ensure always on tabletop on resize (even if pinned)
     window.addEventListener('resize', () => {
