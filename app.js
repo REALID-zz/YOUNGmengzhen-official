@@ -43,7 +43,8 @@
       const W = window.innerWidth;
       const H = window.innerHeight;
       return {
-        left: W * 0.52,
+        // extend to left so it can sit on the tabletop near your arrow target
+        left: W * 0.02,
         right: W * 0.96 - w,
         top: H * 0.78,
         bottom: H * 0.95 - h,
@@ -66,9 +67,9 @@
       const W = window.innerWidth;
       const H = window.innerHeight;
       const r = deskRect();
-      // anchor point roughly where your arrow points (right side of the tabletop)
-      const ax = W * 0.90;
-      const ay = H * 0.90;
+      // anchor point: match your screenshot arrow tip (normalized)
+      const ax = W * 0.037;
+      const ay = H * 0.768;
       let left = ax - w * 0.5;
       let top = ay - h * 0.5;
       left = clamp(left, r.left, r.right);
