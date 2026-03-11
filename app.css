@@ -553,9 +553,11 @@ a:hover{text-decoration:underline}
 /* Desktop-like dock button (digital works) */
 .deskDock{
   position: fixed;
-  /* default: sit on the "desk/table" area (not the corner) */
-  right: clamp(34px, 4.6vw, 78px);
-  bottom: clamp(54px, 9.5vh, 128px);
+  /* fallback position (JS will auto-align precisely) */
+  left: 82vw;
+  top: 80vh;
+  right: auto;
+  bottom: auto;
   z-index: 72;
   touch-action: none;
 }

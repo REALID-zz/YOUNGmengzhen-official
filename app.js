@@ -20,6 +20,7 @@
     const closeDesk = $('closeDesk');
     const gridEl = $('deskGrid');
     const emptyEl = $('deskEmpty');
+    const hint = $('deskHint');
 
     const viewer = $('deskViewer');
     const viewerMedia = $('deskViewerMedia');
@@ -32,6 +33,35 @@
 
     const KEY = 'deskDockPos:v2';
     const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+    let userPinned = false;
+
+    function withinBounds(left, top){
+      const w = dock.offsetWidth || 56;
+      const h = dock.offsetHeight || 56;
+      return (
+        typeof left === 'number' && typeof top === 'number' &&
+        left >= 0 && top >= 0 &&
+        left <= (window.innerWidth - w) &&
+        top <= (window.innerHeight - h)
+      );
+    }
+
+    function placeOnDesk(){
+      // "桌子"锚点：按背景构图固定在右下桌面区域（相对视口），并做边界纠偏
+      const w = dock.offsetWidth || 56;
+      const h = dock.offsetHeight || 56;
+      const ax = window.innerWidth * 0.865;
+      const ay = window.innerHeight * 0.855;
+      let left = ax - w * 0.5;
+      let top = ay - h * 0.5;
+      left = clamp(left, 10, window.innerWidth - w - 10);
+      top = clamp(top, 10, window.innerHeight - h - 10);
+
+      dock.style.left = `${Math.round(left)}px`;
+      dock.style.top = `${Math.round(top)}px`;
+      dock.style.right = 'auto';
+      dock.style.bottom = 'auto';
+    }
 
     function setDrawerOpen(open){
       drawer.hidden = !open;
@@ -187,13 +217,27 @@
       if (raw){
         const p = JSON.parse(raw);
         if (p && typeof p.left === 'number' && typeof p.top === 'number'){
-          dock.style.left = `${p.left}px`;
-          dock.style.top = `${p.top}px`;
-          dock.style.right = 'auto';
-          dock.style.bottom = 'auto';
+          // if saved position is out of screen (resolution changed), discard it
+          if (withinBounds(p.left, p.top)){
+            dock.style.left = `${p.left}px`;
+            dock.style.top = `${p.top}px`;
+            dock.style.right = 'auto';
+            dock.style.bottom = 'auto';
+            userPinned = true;
+          } else {
+            localStorage.removeItem(KEY);
+            placeOnDesk();
+          }
         }
+      } else {
+        placeOnDesk();
       }
     }catch{ /* ignore */ }
+
+    // ensure always visible on resize (if user didn't manually pin it)
+    window.addEventListener('resize', () => {
+      if (!userPinned) placeOnDesk();
+    }, { passive: true });
 
     // dragging + snap
     let dragging = false;
@@ -246,6 +290,7 @@
       dock.style.top = `${top}px`;
       dock.style.right = 'auto';
       dock.style.bottom = 'auto';
+      userPinned = true;
 
       try{
         localStorage.setItem(KEY, JSON.stringify({ left: Math.round(left), top: Math.round(top) }));
