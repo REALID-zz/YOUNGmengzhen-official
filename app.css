@@ -553,8 +553,9 @@ a:hover{text-decoration:underline}
 /* Desktop-like dock button (digital works) */
 .deskDock{
   position: fixed;
-  right: 78px;
-  bottom: 46px;
+  /* default: sit on the "desk/table" area (not the corner) */
+  right: clamp(34px, 4.6vw, 78px);
+  bottom: clamp(54px, 9.5vh, 128px);
   z-index: 72;
   touch-action: none;
 }
@@ -601,6 +602,54 @@ a:hover{text-decoration:underline}
 }
 .deskBtn:hover{ transform: translateY(-1px); }
 .deskBtn:active{ transform: translateY(0px); }
+
+.deskHint{
+  position: absolute;
+  right: 62px;
+  bottom: 10px;
+  padding: 9px 10px 9px;
+  border-radius: 14px;
+  border: 1px solid rgba(173, 203, 65, .28);
+  background: rgba(0,0,0,.18);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow:
+    0 18px 50px rgba(0,0,0,.22),
+    0 0 26px rgba(173, 203, 65, .10);
+  pointer-events: none;
+  white-space: nowrap;
+  opacity: .88;
+  transform: translateY(0);
+}
+.deskHint::after{
+  content:"";
+  position:absolute;
+  right: -7px;
+  bottom: 18px;
+  width: 12px;
+  height: 12px;
+  background: rgba(0,0,0,.18);
+  border-right: 1px solid rgba(173, 203, 65, .18);
+  border-bottom: 1px solid rgba(173, 203, 65, .18);
+  transform: rotate(-45deg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+.deskHintTitle{
+  font-size: 12px;
+  letter-spacing: .04em;
+  color: rgba(173, 203, 65, .96);
+  text-shadow: 0 0 18px rgba(173, 203, 65, .12);
+}
+.deskHintSub{
+  margin-top: 2px;
+  font-size: 11px;
+  color: rgba(255,255,255,.78);
+  letter-spacing: .02em;
+}
+@media (max-width: 520px){
+  .deskHint{ display:none; }
+}
 
 .deskDrawer{
   position: fixed;

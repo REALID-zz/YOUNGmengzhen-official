@@ -30,7 +30,7 @@
 
     if (!dock || !btn || !drawer || !gridEl || !emptyEl) return;
 
-    const KEY = 'deskDockPos:v1';
+    const KEY = 'deskDockPos:v2';
     const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
 
     function setDrawerOpen(open){
