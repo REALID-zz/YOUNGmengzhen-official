@@ -285,58 +285,33 @@
     return (de * de) * 1.8 + (ds * ds) * 1.6 + (dl * dl) * 1.0 + (dc * dc) * 0.9;
   }
 
-  function meanOf(list){
-    const n = list.length || 1;
-    let edge = 0, sat = 0, lum = 0, con = 0, hueX = 0, hueY = 0;
-    for (const f of list){
-      edge += f.edge; sat += f.sat; lum += f.lum; con += f.con;
-      const rad = (f.hue * Math.PI) / 180;
-      hueX += Math.cos(rad);
-      hueY += Math.sin(rad);
-    }
-    const hue = (Math.atan2(hueY, hueX) * 180 / Math.PI + 360) % 360;
-    return { edge: edge / n, sat: sat / n, lum: lum / n, con: con / n, hue };
-  }
+  function chainOrder(items, getFeat){
+    const xs = items.slice();
+    if (xs.length <= 2) return xs;
 
-  function pickInitCentroids(feats, k){
-    // deterministic seeds to avoid "random" regrouping across refresh:
-    // 1) min edge (soft/painterly), 2) max edge (liney), 3) max sat (vivid), 4) min lum (dark)
-    const by = (key, dir) => [...feats].sort((a, b) => dir * (a[key] - b[key]))[0];
-    const c = [];
-    c.push(by('edge', +1));
-    c.push(by('edge', -1));
-    if (k >= 3) c.push(by('sat', -1));
-    if (k >= 4) c.push(by('lum', +1));
-    return c.slice(0, k).map(x => ({ ...x }));
-  }
+    // deterministic start: softest (lowest edge), tie-break by filename/title
+    xs.sort((a, b) => {
+      const fa = getFeat(a), fb = getFeat(b);
+      if (fa.edge !== fb.edge) return fa.edge - fb.edge;
+      return safe(a?.id || a?.title || '').localeCompare(safe(b?.id || b?.title || ''));
+    });
 
-  function kmeans(feats, k){
-    const n = feats.length;
-    if (n === 0) return { assign: [], centroids: [] };
-    const kk = Math.max(2, Math.min(k, n));
-    let centroids = pickInitCentroids(feats, kk);
-    let assign = new Array(n).fill(0);
-
-    for (let iter = 0; iter < 8; iter++){
-      let changed = false;
-      // assign
-      for (let i = 0; i < n; i++){
-        let best = 0;
-        let bestD = Infinity;
-        for (let j = 0; j < kk; j++){
-          const d = dist2(feats[i], centroids[j]);
-          if (d < bestD){ bestD = d; best = j; }
+    const ordered = [xs.shift()];
+    while (xs.length){
+      const last = ordered[ordered.length - 1];
+      const fl = getFeat(last);
+      let bestIdx = 0;
+      let bestD = Infinity;
+      for (let i = 0; i < xs.length; i++){
+        const d = dist2(fl, getFeat(xs[i]));
+        if (d < bestD){
+          bestD = d;
+          bestIdx = i;
         }
-        if (assign[i] !== best){ assign[i] = best; changed = true; }
       }
-      if (!changed && iter > 0) break;
-
-      // update
-      const buckets = Array.from({ length: kk }, () => []);
-      for (let i = 0; i < n; i++) buckets[assign[i]].push(feats[i]);
-      centroids = buckets.map((b, idx) => b.length ? meanOf(b) : centroids[idx]);
+      ordered.push(xs.splice(bestIdx, 1)[0]);
     }
-    return { assign, centroids };
+    return ordered;
   }
 
   async function reorderWorksByTexture(list){
@@ -354,54 +329,33 @@
     const ok = Array.from(featMap.values()).length;
     if (ok < Math.max(4, Math.floor(works.length * 0.5))) return list;
 
-    const featItems = works
-      .map(w => ({ image: w.image, f: featMap.get(w.image) }))
-      .filter(x => x.f);
-    const featVec = featItems.map(x => x.f);
-
-    const { assign, centroids } = kmeans(featVec, 4);
-    // Map image -> cluster id (featVec order matches featItems order)
-    const featImages = featItems.map(x => x.image);
-    const clusterOfImage = new Map();
-    for (let i = 0; i < featImages.length; i++){
-      clusterOfImage.set(featImages[i], assign[i] ?? 0);
-    }
-
-    // Rank clusters by "look": painterly/soft first, then dark, then line-art, then vivid graphic.
-    const ranks = centroids.map((c) => {
-      const edgeHigh = c.edge > 0.095;
-      const satHigh = c.sat > 0.26;
-      const dark = c.lum < 0.38;
-      const lineArt = edgeHigh && c.sat < 0.18;
-      const vividGraphic = edgeHigh && satHigh;
-      if (lineArt) return 2;
-      if (vividGraphic) return 3;
-      if (dark) return 1;
-      return 0; // soft/painterly
-    });
-
     const get = (w) => featMap.get(w.image) || { edge: 0, sat: 0, hue: 0, lum: 0.5, con: 0 };
 
-    const sorted = [...list].sort((a, b) => {
-      const fa = a?.image ? get(a) : null;
-      const fb = b?.image ? get(b) : null;
-      if (!fa && !fb) return 0;
-      if (!fa) return 1;
-      if (!fb) return -1;
+    // 1) Separate obvious line-art and vivid graphic; keep "painterly" as a coherent block.
+    const isLineArt = (f) => (f.edge > 0.095 && f.sat < 0.20 && f.con > 0.16);
+    const isVivid = (f) => (f.sat > 0.30 && !isLineArt(f));
 
-      const ca = clusterOfImage.get(a.image) ?? 9;
-      const cb = clusterOfImage.get(b.image) ?? 9;
-      const ra = ranks[ca] ?? 9;
-      const rb = ranks[cb] ?? 9;
-      if (ra !== rb) return ra - rb;
-      if (ca !== cb) return ca - cb;
+    const painterly = [];
+    const vivid = [];
+    const lineart = [];
+    const restNoFeat = [];
 
-      // within cluster: hue → luminance → edge (keeps similar feel together)
-      if (fa.hue !== fb.hue) return fa.hue - fb.hue;
-      if (fa.lum !== fb.lum) return fa.lum - fb.lum;
-      return fa.edge - fb.edge;
-    });
-    return sorted;
+    for (const w of list){
+      if (!w?.image){ restNoFeat.push(w); continue; }
+      const f = get(w);
+      if (!f || typeof f.edge !== 'number'){ restNoFeat.push(w); continue; }
+      if (isLineArt(f)) lineart.push(w);
+      else if (isVivid(f)) vivid.push(w);
+      else painterly.push(w);
+    }
+
+    // 2) Within each block, chain-order by nearest neighbor so similar works become adjacent.
+    const p2 = chainOrder(painterly, get);
+    const v2 = chainOrder(vivid, get);
+    const l2 = chainOrder(lineart, get);
+
+    // Order blocks: painterly → vivid → line-art (keeps painterly "texture" together like you want)
+    return [...p2, ...v2, ...l2, ...restNoFeat];
   }
 
   function filter() {
