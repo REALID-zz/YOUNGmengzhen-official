@@ -225,6 +225,10 @@
     let lumSum = 0, lum2Sum = 0;
     let satSum = 0, hueX = 0, hueY = 0;
     let edgeSum = 0;
+    // dominant hue histogram (use saturated midtones)
+    const bins = 36; // 10deg per bin
+    const hueW = new Float32Array(bins);
+    const satW = new Float32Array(bins);
 
     // Luma plane for fast edge estimate
     const lum = new Float32Array(n);
@@ -242,6 +246,15 @@
       const rad = (hsl.h * Math.PI) / 180;
       hueX += Math.cos(rad);
       hueY += Math.sin(rad);
+
+      // dominant hue: focus on more "colorful" pixels (ignore near-gray and extreme shadows/highlights)
+      if (hsl.s > 0.18 && hsl.l > 0.08 && hsl.l < 0.92){
+        const bin = Math.max(0, Math.min(bins - 1, Math.floor(hsl.h / 10)));
+        const mid = 1 - Math.min(1, Math.abs(hsl.l - 0.5) * 1.35); // emphasize midtones
+        const w = hsl.s * (0.35 + 0.65 * mid);
+        hueW[bin] += w;
+        satW[bin] += hsl.s * w;
+      }
     }
 
     // edge density: average neighbor diff (right + down)
@@ -262,10 +275,21 @@
     const hue = (Math.atan2(hueY, hueX) * 180 / Math.PI + 360) % 360;
     const edge = edgeSum / (2 * n); // normalized-ish
 
+    // pick dominant hue bin
+    let bestBin = 0;
+    let bestW = 0;
+    for (let i = 0; i < bins; i++){
+      if (hueW[i] > bestW){ bestW = hueW[i]; bestBin = i; }
+    }
+    const hueDom = bestW > 0.25 ? (bestBin * 10 + 5) : hue; // fallback to average hue
+    const satDom = bestW > 0.25 ? (satW[bestBin] / Math.max(1e-6, hueW[bestBin])) : satMean;
+
     const feat = {
       lum: +lumMean.toFixed(4),
       sat: +satMean.toFixed(4),
       hue: +hue.toFixed(2),
+      hueDom: +hueDom.toFixed(2),
+      satDom: +satDom.toFixed(4),
       con: +lumStd.toFixed(4),
       edge: +edge.toFixed(4),
     };
@@ -343,13 +367,18 @@
       if (!fa) return 1;
       if (!fb) return -1;
 
-      const aMono = fa.sat < monoCut;
-      const bMono = fb.sat < monoCut;
+      const aSat = (typeof fa.satDom === 'number' ? fa.satDom : fa.sat);
+      const bSat = (typeof fb.satDom === 'number' ? fb.satDom : fb.sat);
+      const aHue = (typeof fa.hueDom === 'number' ? fa.hueDom : fa.hue);
+      const bHue = (typeof fb.hueDom === 'number' ? fb.hueDom : fb.hue);
+
+      const aMono = aSat < monoCut;
+      const bMono = bSat < monoCut;
       if (aMono !== bMono) return aMono ? 1 : -1; // colored first
 
       if (!aMono) {
-        if (fa.hue !== fb.hue) return fa.hue - fb.hue;
-        if (fa.sat !== fb.sat) return fb.sat - fa.sat; // more vivid first
+        if (aHue !== bHue) return aHue - bHue;
+        if (aSat !== bSat) return bSat - aSat; // more vivid first
         if (fa.lum !== fb.lum) return fa.lum - fb.lum; // darker → lighter
         return (safe(a?.id || a?.title || '')).localeCompare(safe(b?.id || b?.title || ''));
       }
