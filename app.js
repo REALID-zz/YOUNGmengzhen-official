@@ -302,15 +302,6 @@
     return feat;
   }
 
-  function dist2(a, b){
-    const de = a.edge - b.edge;
-    const ds = a.sat - b.sat;
-    const dl = a.lum - b.lum;
-    const dc = a.con - b.con;
-    // weighted: edge + sat matter most for "texture"
-    return (de * de) * 1.8 + (ds * ds) * 1.6 + (dl * dl) * 1.0 + (dc * dc) * 0.9;
-  }
-
   async function reorderWorksByTexture(list){
     const works = (list || []).filter(w => w && w.image);
     if (works.length < 6) return list;
