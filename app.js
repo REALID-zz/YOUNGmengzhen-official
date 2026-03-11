@@ -311,35 +311,6 @@
     return (de * de) * 1.8 + (ds * ds) * 1.6 + (dl * dl) * 1.0 + (dc * dc) * 0.9;
   }
 
-  function chainOrder(items, getFeat){
-    const xs = items.slice();
-    if (xs.length <= 2) return xs;
-
-    // deterministic start: softest (lowest edge), tie-break by filename/title
-    xs.sort((a, b) => {
-      const fa = getFeat(a), fb = getFeat(b);
-      if (fa.edge !== fb.edge) return fa.edge - fb.edge;
-      return safe(a?.id || a?.title || '').localeCompare(safe(b?.id || b?.title || ''));
-    });
-
-    const ordered = [xs.shift()];
-    while (xs.length){
-      const last = ordered[ordered.length - 1];
-      const fl = getFeat(last);
-      let bestIdx = 0;
-      let bestD = Infinity;
-      for (let i = 0; i < xs.length; i++){
-        const d = dist2(fl, getFeat(xs[i]));
-        if (d < bestD){
-          bestD = d;
-          bestIdx = i;
-        }
-      }
-      ordered.push(xs.splice(bestIdx, 1)[0]);
-    }
-    return ordered;
-  }
-
   async function reorderWorksByTexture(list){
     const works = (list || []).filter(w => w && w.image);
     if (works.length < 6) return list;
