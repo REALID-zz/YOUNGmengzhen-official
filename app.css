@@ -291,7 +291,7 @@ a:hover{text-decoration:underline}
 .heroInner{
   padding: 56px 0 58px;
   display:grid;
-  grid-template-columns: 1.25fr .75fr;
+ grid-template-columns: 1fr;
   gap:18px;
 }
 @media (max-width: 920px){ .heroInner{grid-template-columns:1fr} }
@@ -299,6 +299,7 @@ a:hover{text-decoration:underline}
   position: relative;
   isolation: isolate;
   padding: 18px 18px 16px;
+ max-width: 880px;
 }
 .heroCopy::before{
   content:"";
