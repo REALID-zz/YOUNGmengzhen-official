@@ -344,24 +344,24 @@
     if (works.length < 6) return list;
 
     // Analyze in parallel (small list)
-    const feats = await Promise.all(works.map(w => analyzeImage(w.image)));
+    const analyzed = await Promise.all(works.map(w => analyzeImage(w.image)));
     const featMap = new Map();
     for (let i = 0; i < works.length; i++){
-      if (feats[i]) featMap.set(works[i].image, feats[i]);
+      if (analyzed[i]) featMap.set(works[i].image, analyzed[i]);
     }
 
     // If too many failed, bail out
     const ok = Array.from(featMap.values()).length;
     if (ok < Math.max(4, Math.floor(works.length * 0.5))) return list;
 
-    const feats = works
-      .map(w => ({ w, f: featMap.get(w.image) }))
-      .filter(x => x.f)
-      .map(x => x.f);
+    const featItems = works
+      .map(w => ({ image: w.image, f: featMap.get(w.image) }))
+      .filter(x => x.f);
+    const featVec = featItems.map(x => x.f);
 
-    const { assign, centroids } = kmeans(feats, 4);
-    // Map image -> cluster id (feats order matches works.filter(w.image))
-    const featImages = works.filter(w => featMap.get(w.image)).map(w => w.image);
+    const { assign, centroids } = kmeans(featVec, 4);
+    // Map image -> cluster id (featVec order matches featItems order)
+    const featImages = featItems.map(x => x.image);
     const clusterOfImage = new Map();
     for (let i = 0; i < featImages.length; i++){
       clusterOfImage.set(featImages[i], assign[i] ?? 0);
