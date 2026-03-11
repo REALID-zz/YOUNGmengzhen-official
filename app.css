@@ -560,6 +560,10 @@ a:hover{text-decoration:underline}
   bottom: auto;
   z-index: 72;
   touch-action: none;
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
 .deskBtn{
   --deskGreen: #ADCB41;
@@ -607,13 +611,13 @@ a:hover{text-decoration:underline}
 .deskBtn:hover{ border-color: rgba(173, 203, 65, .58); box-shadow: 0 18px 56px rgba(0,0,0,.24), 0 0 28px rgba(173, 203, 65, .16); }
 
 .deskTitle{
-  position: absolute;
-  right: 0;
-  bottom: 44px;
-  font-size: 22px;
+  position: static;
+  font-size: 24px;
   line-height: 1.05;
-  letter-spacing: .02em;
-  text-shadow: 0 10px 40px rgba(0,0,0,.55);
+  letter-spacing: .01em;
+  text-shadow:
+    0 10px 40px rgba(0,0,0,.55),
+    0 2px 18px rgba(0,0,0,.35);
   white-space: nowrap;
   user-select: none;
   pointer-events: none;
