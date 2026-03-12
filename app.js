@@ -48,6 +48,10 @@
     const thingsModal = $('thingsModal');
     const thingsFrame = $('thingsFrame');
     const closeThings = $('closeThings');
+    const interviewBtn = $('interviewBtn');
+    const interviewModal = $('interviewModal');
+    const interviewFrame = $('interviewFrame');
+    const closeInterview = $('closeInterview');
 
     if (!dock || !btn || !drawer || !gridEl || !emptyEl) return;
 
@@ -398,11 +402,27 @@
     closeThings?.addEventListener('click', () => setThingsOpen(false));
     thingsModal?.addEventListener('click', (e) => { if (e.target === thingsModal) setThingsOpen(false); });
 
+    function setInterviewOpen(open){
+      if (!interviewModal) return;
+      interviewModal.classList.toggle('open', open);
+      if (interviewBtn) interviewBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (open){
+        if (interviewFrame) interviewFrame.src = 'https://www.youtube-nocookie.com/embed/X9Xfjq8_XHA?rel=0';
+      } else {
+        if (interviewFrame) interviewFrame.src = '';
+      }
+    }
+
+    interviewBtn?.addEventListener('click', () => setInterviewOpen(true));
+    closeInterview?.addEventListener('click', () => setInterviewOpen(false));
+    interviewModal?.addEventListener('click', (e) => { if (e.target === interviewModal) setInterviewOpen(false); });
+
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape') return;
       if (viewer?.classList.contains('open')) setViewerOpen(false);
       else if (drawer.classList.contains('open')) setDrawerOpen(false);
       else if (thingsModal?.classList.contains('open')) setThingsOpen(false);
+      else if (interviewModal?.classList.contains('open')) setInterviewOpen(false);
     });
   })();
 
