@@ -53,6 +53,28 @@ body{
   pointer-events:none;
 }
 
+/* Table wish text (hero only) */
+.tableWish{
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 54;
+  pointer-events: none;
+  user-select: none;
+  font-size: 14px;
+  letter-spacing: .22em;
+  color: rgba(255,255,255,.72);
+  text-shadow:
+    0 18px 48px rgba(0,0,0,.55),
+    0 0 22px rgba(173, 203, 65, .10);
+  opacity: .92;
+  transform: translate3d(-999px,-999px,0);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+.tableWish.isHidden{
+  opacity: 0;
+}
+
 /* Dynamic cursor (enabled via JS by adding .cursorOn) */
 html.cursorOn, html.cursorOn * { cursor: none !important; }
 .cursorFlame{

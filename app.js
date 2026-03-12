@@ -12,6 +12,40 @@
   const modalDesc = $('modalDesc');
   const closeBtn = $('closeModal');
 
+  // Table wish text (hero tabletop)
+  (function initTableWish(){
+    const el = $('tableWish');
+    if (!el) return;
+
+    function place(){
+      const W = window.innerWidth;
+      const H = window.innerHeight;
+      // place near the tabletop (tuned to the hero photo composition)
+      const ax = W * 0.62;
+      const ay = H * 0.865;
+      const r = el.getBoundingClientRect();
+      const left = Math.round(ax - r.width * 0.5);
+      const top = Math.round(ay - r.height * 0.5);
+      el.style.transform = `translate3d(${left}px, ${top}px, 0)`;
+    }
+
+    requestAnimationFrame(place);
+    window.addEventListener('resize', () => requestAnimationFrame(place), { passive: true });
+
+    // hero-only visibility
+    const hero = document.getElementById('top');
+    if (hero && ('IntersectionObserver' in window)){
+      const io = new IntersectionObserver((entries) => {
+        const vis = !!entries?.[0]?.isIntersecting;
+        el.classList.toggle('isHidden', !vis);
+        if (vis) requestAnimationFrame(place);
+      }, { root: null, threshold: 0.08, rootMargin: '-10% 0px -70% 0px' });
+      io.observe(hero);
+    } else {
+      el.classList.toggle('isHidden', false);
+    }
+  })();
+
   // Hide modules that are marked as hidden in HTML (also hide their nav links)
   (function initHiddenModules(){
     const hiddenIds = Array.from(document.querySelectorAll('section[data-hidden="true"][id]'))
