@@ -43,6 +43,12 @@
     const viewerDesc = $('deskViewerDesc');
     const closeViewer = $('closeDeskViewer');
 
+    // Things (YouTube) modal
+    const thingsBtn = $('thingsBtn');
+    const thingsModal = $('thingsModal');
+    const thingsFrame = $('thingsFrame');
+    const closeThings = $('closeThings');
+
     if (!dock || !btn || !drawer || !gridEl || !emptyEl) return;
 
     const KEY = 'deskDockPos:v3';
@@ -376,10 +382,27 @@
     closeViewer?.addEventListener('click', () => setViewerOpen(false));
     viewer?.addEventListener('click', (e) => { if (e.target === viewer) setViewerOpen(false); });
 
+    function setThingsOpen(open){
+      if (!thingsModal) return;
+      thingsModal.classList.toggle('open', open);
+      if (thingsBtn) thingsBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (open){
+        // nocookie embed; autoplay controlled by user
+        if (thingsFrame) thingsFrame.src = 'https://www.youtube-nocookie.com/embed/k7OdwS5JFZk?rel=0';
+      } else {
+        if (thingsFrame) thingsFrame.src = '';
+      }
+    }
+
+    thingsBtn?.addEventListener('click', () => setThingsOpen(true));
+    closeThings?.addEventListener('click', () => setThingsOpen(false));
+    thingsModal?.addEventListener('click', (e) => { if (e.target === thingsModal) setThingsOpen(false); });
+
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape') return;
       if (viewer?.classList.contains('open')) setViewerOpen(false);
       else if (drawer.classList.contains('open')) setDrawerOpen(false);
+      else if (thingsModal?.classList.contains('open')) setThingsOpen(false);
     });
   })();
 

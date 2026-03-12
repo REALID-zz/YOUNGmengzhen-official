@@ -220,7 +220,7 @@
       </div>
     </div>
 
-    <!-- Desktop-like floating button for digital works -->
+    <!-- Desktop-like floating buttons (AI Arts works + Things) -->
     <div class="deskDock" id="deskDock" aria-label="digital works dock">
       <button class="deskMarqueeBtn" id="deskBtn" type="button" aria-label="AI Arts works" aria-haspopup="dialog" aria-controls="deskDrawer" aria-expanded="false">
         <span class="deskMarqueeDot" aria-hidden="true"></span>
@@ -231,6 +231,20 @@
             </span>
             <span class="deskMarqueeItem" aria-hidden="true">
               AI <span class="deskMarqueeEm">Arts</span> works · DIGITAL · AI <span class="deskMarqueeEm">Arts</span> works · DIGITAL ·
+            </span>
+          </span>
+        </span>
+      </button>
+
+      <button class="deskMarqueeBtn deskMarqueeBtnThings" id="thingsBtn" type="button" aria-label="Things" aria-haspopup="dialog" aria-controls="thingsModal" aria-expanded="false">
+        <span class="deskMarqueeDot" aria-hidden="true"></span>
+        <span class="deskMarqueeViewport" aria-hidden="true">
+          <span class="deskMarqueeTrack">
+            <span class="deskMarqueeItem">
+              <span class="deskMarqueeEm">THINGS</span> · archive · 기록 · <span class="deskMarqueeEm">THINGS</span> · archive · 记录 ·
+            </span>
+            <span class="deskMarqueeItem" aria-hidden="true">
+              <span class="deskMarqueeEm">THINGS</span> · archive · 기록 · <span class="deskMarqueeEm">THINGS</span> · archive · 记录 ·
             </span>
           </span>
         </span>
@@ -258,6 +272,34 @@
           <h3 id="deskViewerTitle"></h3>
           <p id="deskViewerMeta"></p>
           <p id="deskViewerDesc"></p>
+          <div class="note">Tip：点击空白处或按 <strong>Esc</strong> 关闭。</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="thingsModal" class="modal" role="dialog" aria-modal="true" aria-label="Things viewer">
+      <div class="modalCard">
+        <div class="modalMedia">
+          <iframe
+            id="thingsFrame"
+            title="THINGS"
+            src=""
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            referrerpolicy="strict-origin-when-cross-origin"
+            style="width:100%;height:70vh;border:0;"
+          ></iframe>
+        </div>
+        <div class="modalInfo">
+          <div class="modalTop">
+            <div class="k">Things</div>
+            <button id="closeThings" class="closeBtn" type="button">关闭</button>
+          </div>
+          <h3 style="margin:10px 0 0;font-size:18px;">早年记录（YouTube）</h3>
+          <p style="margin:10px 0 0;color:rgba(255,255,255,.74);line-height:1.7;font-size:13px;">
+            点击播放即可观看。也可在新窗口打开：<a href="https://www.youtube.com/watch?v=k7OdwS5JFZk" target="_blank" rel="noreferrer">YouTube</a>
+          </p>
           <div class="note">Tip：点击空白处或按 <strong>Esc</strong> 关闭。</div>
         </div>
       </div>
