@@ -164,6 +164,13 @@
     }
     gCtx.putImageData(gImg, 0, 0);
 
+    // ── Hero character (pixel art) ──
+    const heroImg = new Image();
+    heroImg.crossOrigin = 'anonymous';
+    heroImg.src = './assets/hero-char.png';
+    let heroReady = false;
+    heroImg.onload = () => { heroReady = true; };
+
     // ── Drawing helpers ──
     function drawBeam(sx, sy, ex, ey, w, a, col){
       const grad = ctx.createLinearGradient(sx, sy, ex, ey);
@@ -227,6 +234,44 @@
       haze2.addColorStop(0, `rgba(${G[0]},${G[1]},${G[2]},${0.005 * beatMul})`);
       haze2.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.fillStyle = haze2; ctx.fillRect(0, 0, W, H);
+
+      // ── Hero character (dynamic, beat-reactive) ──
+      if (heroReady){
+        ctx.save();
+        const charScale = Math.min(W, H) * 0.0028;
+        const charW = heroImg.naturalWidth * charScale;
+        const charH = heroImg.naturalHeight * charScale;
+        const cx = W * 0.50;
+        const cy = H * 0.46 + Math.sin(t * 0.0012) * H * 0.025;
+        const beatScale = 1 + bt.pulse * 0.06 * (bt.isBar ? 1.4 : 0.8);
+        const tilt = Math.sin(t * 0.0008) * 4;
+
+        ctx.translate(cx, cy);
+        ctx.rotate(tilt * Math.PI / 180);
+        ctx.scale(beatScale, beatScale);
+
+        ctx.globalCompositeOperation = 'screen';
+        ctx.globalAlpha = 0.10;
+        ctx.filter = 'blur(18px)';
+        ctx.drawImage(heroImg, -charW * 0.5, -charH * 0.5, charW, charH);
+        ctx.filter = 'blur(8px)';
+        ctx.globalAlpha = 0.18;
+        ctx.drawImage(heroImg, -charW * 0.5, -charH * 0.5, charW, charH);
+
+        ctx.filter = 'none';
+        ctx.globalAlpha = 0.88 + bt.pulse * 0.12;
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.drawImage(heroImg, -charW * 0.5, -charH * 0.5, charW, charH);
+
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.globalAlpha = 0.06 + bt.pulse * 0.08;
+        ctx.filter = 'blur(4px) brightness(1.6)';
+        ctx.drawImage(heroImg, -charW * 0.5, -charH * 0.5, charW, charH);
+
+        ctx.filter = 'none';
+        ctx.globalAlpha = 1;
+        ctx.restore();
+      }
 
       // Particles (colored by nearest beam)
       ctx.globalCompositeOperation = 'lighter';
