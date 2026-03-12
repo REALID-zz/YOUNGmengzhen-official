@@ -135,6 +135,31 @@ jobs:
           print("generated", out.as_posix(), "count=", len(files))
           PY
 
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          vis_dir = Path("_site/assets/visuals")
+          vis_dir.mkdir(parents=True, exist_ok=True)
+          out = vis_dir / "works.json"
+
+          exts = {".png", ".jpg", ".jpeg", ".webp", ".gif", ".mp4", ".webm", ".mov"}
+          files = []
+          for p in sorted(vis_dir.iterdir()):
+              if not p.is_file():
+                  continue
+              if p.name.startswith("."):
+                  continue
+              if p.name == "works.json":
+                  continue
+              if p.suffix.lower() not in exts:
+                  continue
+              files.append({"file": p.name})
+
+          out.write_text(json.dumps(files, ensure_ascii=False, indent=2), encoding="utf-8")
+          print("generated", out.as_posix(), "count=", len(files))
+          PY
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

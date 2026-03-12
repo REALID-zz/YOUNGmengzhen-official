@@ -12,6 +12,244 @@
   const modalDesc = $('modalDesc');
   const closeBtn = $('closeModal');
 
+  // ─── Visuals / Laser Canvas ───
+  (function initVisuals(){
+    const canvas = document.getElementById('laserCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let W, H, dpr;
+    let running = false;
+    let mx = 0.5, my = 0.5;
+
+    function resize(){
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = canvas.clientWidth;
+      H = canvas.clientHeight;
+      canvas.width = W * dpr;
+      canvas.height = H * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    resize();
+    window.addEventListener('resize', resize, { passive: true });
+
+    canvas.addEventListener('pointermove', (e) => {
+      const r = canvas.getBoundingClientRect();
+      mx = (e.clientX - r.left) / r.width;
+      my = (e.clientY - r.top) / r.height;
+    }, { passive: true });
+
+    const G = [173, 203, 65];
+
+    const beams = [
+      { ox: 0.10, sweep: 24, speed: 0.30, phase: 0.0, bright: 0.90 },
+      { ox: 0.28, sweep: 18, speed: 0.22, phase: 1.4, bright: 0.75 },
+      { ox: 0.46, sweep: 28, speed: 0.34, phase: 2.8, bright: 1.00 },
+      { ox: 0.64, sweep: 20, speed: 0.26, phase: 4.0, bright: 0.80 },
+      { ox: 0.82, sweep: 22, speed: 0.38, phase: 5.2, bright: 0.85 },
+      { ox: 0.95, sweep: 16, speed: 0.20, phase: 6.0, bright: 0.70 },
+    ];
+
+    const PCNT = 140;
+    const particles = [];
+    for (let i = 0; i < PCNT; i++){
+      particles.push({
+        x: Math.random(), y: Math.random(),
+        vx: (Math.random() - 0.5) * 0.0003,
+        vy: Math.random() * 0.0003 + 0.00008,
+        size: Math.random() * 1.6 + 0.4,
+        base: Math.random() * 0.12 + 0.02,
+      });
+    }
+
+    function drawBeam(sx, sy, ex, ey, w, a){
+      const grad = ctx.createLinearGradient(sx, sy, ex, ey);
+      grad.addColorStop(0, `rgba(${G[0]},${G[1]},${G[2]},${a})`);
+      grad.addColorStop(0.35, `rgba(${G[0]},${G[1]},${G[2]},${a * 0.7})`);
+      grad.addColorStop(0.75, `rgba(${G[0]},${G[1]},${G[2]},${a * 0.3})`);
+      grad.addColorStop(1, `rgba(${G[0]},${G[1]},${G[2]},0)`);
+      ctx.beginPath();
+      ctx.moveTo(sx, sy);
+      ctx.lineTo(ex, ey);
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = w;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+    }
+
+    function beamAngle(b, t){
+      return b.sweep * Math.sin(t * b.speed * 0.001 + b.phase) + (mx - b.ox) * 14;
+    }
+
+    function frame(t){
+      if (!running) return;
+      ctx.clearRect(0, 0, W, H);
+      ctx.globalCompositeOperation = 'lighter';
+
+      const pulse = 0.82 + 0.18 * Math.sin(t * 0.0018);
+
+      for (const b of beams){
+        const ang = beamAngle(b, t) * Math.PI / 180;
+        const sx = b.ox * W;
+        const sy = -30;
+        const len = Math.hypot(W, H) * 1.3;
+        const ex = sx + Math.sin(ang) * len;
+        const ey = sy + Math.cos(ang) * len;
+        const br = b.bright * pulse;
+
+        drawBeam(sx, sy, ex, ey, 90, 0.006 * br);
+        drawBeam(sx, sy, ex, ey, 44, 0.014 * br);
+        drawBeam(sx, sy, ex, ey, 18, 0.035 * br);
+        drawBeam(sx, sy, ex, ey, 7, 0.09 * br);
+        drawBeam(sx, sy, ex, ey, 2.5, 0.24 * br);
+      }
+
+      ctx.globalCompositeOperation = 'screen';
+      const haze = ctx.createRadialGradient(W * mx, H * 0.55, 0, W * mx, H * 0.55, W * 0.5);
+      haze.addColorStop(0, `rgba(${G[0]},${G[1]},${G[2]},0.012)`);
+      haze.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = haze;
+      ctx.fillRect(0, 0, W, H);
+
+      ctx.globalCompositeOperation = 'lighter';
+      for (const p of particles){
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.y > 1){ p.y = 0; p.x = Math.random(); }
+        if (p.x < 0 || p.x > 1) p.vx *= -1;
+
+        const px = p.x * W;
+        const py = p.y * H;
+        let illum = 0;
+        for (const b of beams){
+          const ang = beamAngle(b, t) * Math.PI / 180;
+          const bsx = b.ox * W;
+          const dx = px - bsx;
+          const dy = py + 30;
+          const cross = Math.abs(dx * Math.cos(ang) - dy * Math.sin(ang));
+          if (cross < 50) illum += (1 - cross / 50) * 0.25 * b.bright;
+        }
+        const alpha = Math.min(0.45, p.base + illum);
+        ctx.fillStyle = `rgba(${G[0]},${G[1]},${G[2]},${alpha})`;
+        ctx.beginPath();
+        ctx.arc(px, py, p.size, 0, 6.283);
+        ctx.fill();
+      }
+
+      requestAnimationFrame(frame);
+    }
+
+    const section = canvas.closest('.visualsSection');
+    if (section && 'IntersectionObserver' in window){
+      const io = new IntersectionObserver((entries) => {
+        const vis = !!entries[0]?.isIntersecting;
+        if (vis && !running){ running = true; requestAnimationFrame(frame); }
+        else if (!vis){ running = false; }
+      }, { threshold: 0.02 });
+      io.observe(section);
+    } else {
+      running = true;
+      requestAnimationFrame(frame);
+    }
+
+    const vGrid = document.getElementById('visualsGrid');
+    const vEmpty = document.getElementById('visualsEmpty');
+    if (!vGrid) return;
+
+    function guessKind(f){
+      if (/\.(mp4|webm|mov)$/i.test(f)) return 'video';
+      return 'image';
+    }
+
+    async function loadVisualMedia(){
+      try{
+        const r = await fetch(`./assets/visuals/works.json?v=${Date.now()}`, { cache: 'no-store' });
+        if (!r.ok) return [];
+        const data = await r.json();
+        if (!Array.isArray(data)) return [];
+        return data
+          .filter(x => x && typeof x.file === 'string' && x.file)
+          .map(x => ({
+            file: x.file,
+            title: (x.title || '').trim() || x.file.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' '),
+            kind: guessKind(x.file),
+            url: `./assets/visuals/${encodeURIComponent(x.file)}`
+          }));
+      } catch { return []; }
+    }
+
+    function openVisualViewer(item){
+      const viewer = document.getElementById('deskViewer');
+      const media = document.getElementById('deskViewerMedia');
+      const title = document.getElementById('deskViewerTitle');
+      const meta = document.getElementById('deskViewerMeta');
+      if (!viewer || !media) return;
+      title.textContent = item.title;
+      meta.textContent = item.kind === 'video' ? 'Video' : 'Image';
+      media.innerHTML = '';
+      if (item.kind === 'video'){
+        const v = document.createElement('video');
+        v.src = item.url; v.controls = true; v.playsInline = true;
+        v.style.maxWidth = '100%'; v.style.maxHeight = '70vh';
+        media.appendChild(v);
+      } else {
+        const img = document.createElement('img');
+        img.src = item.url; img.alt = item.title;
+        media.appendChild(img);
+      }
+      viewer.classList.add('open');
+    }
+
+    function renderVisualMedia(list){
+      vGrid.innerHTML = '';
+      if (!list.length){
+        if (vEmpty) vEmpty.style.display = 'none';
+        return;
+      }
+      if (vEmpty) vEmpty.style.display = 'none';
+
+      for (const it of list){
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = 'visualsItem';
+        card.setAttribute('aria-label', it.title);
+
+        const thumb = document.createElement('div');
+        thumb.className = 'visualsThumb';
+
+        if (it.kind === 'video'){
+          const v = document.createElement('video');
+          v.src = it.url; v.muted = true; v.playsInline = true; v.preload = 'metadata'; v.loop = true;
+          card.addEventListener('pointerenter', () => v.play().catch(() => {}));
+          card.addEventListener('pointerleave', () => { v.pause(); v.currentTime = 0; });
+          thumb.appendChild(v);
+          const play = document.createElement('div');
+          play.className = 'playIcon';
+          thumb.appendChild(play);
+        } else {
+          const img = document.createElement('img');
+          img.src = it.url; img.loading = 'lazy'; img.alt = it.title;
+          thumb.appendChild(img);
+        }
+
+        const cap = document.createElement('div');
+        cap.className = 'visualsCap';
+        const capTitle = document.createElement('div');
+        capTitle.className = 'visualsCapTitle';
+        capTitle.textContent = it.title;
+        cap.appendChild(capTitle);
+
+        card.appendChild(thumb);
+        card.appendChild(cap);
+        card.addEventListener('click', () => openVisualViewer(it));
+        vGrid.appendChild(card);
+      }
+    }
+
+    loadVisualMedia().then(renderVisualMedia);
+  })();
+
   // Table wish text (hero tabletop)
   (function initTableWish(){
     const el = $('tableWish');

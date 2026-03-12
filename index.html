@@ -51,7 +51,7 @@
         }
       }
     </script>
-    <link rel="stylesheet" href="./app.css?v=museum1" />
+    <link rel="stylesheet" href="./app.css?v=visuals1" />
     <!-- Google Analytics (GA4) — uncomment and replace G-XXXXXXXXXX with your real measurement ID
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
@@ -65,12 +65,13 @@
     <nav class="sideNav" aria-label="section navigation">
       <div class="logo">MENGZHEN</div>
       <a data-spy href="#top"><span class="n">01</span><span class="t">HOME</span></a>
-      <a data-spy href="#works"><span class="n">02</span><span class="t">FINE ART</span></a>
-      <a data-spy href="#about"><span class="n">03</span><span class="t">ABOUT</span></a>
-      <a data-spy href="#highlights"><span class="n">04</span><span class="t">HIGHLIGHTS</span></a>
-      <a data-spy href="#references"><span class="n">05</span><span class="t">REFERENCES</span></a>
-      <a data-spy href="#faq"><span class="n">06</span><span class="t">FAQ</span></a>
-      <a data-spy href="#contact"><span class="n">07</span><span class="t">CONTACT</span></a>
+      <a data-spy href="#visuals"><span class="n">02</span><span class="t">VISUALS</span></a>
+      <a data-spy href="#works"><span class="n">03</span><span class="t">FINE ART</span></a>
+      <a data-spy href="#about"><span class="n">04</span><span class="t">ABOUT</span></a>
+      <a data-spy href="#highlights"><span class="n">05</span><span class="t">HIGHLIGHTS</span></a>
+      <a data-spy href="#references"><span class="n">06</span><span class="t">REFERENCES</span></a>
+      <a data-spy href="#faq"><span class="n">07</span><span class="t">FAQ</span></a>
+      <a data-spy href="#contact"><span class="n">08</span><span class="t">CONTACT</span></a>
     </nav>
 
     <header class="top" aria-label="site nav">
@@ -80,6 +81,7 @@
           <span>Official one-page · Artist / Painter · EARTH / HK / LA</span>
         </div>
         <nav class="nav">
+          <a href="#visuals">Visuals</a>
           <a href="#works">Fine Art</a>
           <a href="#about">About</a>
           <a href="#references">Refs</a>
@@ -100,13 +102,27 @@
             </p>
             <div class="metaRow">Independent Artist · Oil Painter · EARTH / HK / LA</div>
             <div class="heroLinks">
-              <a href="#works">Fine Art ↓</a>
+              <a href="#visuals">Visuals ↓</a>
+              <a href="#works">Fine Art</a>
               <a href="mailto:hihelloaikenni@gemail.com">Inquiries</a>
             </div>
           </div>
         </div>
         <div class="scrollHint" aria-hidden="true">
           <span class="scrollLine"></span>
+        </div>
+      </section>
+
+      <section id="visuals" class="section visualsSection" aria-label="visual lab">
+        <canvas id="laserCanvas" aria-hidden="true"></canvas>
+        <div class="visualsContent">
+          <div class="visualsHead">
+            <div class="k">VISUAL LAB</div>
+            <h2 class="visualsTitle">VISUALS</h2>
+            <p class="visualsSub">Immersive light · Dynamic media · Interactive experience</p>
+          </div>
+          <div id="visualsGrid" class="visualsGrid" aria-label="visual media grid"></div>
+          <p id="visualsEmpty" class="note visualsEmpty" style="display:none;">Upload media to <code>assets/visuals/</code></p>
         </div>
       </section>
 
@@ -340,7 +356,7 @@
       </div>
     </div>
 
-    <script src="./app.js?v=museum1" defer></script>
+    <script src="./app.js?v=visuals1" defer></script>
   </body>
 </html>
 

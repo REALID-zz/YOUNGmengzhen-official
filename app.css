@@ -348,6 +348,131 @@ a:hover{text-decoration:underline}
   font-family: var(--sans);
 }
 
+/* ─── Visuals / Laser Section ─── */
+.visualsSection{
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background: #000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  isolation: isolate;
+}
+#laserCanvas{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+.visualsContent{
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1200px;
+  padding: 120px 18px 80px;
+}
+.visualsHead{
+  max-width: 640px;
+}
+.visualsTitle{
+  margin: 12px 0 0;
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 28px;
+  letter-spacing: .24em;
+  color: rgba(255,255,255,.78);
+  text-transform: uppercase;
+  text-shadow: 0 0 60px rgba(173,203,65,.18);
+}
+.visualsSub{
+  margin: 12px 0 0;
+  color: rgba(255,255,255,.32);
+  font-size: 12px;
+  letter-spacing: .08em;
+  font-style: italic;
+}
+.visualsGrid{
+  margin-top: 48px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+.visualsEmpty{
+  text-align: center;
+  padding: 48px 0 24px;
+  color: rgba(255,255,255,.22);
+}
+.visualsItem{
+  position: relative;
+  border: 1px solid rgba(173,203,65,.10);
+  background: rgba(0,0,0,.50);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 280ms ease, box-shadow 280ms ease;
+}
+.visualsItem:hover{
+  border-color: rgba(173,203,65,.30);
+  box-shadow: 0 0 40px rgba(173,203,65,.08);
+}
+.visualsThumb{
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: rgba(0,0,0,.40);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.visualsThumb img,
+.visualsThumb video{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.visualsThumb .playIcon{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(0,0,0,.60);
+  border: 1px solid rgba(173,203,65,.40);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+.visualsItem:hover .playIcon{ opacity: 1; }
+.playIcon::after{
+  content: "";
+  display: block;
+  width: 0; height: 0;
+  border-style: solid;
+  border-width: 8px 0 8px 14px;
+  border-color: transparent transparent transparent rgba(173,203,65,.80);
+  margin-left: 3px;
+}
+.visualsCap{
+  padding: 12px 10px 14px;
+  color: rgba(255,255,255,.50);
+  font-size: 11px;
+  letter-spacing: .06em;
+  line-height: 1.4;
+}
+.visualsCap .visualsCapTitle{
+  color: rgba(255,255,255,.70);
+  font-size: 12px;
+  font-weight: 500;
+  margin: 0 0 4px;
+}
+
 /* ─── Works / Gallery Section (museum grid) ─── */
 .sectionHead{
   margin-top: 48px;
