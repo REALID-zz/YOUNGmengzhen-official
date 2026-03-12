@@ -166,6 +166,11 @@ a:focus{outline:2px solid rgba(154,230,255,.55); outline-offset:2px}
   scroll-margin-top: 92px;
 }
 
+/* Hide modules marked as hidden (temporary) */
+section[data-hidden="true"]{
+  display:none !important;
+}
+
 .interlude{
   min-height: 100vh;
   display:flex;

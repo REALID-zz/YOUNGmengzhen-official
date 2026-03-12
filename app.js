@@ -12,6 +12,20 @@
   const modalDesc = $('modalDesc');
   const closeBtn = $('closeModal');
 
+  // Hide modules that are marked as hidden in HTML (also hide their nav links)
+  (function initHiddenModules(){
+    const hiddenIds = Array.from(document.querySelectorAll('section[data-hidden="true"][id]'))
+      .map(s => s.id)
+      .filter(Boolean);
+    if (!hiddenIds.length) return;
+
+    for (const id of hiddenIds){
+      // hide any anchor that points to this section
+      const links = Array.from(document.querySelectorAll(`a[href="#${CSS?.escape ? CSS.escape(id) : id}"]`));
+      for (const a of links) a.style.display = 'none';
+    }
+  })();
+
   // Desktop-like dock button for digital works
   (function initDeskDock(){
     const dock = $('deskDock');
