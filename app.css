@@ -584,13 +584,16 @@ a:hover{text-decoration:underline}
   height: 38px;
   border-radius: 999px;
   overflow: hidden;
-  background: rgba(0,0,0,.12);
+  border: 1px solid transparent;
+  background:
+    /* match the site button family (padding-box + border-box) */
+    linear-gradient(rgba(0,0,0,.14), rgba(0,0,0,.14)) padding-box,
+    linear-gradient(135deg, rgba(255,255,255,.16), rgba(154,230,255,.26), rgba(198,166,255,.20), rgba(255,215,168,.14)) border-box;
   backdrop-filter: blur(12px) saturate(1.08);
   -webkit-backdrop-filter: blur(12px) saturate(1.08);
   box-shadow:
-    0 22px 70px rgba(0,0,0,.26),
-    0 0 28px rgba(173, 203, 65, .10);
-  border: 1px solid rgba(255,255,255,.10);
+    0 18px 60px rgba(0,0,0,.24),
+    0 0 22px rgba(173, 203, 65, .10);
 }
 .deskMarquee::before{
   content:"";
@@ -605,8 +608,8 @@ a:hover{text-decoration:underline}
       rgba(255,160,122,.40),
       rgba(154,230,255,.50)
     );
-  filter: blur(10px);
-  opacity: .55;
+  filter: blur(12px);
+  opacity: .42;
   pointer-events:none;
   animation: hueSpin 6s linear infinite;
 }
@@ -619,7 +622,7 @@ a:hover{text-decoration:underline}
     repeating-linear-gradient(180deg, rgba(255,255,255,.06) 0px, rgba(255,255,255,.02) 2px, rgba(0,0,0,0) 4px),
     /* top sheen */
     linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,0) 46%);
-  opacity: .55;
+  opacity: .48;
   pointer-events:none;
   mix-blend-mode: overlay;
 }
@@ -638,8 +641,9 @@ a:hover{text-decoration:underline}
   display:inline-flex;
   align-items: baseline;
   gap: 6px;
-  font-size: 16px;
-  letter-spacing: .04em;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .12em;
   color: rgba(255,255,255,.88);
   text-shadow: 0 10px 40px rgba(0,0,0,.55);
   white-space: nowrap;
