@@ -153,14 +153,6 @@ a:focus{outline:2px solid rgba(200,176,122,.40); outline-offset:2px}
 .sideNav a.active .n{ opacity:1; }
 
 /* ─── Hero Section ─── */
-.hero{
-  min-height: 100vh;
-}
-.heroInner{
-  align-content: end;
-  min-height: 100vh;
-  padding-bottom: 140px !important;
-}
 
 .heroCopy{
   position: relative;
@@ -328,6 +320,7 @@ a:hover{text-decoration:underline}
 
 /* ─── Hero outer ─── */
 .hero{
+  min-height: 100vh;
   margin-top: 0;
   border-radius: 0;
   border: 0;
@@ -340,7 +333,9 @@ a:hover{text-decoration:underline}
 .hero::before{ content:none; }
 .hero::after{ content:none; }
 .heroInner{
-  padding: 56px 0 58px;
+  align-content: end;
+  min-height: 100vh;
+  padding: 56px 0 140px;
   display:grid;
   grid-template-columns: 1fr;
   gap:18px;
@@ -575,7 +570,6 @@ a:hover{text-decoration:underline}
   transition: color 200ms ease;
 }
 .siteFooter a:hover{ color:rgba(255,255,255,.60); text-decoration:none; }
-footer{ display:none; }
 
 /* ─── Modals ─── */
 .modal{

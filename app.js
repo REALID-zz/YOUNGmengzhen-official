@@ -68,7 +68,6 @@
     const closeDesk = $('closeDesk');
     const gridEl = $('deskGrid');
     const emptyEl = $('deskEmpty');
-    const hint = $('deskHint');
 
     const viewer = $('deskViewer');
     const viewerMedia = $('deskViewerMedia');
