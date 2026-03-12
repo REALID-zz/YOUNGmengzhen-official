@@ -88,21 +88,19 @@
 
     if (!dock || !btn || !drawer || !gridEl || !emptyEl) return;
 
-    const KEY = 'deskDockPos:v3';
+    const KEY = 'deskDockPos:v4';
     const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
     let userPinned = false;
 
     function deskRect(){
-      // Desk/table region derived from your hero photo composition:
-      // keep the dock on the tabletop area (right side), never off-screen.
       const w = dock.offsetWidth || 64;
       const h = dock.offsetHeight || 64;
       const W = window.innerWidth;
       const H = window.innerHeight;
-      let left = W * 0.02;            // allow near-left tabletop
-      const right = W * 0.96 - w;
-      const top = H * 0.78;           // tabletop band
-      const bottom = H * 0.95 - h;
+      let left = W * 0.52;
+      const right = W * 0.97 - w;
+      const top = H * 0.72;
+      const bottom = H * 0.96 - h;
 
       // Don't cover left side navigation (when visible on desktop)
       const sideNav = document.querySelector('.sideNav');
@@ -133,9 +131,8 @@
       const W = window.innerWidth;
       const H = window.innerHeight;
       const r = deskRect();
-      // anchor point: match your screenshot arrow tip (normalized)
-      const ax = W * 0.037;
-      const ay = H * 0.768;
+      const ax = W * 0.72;
+      const ay = H * 0.84;
       let left = ax - w * 0.5;
       let top = ay - h * 0.5;
       left = clamp(left, r.left, r.right);

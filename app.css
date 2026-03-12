@@ -641,8 +641,8 @@ a:hover{text-decoration:underline}
 /* ─── Desktop dock (digital / things / interview buttons) ─── */
 .deskDock{
   position: fixed;
-  left: 82vw;
-  top: 80vh;
+  left: 72vw;
+  top: 84vh;
   right: auto;
   bottom: auto;
   z-index: 72;
