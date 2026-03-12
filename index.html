@@ -222,9 +222,18 @@
 
     <!-- Desktop-like floating button for digital works -->
     <div class="deskDock" id="deskDock" aria-label="digital works dock">
-      <button class="deskBtn" id="deskBtn" type="button" aria-label="AIARTSworks" aria-haspopup="dialog" aria-controls="deskDrawer" aria-expanded="false">
-        <span class="deskBtnMark" aria-hidden="true"></span>
-        <span class="deskBtnLabel">AIARTSworks</span>
+      <button class="deskMarqueeBtn" id="deskBtn" type="button" aria-label="AI Arts works" aria-haspopup="dialog" aria-controls="deskDrawer" aria-expanded="false">
+        <span class="deskMarqueeDot" aria-hidden="true"></span>
+        <span class="deskMarqueeViewport" aria-hidden="true">
+          <span class="deskMarqueeTrack">
+            <span class="deskMarqueeItem">
+              AI <span class="deskMarqueeEm">Arts</span> works · DIGITAL · AI <span class="deskMarqueeEm">Arts</span> works · DIGITAL ·
+            </span>
+            <span class="deskMarqueeItem" aria-hidden="true">
+              AI <span class="deskMarqueeEm">Arts</span> works · DIGITAL · AI <span class="deskMarqueeEm">Arts</span> works · DIGITAL ·
+            </span>
+          </span>
+        </span>
       </button>
     </div>
     <div class="deskDrawer" id="deskDrawer" hidden>

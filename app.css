@@ -577,29 +577,62 @@ a:hover{text-decoration:underline}
   pointer-events: none;
 }
 
-/* (removed) iridescent marquee HUD */
-.deskBtn{
+/* Iridescent scrolling button (single button; removed the pill) */
+.deskMarqueeBtn{
   --deskGreen: #ADCB41;
+  position: relative;
   display:inline-flex;
   align-items:center;
-  justify-content:flex-start;
-  gap: 8px;
-  height: 32px;
-  padding: 7px 14px 7px 12px;
+  gap: 10px;
+  height: 38px;
+  padding: 0 14px 0 12px;
   border-radius: 999px;
-  border: 1px solid rgba(173, 203, 65, .42);
-  background: rgba(0,0,0,.16);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid transparent;
+  background:
+    linear-gradient(rgba(0,0,0,.14), rgba(0,0,0,.14)) padding-box,
+    linear-gradient(135deg, rgba(255,255,255,.16), rgba(154,230,255,.26), rgba(198,166,255,.20), rgba(255,215,168,.14)) border-box;
+  backdrop-filter: blur(12px) saturate(1.08);
+  -webkit-backdrop-filter: blur(12px) saturate(1.08);
   box-shadow:
-    0 16px 48px rgba(0,0,0,.22),
-    0 0 24px rgba(173, 203, 65, .14);
-  color: rgba(173, 203, 65, .98);
-  letter-spacing: .18em;
+    0 18px 60px rgba(0,0,0,.24),
+    0 0 22px rgba(173, 203, 65, .10);
   cursor: pointer;
   user-select: none;
+  white-space: nowrap;
+  overflow: hidden;
 }
-.deskBtnMark{
+.deskMarqueeBtn::before{
+  content:"";
+  position:absolute;
+  inset:-1px;
+  border-radius: inherit;
+  background:
+    conic-gradient(from 180deg,
+      rgba(154,230,255,.50),
+      rgba(198,166,255,.42),
+      rgba(173,203,65,.50),
+      rgba(255,160,122,.40),
+      rgba(154,230,255,.50)
+    );
+  filter: blur(12px);
+  opacity: .40;
+  pointer-events:none;
+  animation: hueSpin 6s linear infinite;
+}
+.deskMarqueeBtn::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    repeating-linear-gradient(180deg, rgba(255,255,255,.06) 0px, rgba(255,255,255,.02) 2px, rgba(0,0,0,0) 4px),
+    linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,0) 46%);
+  opacity: .46;
+  pointer-events:none;
+  mix-blend-mode: overlay;
+}
+.deskMarqueeDot{
+  position: relative;
+  z-index: 1;
   width: 10px;
   height: 10px;
   border-radius: 50%;
@@ -611,17 +644,50 @@ a:hover{text-decoration:underline}
     0 0 10px rgba(173, 203, 65, .30),
     0 0 22px rgba(173, 203, 65, .14);
 }
-.deskBtnLabel{
-  display:inline;
-  font-size: 12px;
-  line-height: 1;
-  font-weight: 700;
-  text-transform: none;
-  letter-spacing: .02em;
+.deskMarqueeViewport{
+  position: relative;
+  z-index: 1;
+  display:block;
+  overflow:hidden;
+  width: 238px;
 }
-.deskBtn:hover{ transform: translateY(-1px); }
-.deskBtn:active{ transform: translateY(0px); }
-.deskBtn:hover{ border-color: rgba(173, 203, 65, .58); box-shadow: 0 18px 56px rgba(0,0,0,.24), 0 0 28px rgba(173, 203, 65, .16); }
+.deskMarqueeTrack{
+  position: relative;
+  display:flex;
+  align-items:center;
+  gap: 28px;
+  will-change: transform;
+  animation: marqueeX 8.5s linear infinite;
+}
+.deskMarqueeItem{
+  display:inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  color: rgba(255,255,255,.88);
+  text-shadow: 0 10px 40px rgba(0,0,0,.55);
+  white-space: nowrap;
+}
+.deskMarqueeEm{ color: rgba(173,203,65,.92); }
+.deskMarqueeBtn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 20px 66px rgba(0,0,0,.26), 0 0 28px rgba(173, 203, 65, .12);
+}
+.deskMarqueeBtn:active{ transform: translateY(0px); }
+@keyframes marqueeX{
+  from{ transform: translate3d(0,0,0); }
+  to{ transform: translate3d(-50%,0,0); }
+}
+@keyframes hueSpin{
+  from{ filter: blur(12px) hue-rotate(0deg); }
+  to{ filter: blur(12px) hue-rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce){
+  .deskMarqueeBtn::before,
+  .deskMarqueeTrack{ animation: none; }
+}
 
 .deskTitle{ display:none; }
 
