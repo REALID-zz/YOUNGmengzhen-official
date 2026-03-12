@@ -62,12 +62,12 @@ body{
   z-index: 54;
   pointer-events: none;
   user-select: none;
-  font-family: var(--serif);
+  font-family: var(--sans);
   font-style: italic;
   font-weight: 300;
-  font-size: 15px;
-  letter-spacing: .28em;
-  color: rgba(255,255,255,.52);
+  font-size: 13px;
+  letter-spacing: .22em;
+  color: rgba(255,255,255,.42);
   text-shadow: 0 18px 48px rgba(0,0,0,.55);
   opacity: .85;
   transform: translate3d(-999px,-999px,0);
@@ -120,10 +120,10 @@ a:focus{outline:2px solid rgba(200,176,122,.40); outline-offset:2px}
   .sideNav{ display:none; }
 }
 .sideNav .logo{
-  font-family: var(--serif);
-  font-weight: 600;
+  font-family: var(--sans);
+  font-weight: 700;
   letter-spacing: .18em;
-  font-size: 15px;
+  font-size: 13px;
   color: rgba(255,255,255,.78);
   margin-bottom: 16px;
   user-select:none;
@@ -192,35 +192,28 @@ a:focus{outline:2px solid rgba(200,176,122,.40); outline-offset:2px}
 
 .title{
   margin: 16px 0 0;
-  font-family: var(--serif);
-  font-weight: 300;
-  font-size: 72px;
-  letter-spacing: .08em;
-  line-height: 1.05;
-  color: rgba(255,255,255,.92);
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 42px;
+  letter-spacing: .18em;
+  line-height: 1.15;
+  color: rgba(255,255,255,.90);
+  text-transform: uppercase;
   text-shadow: 0 4px 40px rgba(0,0,0,.60);
 }
-.titleSub{
-  font-weight: 300;
-  font-size: 38px;
-  color: rgba(255,255,255,.45);
-  letter-spacing: .16em;
-  margin-left: 8px;
-}
 @media (max-width: 640px){
-  .title{ font-size: 44px; }
-  .titleSub{ font-size: 24px; }
+  .title{ font-size: 28px; }
 }
 
 .subtitle{
   margin: 20px 0 0;
-  font-size: 14px;
+  font-size: 13px;
   max-width: 48ch;
   color: rgba(255,255,255,.48);
   line-height: 2;
-  letter-spacing: .02em;
+  letter-spacing: .04em;
   font-style: italic;
-  font-family: var(--serif);
+  font-family: var(--sans);
 }
 .metaRow{
   margin-top: 16px;
@@ -301,7 +294,7 @@ section[data-hidden="true"]{
   padding:12px 18px;
 }
 .brand{display:flex; align-items:baseline; gap:10px}
-.brand h1{margin:0; font-size:14px; letter-spacing:.2px; font-family: var(--serif); font-weight:400;}
+.brand h1{margin:0; font-size:13px; letter-spacing:.12em; font-family: var(--sans); font-weight:700;}
 .brand span{color:var(--muted); font-size:11px; letter-spacing:.06em;}
 .nav{display:flex; gap:16px; flex-wrap:wrap; align-items:center}
 .nav a{color:rgba(255,255,255,.60); font-size:11px; letter-spacing:.10em; text-transform:uppercase; text-decoration:none;}
@@ -364,11 +357,12 @@ a:hover{text-decoration:underline}
 }
 .sectionHead h2{
   margin:0;
-  font-family: var(--serif);
-  font-weight: 300;
-  font-size: 28px;
-  letter-spacing: .14em;
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: .18em;
   color: rgba(255,255,255,.80);
+  text-transform: uppercase;
 }
 .sectionHead p{
   margin:6px 0 0;
@@ -434,10 +428,10 @@ a:hover{text-decoration:underline}
 }
 .meta .t{
   margin:0;
-  font-family: var(--serif);
-  font-size: 14px;
+  font-family: var(--sans);
+  font-size: 12px;
   font-weight: 400;
-  letter-spacing: .02em;
+  letter-spacing: .06em;
   color: rgba(255,255,255,.72);
 }
 .meta .m{
@@ -621,10 +615,10 @@ a:hover{text-decoration:underline}
 }
 .modalInfo h3{
   margin:14px 0 0;
-  font-family: var(--serif);
-  font-size:20px;
-  font-weight:400;
-  letter-spacing:.02em;
+  font-family: var(--sans);
+  font-size:16px;
+  font-weight:600;
+  letter-spacing:.06em;
 }
 .modalInfo p{
   margin:10px 0 0;
@@ -638,25 +632,28 @@ a:hover{text-decoration:underline}
 .interlude{ display:none; }
 .interludeSubtle{ display:none; }
 
-/* ─── Desktop dock (digital / things / interview buttons) ─── */
+/* ─── Desktop dock (top bar, horizontal) ─── */
 .deskDock{
   position: fixed;
-  left: 72vw;
-  top: 84vh;
-  right: auto;
+  top: 18px;
+  right: 18px;
+  left: auto;
   bottom: auto;
   z-index: 72;
   touch-action: none;
   display:flex;
-  flex-direction: column;
-  align-items: flex-start;
+  flex-direction: row;
+  align-items: center;
   gap: 8px;
   transition: opacity 280ms ease, transform 280ms ease;
 }
 .deskDock.isHidden{
   opacity: 0;
-  transform: translateY(10px);
+  transform: translateY(-10px);
   pointer-events: none;
+}
+@media (max-width: 640px){
+  .deskDock{ top:10px; right:10px; gap:6px; }
 }
 
 .deskMarqueeBtn{
