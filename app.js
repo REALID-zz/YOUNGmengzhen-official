@@ -320,7 +320,7 @@
       // ── Hero character (dynamic, beat-reactive) ──
       if (heroReady){
         ctx.save();
-        const charScale = Math.min(W, H) * 0.0028;
+        const charScale = Math.min(W, H) * 0.00056;
         const charW = heroImg.naturalWidth * charScale;
         const charH = heroImg.naturalHeight * charScale;
         const cx = W * 0.50;
