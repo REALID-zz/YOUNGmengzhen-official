@@ -117,9 +117,14 @@
         <canvas id="laserCanvas" aria-hidden="true"></canvas>
         <div class="visualsContent">
           <div class="visualsHead">
-            <div class="k">VISUAL LAB</div>
-            <h2 class="visualsTitle">VISUALS</h2>
-            <p class="visualsSub">Immersive light · Dynamic media · Interactive experience</p>
+            <div class="visualsHeadRow">
+              <div>
+                <div class="k">VISUAL LAB</div>
+                <h2 class="visualsTitle">VISUALS</h2>
+                <p class="visualsSub">Immersive light · Dynamic media · Interactive experience</p>
+              </div>
+              <button id="soundToggle" class="soundToggle" type="button" aria-label="Toggle sound">SOUND OFF</button>
+            </div>
           </div>
           <div id="visualsGrid" class="visualsGrid" aria-label="visual media grid"></div>
           <p id="visualsEmpty" class="note visualsEmpty" style="display:none;">Upload media to <code>assets/visuals/</code></p>

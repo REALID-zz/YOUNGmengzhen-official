@@ -374,7 +374,56 @@ a:hover{text-decoration:underline}
   padding: 120px 18px 80px;
 }
 .visualsHead{
-  max-width: 640px;
+  max-width: 100%;
+}
+.visualsHeadRow{
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.soundToggle{
+  flex-shrink: 0;
+  padding: 10px 20px;
+  border: 1px solid rgba(173,203,65,.20);
+  background: rgba(0,0,0,.50);
+  backdrop-filter: blur(10px);
+  color: rgba(255,255,255,.45);
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .20em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 250ms ease, color 250ms ease, box-shadow 250ms ease;
+  position: relative;
+  overflow: hidden;
+}
+.soundToggle::before{
+  content: "";
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.20);
+  transition: background 250ms ease, box-shadow 250ms ease;
+}
+.soundToggle{ padding-left: 24px; }
+.soundToggle.active{
+  border-color: rgba(173,203,65,.45);
+  color: rgba(173,203,65,.85);
+}
+.soundToggle.active::before{
+  background: rgba(173,203,65,.80);
+  box-shadow: 0 0 8px rgba(173,203,65,.40);
+}
+.soundToggle:hover{
+  border-color: rgba(173,203,65,.40);
+  color: rgba(255,255,255,.70);
 }
 .visualsTitle{
   margin: 12px 0 0;

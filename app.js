@@ -40,112 +40,245 @@
       my = (e.clientY - r.top) / r.height;
     }, { passive: true });
 
-    const G = [173, 203, 65];
+    // ── Audio engine (Web Audio API) ──
+    let ac = null, audioRefs = null, audioOn = false;
+    let kickTimer = 0;
+    const soundBtn = document.getElementById('soundToggle');
+
+    function initAudio(){
+      try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch { return; }
+      const master = ac.createGain();
+      master.gain.value = 0.13;
+      master.connect(ac.destination);
+
+      const sub = ac.createOscillator();
+      sub.type = 'sine'; sub.frequency.value = 55;
+      const subG = ac.createGain(); subG.gain.value = 0.28;
+      sub.connect(subG); subG.connect(master); sub.start();
+
+      const padF = ac.createBiquadFilter();
+      padF.type = 'lowpass'; padF.frequency.value = 260; padF.Q.value = 5;
+      const padG = ac.createGain(); padG.gain.value = 0.06;
+      padF.connect(padG); padG.connect(master);
+
+      const pad = ac.createOscillator();
+      pad.type = 'sawtooth'; pad.frequency.value = 110;
+      pad.connect(padF); pad.start();
+
+      const pad2 = ac.createOscillator();
+      pad2.type = 'triangle'; pad2.frequency.value = 164.81;
+      pad2.connect(padF); pad2.start();
+
+      audioRefs = { master, padF };
+      audioOn = true;
+      scheduleKicks();
+    }
+
+    function scheduleKicks(){
+      if (!ac || !audioOn) return;
+      const interval = 60 / 126;
+      let next = ac.currentTime + 0.05;
+      (function loop(){
+        if (!audioOn || !ac) return;
+        while (next < ac.currentTime + 0.25){
+          const o = ac.createOscillator();
+          const g = ac.createGain();
+          o.type = 'sine';
+          o.frequency.setValueAtTime(110, next);
+          o.frequency.exponentialRampToValueAtTime(26, next + 0.10);
+          g.gain.setValueAtTime(0.26, next);
+          g.gain.exponentialRampToValueAtTime(0.001, next + 0.20);
+          o.connect(g); g.connect(audioRefs.master);
+          o.start(next); o.stop(next + 0.22);
+          next += interval;
+        }
+        kickTimer = setTimeout(loop, 80);
+      })();
+    }
+
+    function stopAudio(){
+      audioOn = false;
+      clearTimeout(kickTimer);
+      if (audioRefs && ac) audioRefs.master.gain.linearRampToValueAtTime(0, ac.currentTime + 0.4);
+      setTimeout(() => { try { if (ac) ac.close(); } catch {} ac = null; audioRefs = null; }, 500);
+    }
+
+    if (soundBtn){
+      soundBtn.addEventListener('click', () => {
+        if (!audioOn){ initAudio(); soundBtn.textContent = 'SOUND ON'; soundBtn.classList.add('active'); }
+        else { stopAudio(); soundBtn.textContent = 'SOUND OFF'; soundBtn.classList.remove('active'); }
+      });
+    }
+
+    // ── Beat system (126 BPM) ──
+    const BEAT_MS = 60000 / 126;
+    function getBeat(t){
+      const b = t / BEAT_MS;
+      const frac = b % 1;
+      const num = (b | 0);
+      const pulse = Math.exp(-frac * 6);
+      return { pulse, isBar: (num % 4 === 0), isDrop: (num % 32 === 0) && frac < 0.06, frac };
+    }
+
+    // ── Multi-color beams ──
+    const G  = [173, 203, 65];
+    const CY = [65, 210, 190];
+    const WW = [255, 245, 225];
+    const PU = [160, 90, 220];
 
     const beams = [
-      { ox: 0.10, sweep: 24, speed: 0.30, phase: 0.0, bright: 0.90 },
-      { ox: 0.28, sweep: 18, speed: 0.22, phase: 1.4, bright: 0.75 },
-      { ox: 0.46, sweep: 28, speed: 0.34, phase: 2.8, bright: 1.00 },
-      { ox: 0.64, sweep: 20, speed: 0.26, phase: 4.0, bright: 0.80 },
-      { ox: 0.82, sweep: 22, speed: 0.38, phase: 5.2, bright: 0.85 },
-      { ox: 0.95, sweep: 16, speed: 0.20, phase: 6.0, bright: 0.70 },
+      { ox: 0.06, sweep: 28, speed: 0.30, phase: 0.0, bright: 0.88, c: G },
+      { ox: 0.20, sweep: 14, speed: 0.18, phase: 0.9, bright: 0.42, c: CY },
+      { ox: 0.34, sweep: 22, speed: 0.24, phase: 1.8, bright: 0.78, c: G },
+      { ox: 0.48, sweep: 32, speed: 0.36, phase: 2.6, bright: 1.00, c: G },
+      { ox: 0.56, sweep: 10, speed: 0.14, phase: 3.3, bright: 0.26, c: WW },
+      { ox: 0.66, sweep: 24, speed: 0.28, phase: 4.0, bright: 0.72, c: G },
+      { ox: 0.78, sweep: 18, speed: 0.32, phase: 4.8, bright: 0.50, c: CY },
+      { ox: 0.88, sweep: 20, speed: 0.40, phase: 5.6, bright: 0.82, c: G },
+      { ox: 0.42, sweep: 12, speed: 0.12, phase: 6.2, bright: 0.18, c: PU },
     ];
 
-    const PCNT = 140;
+    // ── Particles (180) ──
+    const PCNT = 180;
     const particles = [];
     for (let i = 0; i < PCNT; i++){
       particles.push({
         x: Math.random(), y: Math.random(),
-        vx: (Math.random() - 0.5) * 0.0003,
-        vy: Math.random() * 0.0003 + 0.00008,
-        size: Math.random() * 1.6 + 0.4,
-        base: Math.random() * 0.12 + 0.02,
+        vx: (Math.random() - 0.5) * 0.0004,
+        vy: Math.random() * 0.00035 + 0.00006,
+        size: Math.random() * 1.8 + 0.3,
+        base: Math.random() * 0.10 + 0.015,
       });
     }
 
-    function drawBeam(sx, sy, ex, ey, w, a){
+    // ── Film grain texture (pre-rendered) ──
+    const GS = 128;
+    const grainCvs = document.createElement('canvas');
+    grainCvs.width = GS; grainCvs.height = GS;
+    const gCtx = grainCvs.getContext('2d');
+    const gImg = gCtx.createImageData(GS, GS);
+    for (let i = 0; i < gImg.data.length; i += 4){
+      const v = Math.random() * 255;
+      gImg.data[i] = gImg.data[i+1] = gImg.data[i+2] = v;
+      gImg.data[i+3] = 10;
+    }
+    gCtx.putImageData(gImg, 0, 0);
+
+    // ── Drawing helpers ──
+    function drawBeam(sx, sy, ex, ey, w, a, col){
       const grad = ctx.createLinearGradient(sx, sy, ex, ey);
-      grad.addColorStop(0, `rgba(${G[0]},${G[1]},${G[2]},${a})`);
-      grad.addColorStop(0.35, `rgba(${G[0]},${G[1]},${G[2]},${a * 0.7})`);
-      grad.addColorStop(0.75, `rgba(${G[0]},${G[1]},${G[2]},${a * 0.3})`);
-      grad.addColorStop(1, `rgba(${G[0]},${G[1]},${G[2]},0)`);
-      ctx.beginPath();
-      ctx.moveTo(sx, sy);
-      ctx.lineTo(ex, ey);
-      ctx.strokeStyle = grad;
-      ctx.lineWidth = w;
-      ctx.lineCap = 'round';
-      ctx.stroke();
+      grad.addColorStop(0, `rgba(${col[0]},${col[1]},${col[2]},${a})`);
+      grad.addColorStop(0.35, `rgba(${col[0]},${col[1]},${col[2]},${a * 0.65})`);
+      grad.addColorStop(0.75, `rgba(${col[0]},${col[1]},${col[2]},${a * 0.25})`);
+      grad.addColorStop(1, `rgba(${col[0]},${col[1]},${col[2]},0)`);
+      ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(ex, ey);
+      ctx.strokeStyle = grad; ctx.lineWidth = w; ctx.lineCap = 'round'; ctx.stroke();
     }
 
     function beamAngle(b, t){
       return b.sweep * Math.sin(t * b.speed * 0.001 + b.phase) + (mx - b.ox) * 14;
     }
 
+    // ── Main render loop ──
     function frame(t){
       if (!running) return;
       ctx.clearRect(0, 0, W, H);
+      const bt = getBeat(t);
+      const beatMul = 1 + bt.pulse * 0.38 * (bt.isBar ? 1.3 : 0.7);
+
+      if (audioRefs && audioOn) audioRefs.padF.frequency.value = 180 + (1 - my) * 900;
+
       ctx.globalCompositeOperation = 'lighter';
 
-      const pulse = 0.82 + 0.18 * Math.sin(t * 0.0018);
-
+      // Beams (multi-color, beat-reactive)
       for (const b of beams){
         const ang = beamAngle(b, t) * Math.PI / 180;
-        const sx = b.ox * W;
-        const sy = -30;
+        const sx = b.ox * W, sy = -30;
         const len = Math.hypot(W, H) * 1.3;
         const ex = sx + Math.sin(ang) * len;
         const ey = sy + Math.cos(ang) * len;
-        const br = b.bright * pulse;
-
-        drawBeam(sx, sy, ex, ey, 90, 0.006 * br);
-        drawBeam(sx, sy, ex, ey, 44, 0.014 * br);
-        drawBeam(sx, sy, ex, ey, 18, 0.035 * br);
-        drawBeam(sx, sy, ex, ey, 7, 0.09 * br);
-        drawBeam(sx, sy, ex, ey, 2.5, 0.24 * br);
+        const br = b.bright * beatMul;
+        drawBeam(sx, sy, ex, ey, 100, 0.005 * br, b.c);
+        drawBeam(sx, sy, ex, ey, 48, 0.012 * br, b.c);
+        drawBeam(sx, sy, ex, ey, 20, 0.032 * br, b.c);
+        drawBeam(sx, sy, ex, ey, 8, 0.085 * br, b.c);
+        drawBeam(sx, sy, ex, ey, 2.5, 0.22 * br, b.c);
       }
 
-      ctx.globalCompositeOperation = 'screen';
-      const haze = ctx.createRadialGradient(W * mx, H * 0.55, 0, W * mx, H * 0.55, W * 0.5);
-      haze.addColorStop(0, `rgba(${G[0]},${G[1]},${G[2]},0.012)`);
-      haze.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = haze;
-      ctx.fillRect(0, 0, W, H);
+      // Horizontal scanner beam
+      const scanY = (Math.sin(t * 0.00038) * 0.5 + 0.5) * H;
+      const scanG = ctx.createLinearGradient(0, scanY - 55, 0, scanY + 55);
+      scanG.addColorStop(0, 'rgba(173,203,65,0)');
+      scanG.addColorStop(0.42, `rgba(173,203,65,${0.014 * beatMul})`);
+      scanG.addColorStop(0.5, `rgba(173,203,65,${0.04 * beatMul})`);
+      scanG.addColorStop(0.58, `rgba(173,203,65,${0.014 * beatMul})`);
+      scanG.addColorStop(1, 'rgba(173,203,65,0)');
+      ctx.fillStyle = scanG; ctx.fillRect(0, scanY - 55, W, 110);
 
+      // Atmospheric haze (dual layer, mouse-reactive)
+      ctx.globalCompositeOperation = 'screen';
+      const hx = W * mx, hy = H * 0.52;
+      const haze = ctx.createRadialGradient(hx, hy, 0, hx, hy, W * 0.45);
+      haze.addColorStop(0, `rgba(${G[0]},${G[1]},${G[2]},${0.010 * beatMul})`);
+      haze.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = haze; ctx.fillRect(0, 0, W, H);
+
+      const haze2 = ctx.createRadialGradient(W * 0.5, H * 0.72, 0, W * 0.5, H * 0.72, W * 0.55);
+      haze2.addColorStop(0, `rgba(${G[0]},${G[1]},${G[2]},${0.005 * beatMul})`);
+      haze2.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = haze2; ctx.fillRect(0, 0, W, H);
+
+      // Particles (colored by nearest beam)
       ctx.globalCompositeOperation = 'lighter';
       for (const p of particles){
-        p.x += p.vx;
-        p.y += p.vy;
+        p.x += p.vx; p.y += p.vy;
         if (p.y > 1){ p.y = 0; p.x = Math.random(); }
         if (p.x < 0 || p.x > 1) p.vx *= -1;
-
-        const px = p.x * W;
-        const py = p.y * H;
-        let illum = 0;
+        const px = p.x * W, py = p.y * H;
+        let illum = 0, bestC = G;
         for (const b of beams){
           const ang = beamAngle(b, t) * Math.PI / 180;
-          const bsx = b.ox * W;
-          const dx = px - bsx;
-          const dy = py + 30;
+          const dx = px - b.ox * W, dy = py + 30;
           const cross = Math.abs(dx * Math.cos(ang) - dy * Math.sin(ang));
-          if (cross < 50) illum += (1 - cross / 50) * 0.25 * b.bright;
+          if (cross < 55){
+            const contribution = (1 - cross / 55) * 0.22 * b.bright;
+            if (contribution > illum){ illum = contribution; bestC = b.c; }
+          }
         }
-        const alpha = Math.min(0.45, p.base + illum);
-        ctx.fillStyle = `rgba(${G[0]},${G[1]},${G[2]},${alpha})`;
-        ctx.beginPath();
-        ctx.arc(px, py, p.size, 0, 6.283);
-        ctx.fill();
+        const alpha = Math.min(0.50, p.base + illum * beatMul);
+        ctx.fillStyle = `rgba(${bestC[0]},${bestC[1]},${bestC[2]},${alpha})`;
+        ctx.beginPath(); ctx.arc(px, py, p.size, 0, 6.283); ctx.fill();
       }
+
+      // Strobe flash on drops
+      if (bt.isDrop){
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.fillStyle = `rgba(255,255,255,${0.12 * (1 - bt.frac / 0.06)})`;
+        ctx.fillRect(0, 0, W, H);
+      }
+
+      // Film grain overlay
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha = 0.03;
+      const gox = (Math.random() * GS) | 0, goy = (Math.random() * GS) | 0;
+      for (let x = -gox; x < W; x += GS)
+        for (let y = -goy; y < H; y += GS)
+          ctx.drawImage(grainCvs, x, y);
+      ctx.globalAlpha = 1;
 
       requestAnimationFrame(frame);
     }
 
+    // ── Visibility observer (pause when off-screen, stop audio) ──
     const section = canvas.closest('.visualsSection');
     if (section && 'IntersectionObserver' in window){
       const io = new IntersectionObserver((entries) => {
         const vis = !!entries[0]?.isIntersecting;
         if (vis && !running){ running = true; requestAnimationFrame(frame); }
-        else if (!vis){ running = false; }
+        else if (!vis){
+          running = false;
+          if (audioOn){ stopAudio(); if (soundBtn){ soundBtn.textContent = 'SOUND OFF'; soundBtn.classList.remove('active'); } }
+        }
       }, { threshold: 0.02 });
       io.observe(section);
     } else {
