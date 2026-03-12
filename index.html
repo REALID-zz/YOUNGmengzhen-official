@@ -3,14 +3,19 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>孟臻（DCT）｜艺术家 / 画家 Official Portfolio</title>
-    <meta name="description" content="孟臻（DCT）独立艺术家、画家（油画）。单页官网：完整介绍、作品墙（自动铺满）、履历亮点、引用链接、同名/DCT 消歧与联系方式。Base EARTH / HK / LA。Keywords: 孟臻 画家, 孟臻 艺术家, DCT 孟臻, Mengzhen, Meng Zhen, artist, painter, oil painting." />
+    <title>孟臻（DCT）｜Artist / Painter — Official</title>
+    <meta name="description" content="孟臻（DCT）独立艺术家、油画家。Official portfolio: fine art, about, references. Base EARTH / HK / LA." />
     <link rel="canonical" href="https://realid-zz.github.io/YOUNGmengzhen-official/" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="孟臻（DCT）｜艺术家 / 画家 Official Portfolio" />
-    <meta property="og:description" content="单页官网：完整介绍、作品墙（自动铺满）、履历亮点、引用链接、同名/DCT 消歧与联系方式。Base EARTH / HK / LA。" />
+    <meta property="og:title" content="孟臻（DCT）— Artist / Painter" />
+    <meta property="og:description" content="Independent artist and oil painter. Official portfolio." />
     <meta property="og:url" content="https://realid-zz.github.io/YOUNGmengzhen-official/" />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image" content="https://realid-zz.github.io/YOUNGmengzhen-official/assets/hero.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://realid-zz.github.io/YOUNGmengzhen-official/assets/hero.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet" />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -46,7 +51,10 @@
         }
       }
     </script>
-    <link rel="stylesheet" href="./app.css?v=tablewish1" />
+    <link rel="stylesheet" href="./app.css?v=museum1" />
+    <!-- Google Analytics (GA4) — replace G-XXXXXXXXXX with your measurement ID -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
   </head>
   <body>
     <a class="skip" href="#main">跳到正文</a>
@@ -83,55 +91,46 @@
       <section class="hero section" id="top" aria-label="hero">
         <div class="heroInner">
           <div class="heroCopy">
-            <div class="heroK">OFFICIAL</div>
-            <h2 class="title">孟臻（DCT）</h2>
+            <div class="heroK">OFFICIAL PORTFOLIO</div>
+            <h2 class="title">孟臻<span class="titleSub">(DCT)</span></h2>
             <p class="subtitle">
-              I translate philosophical emotions through a distinct naïve gaze, focusing on painting and contemporary art.
-              Working primarily in oil, I build narrative spaces with sharp chiaroscuro and atmosphere—placing emotion and story side by side for an experience that is both intuitive and reflective.
+              Translating philosophical emotions through a distinct naïve gaze.
+              Oil painting, chiaroscuro, narrative atmosphere.
             </p>
-            <div class="metaRow">Independent Artist · Oil Painter · Base EARTH / HK / LA</div>
-            <div class="chips" aria-label="keywords">
-              <span class="chip">Oil Painting</span>
-              <span class="chip">Chiaroscuro</span>
-              <span class="chip">Narrative</span>
-              <span class="chip">Melancholy</span>
-              <span class="chip">Illusion</span>
+            <div class="metaRow">Independent Artist · Oil Painter · EARTH / HK / LA</div>
+            <div class="heroLinks">
+              <a href="#works">Fine Art ↓</a>
+              <a href="mailto:hihelloaikenni@gemail.com">Inquiries</a>
             </div>
-            <div class="actions">
-              <a class="btn btnPrimary" href="#works">View Fine Art (Auto-Fill)</a>
-              <a class="btn btnGhost" href="mailto:hihelloaikenni@gemail.com">Inquiries / Press</a>
-            </div>
-            <div class="hrGlow"></div>
           </div>
         </div>
-        <div class="creditStrip">
-          <a href="#references">References</a>
-          <a href="#works">Scroll ↓</a>
+        <div class="scrollHint" aria-hidden="true">
+          <span class="scrollLine"></span>
         </div>
       </section>
 
       <section id="works" class="section" aria-label="works">
         <div class="sectionHead">
           <div>
-            <h2>FINE ART / 作品墙</h2>
-            <p>Selected fine art · 持续更新。点击作品查看大图。</p>
+            <h2>FINE ART</h2>
+            <p>Selected works · Click to view</p>
           </div>
           <div class="search" role="search">
-            <input id="worksQuery" placeholder="Search fine art… / 搜索作品…" autocomplete="off" />
+            <input id="worksQuery" placeholder="Search…" autocomplete="off" />
           </div>
         </div>
         <div id="worksGrid" class="masonry" aria-label="works grid"></div>
       </section>
 
-      <section class="grid2 section" id="about" aria-label="about">
-        <div class="card">
-          <div class="k">About</div>
-          <p style="margin:10px 0 0;color:rgba(255,255,255,.78);line-height:1.75;font-size:13px;">
+      <section class="section aboutSection" id="about" aria-label="about">
+        <div class="aboutInner">
+          <div class="k">About the Artist</div>
+          <p class="aboutText">
             以油画为核心媒介，在强烈明暗对比与氛围建构中搭建叙事空间；以“天真视角”触及哲学情感，让情绪与故事并置，形成兼具直觉与思辨的观看体验。
           </p>
-          <div class="miniLinks">
-            <a href="#references">查看引用</a>
-            <a href="#faq">同名/缩写消歧</a>
+          <div class="aboutLinks">
+            <a href="#references">References</a>
+            <a href="#faq">FAQ</a>
           </div>
         </div>
       </section>
@@ -182,27 +181,19 @@
         </details>
       </section>
 
-      <section id="contact" class="card section" aria-label="contact">
-        <div class="k">Contact</div>
-        <p style="margin:10px 0 0;color:rgba(255,255,255,.78);line-height:1.75;font-size:13px;">
-          合作/媒体：<a href="mailto:hihelloaikenni@gemail.com">hihelloaikenni@gemail.com</a>
-        </p>
-      </section>
-
-      <section id="interlude" class="section interlude interludeSubtle" aria-label="interlude">
-        <div class="interludeInner">
-          <div>
-            <div class="interludeK">PHOTO</div>
-            <div class="interludeTitle">孟臻（DCT）</div>
-            <div class="interludeSub">Official one-page · Artist / Painter</div>
-          </div>
-          <div class="interludeActions">
-            <a class="btn btnGhost" href="#top">Back to top</a>
-          </div>
+      <section id="contact" class="section contactSection" aria-label="contact">
+        <div class="contactInner">
+          <div class="k">Contact</div>
+          <p class="contactText">
+            Inquiries / Press&ensp;—&ensp;<a href="mailto:hihelloaikenni@gemail.com">hihelloaikenni@gemail.com</a>
+          </p>
         </div>
       </section>
 
-      <footer>© 孟臻（DCT） · All rights reserved.</footer>
+      <footer class="siteFooter">
+        <span>© 孟臻（DCT）</span>
+        <a href="#top">Back to top ↑</a>
+      </footer>
     </main>
 
     <div id="modal" class="modal" role="dialog" aria-modal="true" aria-label="work viewer">
@@ -348,7 +339,7 @@
       </div>
     </div>
 
-    <script src="./app.js?v=tablewish1" defer></script>
+    <script src="./app.js?v=museum1" defer></script>
   </body>
 </html>
 
