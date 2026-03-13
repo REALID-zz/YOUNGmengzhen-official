@@ -565,8 +565,18 @@
       requestAnimationFrame(frame);
     }
 
-    // ── Auto-start audio on page load ──
-    initAudio();
+    // ── Auto-start audio on first user interaction ──
+    function _autoStartAudio(){
+      if (!audioOn) initAudio();
+      document.removeEventListener('click', _autoStartAudio);
+      document.removeEventListener('touchstart', _autoStartAudio);
+      document.removeEventListener('keydown', _autoStartAudio);
+      document.removeEventListener('pointerdown', _autoStartAudio);
+    }
+    document.addEventListener('click', _autoStartAudio);
+    document.addEventListener('touchstart', _autoStartAudio);
+    document.addEventListener('keydown', _autoStartAudio);
+    document.addEventListener('pointerdown', _autoStartAudio);
 
     // ── Visibility observer (pause canvas off-screen) ──
     const section = canvas.closest('.visualsSection');

@@ -592,6 +592,60 @@ a:hover{text-decoration:underline}
   letter-spacing: .06em;
 }
 
+.recentWorks{
+  margin-bottom: 48px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.recentTitle{
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: .22em;
+  color: rgba(255,255,255,.55);
+  margin: 0 0 20px;
+  text-transform: uppercase;
+}
+.recentGrid{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+@media (max-width: 768px){
+  .recentGrid{ grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px){
+  .recentGrid{ grid-template-columns: 1fr; }
+}
+.recentItem{
+  margin: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+  background: rgba(255,255,255,.03);
+  cursor: pointer;
+  transition: transform 350ms cubic-bezier(.4,0,.2,1), box-shadow 350ms ease;
+}
+.recentItem:hover{
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 12px 40px rgba(0,0,0,.5);
+}
+.recentItem img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 600ms cubic-bezier(.4,0,.2,1);
+}
+.recentItem:hover img{
+  transform: scale(1.04);
+}
+.recentItem--tall{
+  grid-row: span 2;
+}
+.recentItem--wide{
+  grid-column: span 2;
+}
 .masonry{
   margin-top: 28px;
   columns: 4 260px;
