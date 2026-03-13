@@ -320,25 +320,23 @@
 
         const viewScale = Math.min(W, H) / Math.max(heroImg.naturalWidth, heroImg.naturalHeight);
         const baseScale = viewScale * 0.7;
-        const breathe = 1 + Math.sin(t * 0.0008) * 0.04 + Math.sin(t * 0.0005) * 0.02;
-        const beatPump = 1 + bt.pulse * 0.18 * (bt.isBar ? 2.5 : 0.8);
+        const breathe = 1 + Math.sin(t * 0.0006) * 0.015 + Math.sin(t * 0.0004) * 0.008;
+        const beatPump = 1 + bt.pulse * 0.04 * (bt.isBar ? 1.3 : 0.5);
         const fScale = baseScale * breathe * beatPump;
         const charW = heroImg.naturalWidth * fScale;
         const charH = heroImg.naturalHeight * fScale;
 
-        // Expanding ghost echoes — fill the entire screen
-        for (let i = 0; i < 10; i++){
-          const echoT = ((t * 0.00012 + i * 0.1) % 1);
-          const echoS = fScale * (1 + echoT * 5);
-          const echoA = Math.pow(1 - echoT, 3) * 0.055 * beatMul;
-          const rot = echoT * (i % 2 ? 0.35 : -0.35);
+        // Soft expanding echoes
+        for (let i = 0; i < 6; i++){
+          const echoT = ((t * 0.00008 + i * 0.167) % 1);
+          const echoS = fScale * (1 + echoT * 3);
+          const echoA = Math.pow(1 - echoT, 4) * 0.03;
           const ew = heroImg.naturalWidth * echoS, eh = heroImg.naturalHeight * echoS;
           ctx.save();
           ctx.globalCompositeOperation = 'screen';
           ctx.globalAlpha = echoA;
           ctx.translate(cx, cy);
-          ctx.rotate(rot);
-          ctx.filter = `blur(${echoT * 35 + 5}px) hue-rotate(${hue + i * 36}deg)`;
+          ctx.filter = `blur(${echoT * 40 + 8}px)`;
           ctx.drawImage(heroImg, -ew * 0.5, -eh * 0.5, ew, eh);
           ctx.restore();
         }
@@ -379,58 +377,55 @@
         glow.addColorStop(1, 'rgba(0,0,0,0)');
         ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
 
-        // Wave-sliced liquid distortion
-        const sliceH = 3;
+        // Gentle wave distortion
+        const sliceH = 4;
         const numSlices = Math.ceil(charH / sliceH);
         ctx.save();
         ctx.globalCompositeOperation = 'lighter';
-        ctx.globalAlpha = 0.92;
+        ctx.globalAlpha = 0.95;
         for (let s = 0; s < numSlices; s++){
           const srcY = (s / numSlices) * heroImg.naturalHeight;
           const srcSliceH = heroImg.naturalHeight / numSlices;
-          const waveAmt = 5 + bt.pulse * 22 * (bt.isBar ? 2.2 : 1);
-          const wave = Math.sin(t * 0.0025 + s * 0.13) * waveAmt;
-          const glitch = (bt.isBar && bt.pulse > 0.6 && Math.random() > 0.72)
-            ? (Math.random() - 0.5) * 55 * bt.pulse : 0;
+          const wave = Math.sin(t * 0.0008 + s * 0.08) * 2.5;
           ctx.drawImage(heroImg,
             0, srcY, heroImg.naturalWidth, srcSliceH,
-            cx - charW * 0.5 + wave + glitch, cy - charH * 0.5 + s * sliceH,
+            cx - charW * 0.5 + wave, cy - charH * 0.5 + s * sliceH,
             charW, sliceH);
         }
         ctx.restore();
 
-        // Chromatic aberration (RGB split)
-        const abr = 2.5 + bt.pulse * 12 * (bt.isDrop ? 4 : 1);
+        // Subtle chromatic aberration
+        const abr = 1 + bt.pulse * 2.5;
         ctx.save();
         ctx.globalCompositeOperation = 'lighter';
-        ctx.globalAlpha = 0.2;
-        ctx.filter = `blur(1.5px) hue-rotate(${hue - 90}deg) saturate(4)`;
+        ctx.globalAlpha = 0.08;
+        ctx.filter = 'blur(2px) hue-rotate(-60deg) saturate(2)';
         ctx.drawImage(heroImg, cx - charW * 0.5 + abr, cy - charH * 0.5, charW, charH);
         ctx.restore();
         ctx.save();
         ctx.globalCompositeOperation = 'lighter';
-        ctx.globalAlpha = 0.2;
-        ctx.filter = `blur(1.5px) hue-rotate(${hue + 90}deg) saturate(4)`;
-        ctx.drawImage(heroImg, cx - charW * 0.5 - abr, cy - charH * 0.5 - abr * 0.4, charW, charH);
+        ctx.globalAlpha = 0.08;
+        ctx.filter = 'blur(2px) hue-rotate(160deg) saturate(2)';
+        ctx.drawImage(heroImg, cx - charW * 0.5 - abr, cy - charH * 0.5, charW, charH);
         ctx.restore();
 
         // Core glow layers
         ctx.save();
         ctx.translate(cx, cy);
         ctx.globalCompositeOperation = 'screen';
-        ctx.globalAlpha = 0.12 + bt.pulse * 0.08;
-        ctx.filter = 'blur(28px)';
+        ctx.globalAlpha = 0.08 + bt.pulse * 0.04;
+        ctx.filter = 'blur(30px)';
         ctx.drawImage(heroImg, -charW * 0.5, -charH * 0.5, charW, charH);
-        ctx.filter = `blur(12px) hue-rotate(${hue}deg)`;
-        ctx.globalAlpha = 0.16 + bt.pulse * 0.12;
+        ctx.filter = 'blur(14px)';
+        ctx.globalAlpha = 0.12 + bt.pulse * 0.05;
         ctx.drawImage(heroImg, -charW * 0.5, -charH * 0.5, charW, charH);
         ctx.filter = 'none';
         ctx.globalAlpha = 1;
         ctx.globalCompositeOperation = 'lighter';
         ctx.drawImage(heroImg, -charW * 0.5, -charH * 0.5, charW, charH);
-        if (bt.isBar && bt.pulse > 0.5){
-          ctx.globalAlpha = bt.pulse * 0.55;
-          ctx.filter = 'blur(14px) brightness(3)';
+        if (bt.isBar && bt.pulse > 0.7){
+          ctx.globalAlpha = bt.pulse * 0.18;
+          ctx.filter = 'blur(18px) brightness(2)';
           ctx.drawImage(heroImg, -charW * 0.5, -charH * 0.5, charW, charH);
         }
         ctx.filter = 'none';
@@ -438,8 +433,8 @@
         ctx.restore();
 
         // Character sparks (green/cyan/white mix)
-        if (bt.pulse > 0.55){
-          const cnt = bt.isBar ? 10 : 3;
+        if (bt.pulse > 0.8){
+          const cnt = bt.isBar ? 4 : 1;
           const sparkCols = [G, CY, WW, [200,220,80]];
           for (let i = 0; i < cnt; i++){
             const ang = Math.random() * Math.PI * 2;
