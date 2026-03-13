@@ -328,25 +328,39 @@
           ctx.restore();
         }
 
-        // Radial energy pulse rings
+        // Radial energy pulse rings (green)
         for (let i = 0; i < 5; i++){
           const phase = ((t * 0.00028 + i * 0.2) % 1);
           const r = phase * Math.max(W, H) * 0.75;
           const a = Math.pow(1 - phase, 2.5) * 0.04 * beatMul;
           const grad = ctx.createRadialGradient(cx, cy, r * 0.9, cx, cy, r);
-          grad.addColorStop(0, 'rgba(255,255,255,0)');
-          grad.addColorStop(0.5, `rgba(255,255,255,${a})`);
-          grad.addColorStop(1, 'rgba(255,255,255,0)');
+          grad.addColorStop(0, 'rgba(173,203,65,0)');
+          grad.addColorStop(0.5, `rgba(173,203,65,${a})`);
+          grad.addColorStop(1, 'rgba(173,203,65,0)');
           ctx.fillStyle = grad;
           ctx.globalCompositeOperation = 'lighter';
           ctx.fillRect(0, 0, W, H);
         }
 
-        // Central atmospheric glow
+        // Green atmospheric haze (dual layer, mouse-reactive)
+        ctx.globalCompositeOperation = 'screen';
+        const hx = W * mx, hy = H * 0.52;
+        const haze = ctx.createRadialGradient(hx, hy, 0, hx, hy, W * 0.45);
+        haze.addColorStop(0, `rgba(173,203,65,${0.012 * beatMul})`);
+        haze.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = haze; ctx.fillRect(0, 0, W, H);
+
+        const haze2 = ctx.createRadialGradient(W * 0.5, H * 0.72, 0, W * 0.5, H * 0.72, W * 0.55);
+        haze2.addColorStop(0, `rgba(173,203,65,${0.006 * beatMul})`);
+        haze2.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = haze2; ctx.fillRect(0, 0, W, H);
+
+        // Central atmospheric glow (green core)
         ctx.globalCompositeOperation = 'screen';
         const glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(W, H) * 0.5);
-        glow.addColorStop(0, `rgba(255,255,255,${0.025 * beatMul})`);
-        glow.addColorStop(0.4, `rgba(200,210,255,${0.008 * beatMul})`);
+        glow.addColorStop(0, `rgba(173,203,65,${0.028 * beatMul})`);
+        glow.addColorStop(0.35, `rgba(65,210,190,${0.010 * beatMul})`);
+        glow.addColorStop(0.7, `rgba(173,203,65,${0.004 * beatMul})`);
         glow.addColorStop(1, 'rgba(0,0,0,0)');
         ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
 
@@ -408,9 +422,10 @@
         ctx.globalAlpha = 1;
         ctx.restore();
 
-        // Character sparks
+        // Character sparks (green/cyan/white mix)
         if (bt.pulse > 0.55){
           const cnt = bt.isBar ? 10 : 3;
+          const sparkCols = [G, CY, WW, [200,220,80]];
           for (let i = 0; i < cnt; i++){
             const ang = Math.random() * Math.PI * 2;
             const spd = 1.2 + Math.random() * 4;
@@ -419,7 +434,7 @@
               y: cy + (Math.random() - 0.5) * charH * 0.4,
               vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd - 1.8,
               life: 1, size: 1.2 + Math.random() * 3,
-              c: WW
+              c: sparkCols[Math.floor(Math.random() * sparkCols.length)]
             });
           }
         }
@@ -441,9 +456,11 @@
         ctx.globalCompositeOperation = 'source-over';
       }
 
-      // Ambient particles (white, proximity-lit)
+      // Ambient particles (green-tinted, proximity-lit)
       ctx.globalCompositeOperation = 'lighter';
-      for (const p of particles){
+      const pCols = [[173,203,65],[65,210,190],[255,245,225]];
+      for (let pi = 0; pi < particles.length; pi++){
+        const p = particles[pi];
         p.x += p.vx; p.y += p.vy;
         if (p.y > 1){ p.y = 0; p.x = Math.random(); }
         if (p.x < 0 || p.x > 1) p.vx *= -1;
@@ -452,7 +469,8 @@
         const dist = Math.sqrt(dx * dx + dy * dy);
         const proximity = Math.max(0, 1 - dist / (Math.max(W, H) * 0.5));
         const alpha = Math.min(0.55, p.base + proximity * 0.18 * beatMul);
-        ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+        const pc = pCols[pi % 3];
+        ctx.fillStyle = `rgba(${pc[0]},${pc[1]},${pc[2]},${alpha})`;
         ctx.beginPath(); ctx.arc(px, py, p.size, 0, 6.283); ctx.fill();
       }
 
