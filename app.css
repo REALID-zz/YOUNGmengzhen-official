@@ -629,11 +629,17 @@ a:hover{color:rgba(255,255,255,.80); text-decoration:none}
 .gPair .gMat img{
   height: 340px;
 }
+.gFrame--portrait .gMat img{
+  height: 440px;
+  object-fit: contain;
+  background: #0a0a0a;
+}
 @media (max-width: 700px){
   .gallery{ max-width: 100%; }
   .gFrame--hero .gMat img{ height: 360px; }
   .gPair{ grid-template-columns: 1fr; }
   .gPair .gMat img{ height: 280px; }
+  .gFrame--portrait .gMat img{ height: 360px; }
 }
 .masonry{
   margin-top: 28px;
