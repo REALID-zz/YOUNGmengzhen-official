@@ -269,6 +269,9 @@
     let heroReady = false;
     heroImg.onload = () => { heroReady = true; };
 
+    const charTrail = [];
+    const charSparks = [];
+
     // ── Drawing helpers ──
     function drawBeam(sx, sy, ex, ey, w, a, col){
       const grad = ctx.createLinearGradient(sx, sy, ex, ey);
@@ -335,40 +338,103 @@
 
       // ── Hero character (dynamic, beat-reactive) ──
       if (heroReady){
-        ctx.save();
         const charScale = 0.2;
         const charW = heroImg.naturalWidth * charScale;
         const charH = heroImg.naturalHeight * charScale;
-        const cx = W * 0.50;
-        const cy = H * 0.46 + Math.sin(t * 0.0012) * H * 0.025;
-        const beatScale = 1 + bt.pulse * 0.06 * (bt.isBar ? 1.4 : 0.8);
-        const tilt = Math.sin(t * 0.0008) * 4;
 
-        ctx.translate(cx, cy);
+        const cx = W * 0.50 + Math.sin(t * 0.0005) * W * 0.06 + Math.cos(t * 0.00073) * W * 0.025;
+        const cy = H * 0.44 + Math.sin(t * 0.00068) * H * 0.04 + Math.cos(t * 0.0004) * H * 0.018;
+
+        let gx = 0, gy = 0;
+        if (bt.isDrop){ gx = (Math.random() - 0.5) * W * 0.10; gy = (Math.random() - 0.5) * H * 0.06; }
+        else if (bt.isBar && bt.pulse > 0.85){ gx = (Math.random() - 0.5) * 14; gy = (Math.random() - 0.5) * 10; }
+
+        const fx = cx + gx, fy = cy + gy;
+        const beatScale = 1 + bt.pulse * 0.14 * (bt.isBar ? 2.0 : 1);
+        const tilt = Math.sin(t * 0.0008) * 5 + (bt.isDrop ? (Math.random() - 0.5) * 18 : 0);
+        const hue = (t * 0.025) % 360;
+
+        charTrail.push({ x: fx, y: fy, s: beatScale, r: tilt });
+        if (charTrail.length > 8) charTrail.shift();
+
+        if (bt.pulse > 0.7){
+          const cnt = bt.isBar ? 6 : 2;
+          for (let i = 0; i < cnt; i++){
+            const ang = Math.random() * Math.PI * 2;
+            const spd = 0.6 + Math.random() * 2.8;
+            const cols = [G, CY, WW, [255,220,100]];
+            charSparks.push({
+              x: fx, y: fy,
+              vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd - 1,
+              life: 1, size: 0.8 + Math.random() * 2.2,
+              c: cols[Math.floor(Math.random() * cols.length)]
+            });
+          }
+        }
+        for (let i = charSparks.length - 1; i >= 0; i--){
+          const sp = charSparks[i];
+          sp.x += sp.vx; sp.y += sp.vy; sp.vy += 0.03;
+          sp.life -= 0.016;
+          if (sp.life <= 0) charSparks.splice(i, 1);
+        }
+
+        for (let i = 0; i < charTrail.length - 1; i++){
+          const tr = charTrail[i];
+          ctx.save();
+          ctx.globalCompositeOperation = 'screen';
+          ctx.globalAlpha = (i / charTrail.length) * 0.13;
+          ctx.translate(tr.x, tr.y);
+          ctx.rotate(tr.r * Math.PI / 180);
+          ctx.scale(tr.s, tr.s);
+          ctx.filter = `blur(${(8 - i) * 1.5}px) hue-rotate(${i * 30 + hue}deg)`;
+          ctx.drawImage(heroImg, -charW * 0.5, -charH * 0.5, charW, charH);
+          ctx.restore();
+        }
+
+        ctx.save();
+        ctx.translate(fx, fy);
         ctx.rotate(tilt * Math.PI / 180);
         ctx.scale(beatScale, beatScale);
 
         ctx.globalCompositeOperation = 'screen';
-        ctx.globalAlpha = 0.10;
-        ctx.filter = 'blur(18px)';
+        ctx.globalAlpha = 0.08 + bt.pulse * 0.06;
+        ctx.filter = `blur(22px) hue-rotate(${hue}deg)`;
         ctx.drawImage(heroImg, -charW * 0.5, -charH * 0.5, charW, charH);
-        ctx.filter = 'blur(8px)';
-        ctx.globalAlpha = 0.18;
+
+        ctx.filter = `blur(9px) hue-rotate(${hue * 0.5}deg)`;
+        ctx.globalAlpha = 0.16 + bt.pulse * 0.10;
         ctx.drawImage(heroImg, -charW * 0.5, -charH * 0.5, charW, charH);
 
         ctx.filter = 'none';
-        ctx.globalAlpha = 0.88 + bt.pulse * 0.12;
+        ctx.globalAlpha = 0.90 + bt.pulse * 0.10;
         ctx.globalCompositeOperation = 'lighter';
         ctx.drawImage(heroImg, -charW * 0.5, -charH * 0.5, charW, charH);
 
-        ctx.globalCompositeOperation = 'lighter';
-        ctx.globalAlpha = 0.06 + bt.pulse * 0.08;
-        ctx.filter = 'blur(4px) brightness(1.6)';
+        ctx.globalAlpha = 0.08 + bt.pulse * 0.14;
+        ctx.filter = `blur(3px) brightness(1.8) hue-rotate(${hue + 180}deg)`;
         ctx.drawImage(heroImg, -charW * 0.5, -charH * 0.5, charW, charH);
+
+        if (bt.isBar && bt.pulse > 0.8){
+          ctx.globalAlpha = bt.pulse * 0.38;
+          ctx.filter = 'blur(14px) brightness(3)';
+          ctx.globalCompositeOperation = 'lighter';
+          ctx.drawImage(heroImg, -charW * 0.5, -charH * 0.5, charW, charH);
+        }
 
         ctx.filter = 'none';
         ctx.globalAlpha = 1;
         ctx.restore();
+
+        ctx.globalCompositeOperation = 'lighter';
+        for (const sp of charSparks){
+          ctx.globalAlpha = sp.life * 0.75;
+          ctx.fillStyle = `rgb(${sp.c[0]},${sp.c[1]},${sp.c[2]})`;
+          ctx.beginPath();
+          ctx.arc(sp.x, sp.y, sp.size * sp.life, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+        ctx.globalCompositeOperation = 'source-over';
       }
 
       // Particles (colored by nearest beam)
