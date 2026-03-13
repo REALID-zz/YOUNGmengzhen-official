@@ -1,1 +1,32 @@
-[]
+[
+  {
+    "file": "dct-fox-01.png",
+    "title": "DCT × Fox — Laser Genesis",
+    "medium": "Digital art",
+    "desc": "Laser beams, cosmic cloak, red fox companion"
+  },
+  {
+    "file": "dct-fox-02.png",
+    "title": "DCT × Fox — Triptych Fire",
+    "medium": "Digital art",
+    "desc": "Three-panel composition with flames and sacred geometry"
+  },
+  {
+    "file": "dct-fox-03.png",
+    "title": "DCT × Fox — Crystal Vortex",
+    "medium": "Digital art",
+    "desc": "Low-poly crystalline shards, purple energy spiral"
+  },
+  {
+    "file": "dct-fox-04.png",
+    "title": "DCT × Fox — Neon Pulse",
+    "medium": "Digital art",
+    "desc": "Neon outlines, red laser array, dark atmosphere"
+  },
+  {
+    "file": "dct-fox-05.png",
+    "title": "DCT × Fox — Gold Edition",
+    "medium": "Digital art",
+    "desc": "Yellow backdrop, galaxy cloak, crimson fox"
+  }
+]
