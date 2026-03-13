@@ -631,15 +631,15 @@ a:hover{color:rgba(255,255,255,.80); text-decoration:none}
 }
 .gFrame--portrait .gMat img{
   height: 440px;
-  object-fit: contain;
-  background: #0a0a0a;
+  object-fit: cover;
+  object-position: center 20%;
 }
 @media (max-width: 700px){
   .gallery{ max-width: 100%; }
   .gFrame--hero .gMat img{ height: 360px; }
   .gPair{ grid-template-columns: 1fr; }
   .gPair .gMat img{ height: 280px; }
-  .gFrame--portrait .gMat img{ height: 360px; }
+  .gFrame--portrait .gMat img{ height: 320px; }
 }
 .masonry{
   margin-top: 28px;
