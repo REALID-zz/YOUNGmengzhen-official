@@ -3,6 +3,24 @@
 
   const $ = (id) => document.getElementById(id);
   const grid = $('worksGrid');
+
+  // ── Name flip: 梦真 ↔ 孟臻 ──
+  (function nameFlip(){
+    const el = $('nameFlip');
+    if (!el) return;
+    const names = ['梦真', '孟臻'];
+    let idx = 0;
+    setInterval(() => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(8px)';
+      setTimeout(() => {
+        idx = 1 - idx;
+        el.textContent = names[idx];
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+      }, 500);
+    }, 3500);
+  })();
   const q = $('worksQuery');
 
   const modal = $('modal');
@@ -40,12 +58,12 @@
       my = (e.clientY - r.top) / r.height;
     }, { passive: true });
 
-    // ── Audio engine — Dom Dolla-style deep house (125 BPM) ──
+    // ── Audio engine — Dom Dolla deep house (124 BPM, Am key) ──
     let ac = null, audioRefs = null, audioOn = false;
     let kickTimer = 0;
     const soundBtn = document.getElementById('soundToggle');
     let muted = false;
-    const MASTER_VOL = 0.19;
+    const MASTER_VOL = 0.22;
 
     function initAudio(){
       if (audioOn) return;
@@ -56,20 +74,21 @@
         document.addEventListener('click', wake); document.addEventListener('touchstart', wake); document.addEventListener('scroll', wake);
       }
 
-      const BPM = 125;
+      const BPM = 124;
       const s16 = 60 / BPM / 4;
-      const swingAmt = s16 * 0.045;
+      const swingAmt = s16 * 0.035;
 
       const comp = ac.createDynamicsCompressor();
-      comp.threshold.value = -12; comp.knee.value = 8; comp.ratio.value = 4;
-      comp.attack.value = 0.002; comp.release.value = 0.10;
+      comp.threshold.value = -10; comp.knee.value = 6; comp.ratio.value = 3.5;
+      comp.attack.value = 0.003; comp.release.value = 0.15;
       const master = ac.createGain(); master.gain.value = muted ? 0 : MASTER_VOL;
       comp.connect(master); master.connect(ac.destination);
 
       const dly = ac.createDelay(); dly.delayTime.value = s16 * 3;
-      const dlyFb = ac.createGain(); dlyFb.gain.value = 0.28;
-      const dlyW = ac.createGain(); dlyW.gain.value = 0.18;
-      dly.connect(dlyFb); dlyFb.connect(dly); dly.connect(dlyW); dlyW.connect(comp);
+      const dlyFb = ac.createGain(); dlyFb.gain.value = 0.30;
+      const dlyW = ac.createGain(); dlyW.gain.value = 0.13;
+      const dlyF = ac.createBiquadFilter(); dlyF.type = 'lowpass'; dlyF.frequency.value = 2200;
+      dly.connect(dlyF); dlyF.connect(dlyFb); dlyFb.connect(dly); dly.connect(dlyW); dlyW.connect(comp);
 
       function noiseBuf(dur, dec){
         const len = Math.round(ac.sampleRate * dur);
@@ -78,119 +97,127 @@
         for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ac.sampleRate * dec));
         return buf;
       }
-      const clpBuf = noiseBuf(0.12, 0.04);
-      const chBuf  = noiseBuf(0.035, 0.010);
-      const ohBuf  = noiseBuf(0.18, 0.065);
+      const clpBuf = noiseBuf(0.14, 0.042);
+      const chBuf  = noiseBuf(0.028, 0.007);
+      const ohBuf  = noiseBuf(0.13, 0.05);
 
       let _padG = null;
 
       function doKick(t){
         const o = ac.createOscillator(); const g = ac.createGain();
         o.type = 'sine';
-        o.frequency.setValueAtTime(150, t);
-        o.frequency.exponentialRampToValueAtTime(26, t + 0.08);
-        g.gain.setValueAtTime(0.78, t);
-        g.gain.exponentialRampToValueAtTime(0.001, t + 0.50);
-        o.connect(g); g.connect(comp); o.start(t); o.stop(t + 0.52);
+        o.frequency.setValueAtTime(145, t);
+        o.frequency.exponentialRampToValueAtTime(33, t + 0.055);
+        g.gain.setValueAtTime(0.85, t);
+        g.gain.setValueAtTime(0.85, t + 0.015);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.42);
+        o.connect(g); g.connect(comp); o.start(t); o.stop(t + 0.44);
         const c = ac.createOscillator(); const cg = ac.createGain();
-        c.frequency.setValueAtTime(4500, t);
-        c.frequency.exponentialRampToValueAtTime(120, t + 0.007);
-        cg.gain.setValueAtTime(0.11, t);
-        cg.gain.exponentialRampToValueAtTime(0.001, t + 0.009);
-        c.connect(cg); cg.connect(comp); c.start(t); c.stop(t + 0.015);
-        if (_padG){ _padG.gain.setValueAtTime(0.006, t); _padG.gain.linearRampToValueAtTime(0.032, t + 0.18); }
+        c.frequency.setValueAtTime(5500, t);
+        c.frequency.exponentialRampToValueAtTime(80, t + 0.005);
+        cg.gain.setValueAtTime(0.07, t);
+        cg.gain.exponentialRampToValueAtTime(0.001, t + 0.007);
+        c.connect(cg); cg.connect(comp); c.start(t); c.stop(t + 0.01);
+        if (_padG){ _padG.gain.setValueAtTime(0.003, t); _padG.gain.linearRampToValueAtTime(0.026, t + 0.22); }
       }
 
       function doClap(t){
         const n = ac.createBufferSource(); n.buffer = clpBuf;
-        const f = ac.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 1800; f.Q.value = 1.2;
-        const g = ac.createGain(); g.gain.setValueAtTime(0.18, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+        const f = ac.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 2400; f.Q.value = 0.7;
+        const g = ac.createGain(); g.gain.setValueAtTime(0.14, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
         n.connect(f); f.connect(g); g.connect(comp); n.start(t);
       }
 
-      function doHat(t, open){
+      function doHat(t, open, vel){
         const n = ac.createBufferSource(); n.buffer = open ? ohBuf : chBuf;
-        const f = ac.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = open ? 6500 : 8500;
-        const g = ac.createGain(); g.gain.value = open ? 0.055 : 0.04;
+        const f = ac.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = open ? 7500 : 9500;
+        const g = ac.createGain(); g.gain.value = (open ? 0.04 : 0.028) * vel;
         n.connect(f); f.connect(g); g.connect(comp); n.start(t);
       }
 
-      function doBass(t, freq){
-        const o1 = ac.createOscillator(); o1.type = 'sawtooth'; o1.frequency.value = freq;
-        const o2 = ac.createOscillator(); o2.type = 'square'; o2.frequency.value = freq * 0.998;
-        const f = ac.createBiquadFilter(); f.type = 'lowpass';
-        f.frequency.setValueAtTime(1100, t); f.frequency.exponentialRampToValueAtTime(75, t + s16 * 1.6); f.Q.value = 6;
+      function doBass(t, freq, dur){
+        const sub = ac.createOscillator(); sub.type = 'sine'; sub.frequency.value = freq;
+        const subG = ac.createGain();
+        subG.gain.setValueAtTime(0.20, t);
+        subG.gain.exponentialRampToValueAtTime(0.001, t + dur * 0.92);
+        sub.connect(subG); subG.connect(comp);
+        const o = ac.createOscillator(); o.type = 'sawtooth'; o.frequency.value = freq * 2;
+        const bf = ac.createBiquadFilter(); bf.type = 'lowpass'; bf.Q.value = 4.5;
+        bf.frequency.setValueAtTime(750, t);
+        bf.frequency.exponentialRampToValueAtTime(55, t + dur * 0.65);
         const g = ac.createGain();
-        g.gain.setValueAtTime(0.15, t); g.gain.setValueAtTime(0.15, t + s16 * 1.2);
-        g.gain.exponentialRampToValueAtTime(0.001, t + s16 * 1.8);
-        o1.connect(f); o2.connect(f); f.connect(g); g.connect(comp);
-        o1.start(t); o2.start(t); o1.stop(t + s16 * 2); o2.stop(t + s16 * 2);
+        g.gain.setValueAtTime(0.09, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + dur * 0.88);
+        o.connect(bf); bf.connect(g); g.connect(comp);
+        sub.start(t); o.start(t); sub.stop(t + dur); o.stop(t + dur);
       }
 
       function doStab(t, freq){
-        const o1 = ac.createOscillator(); o1.type = 'sawtooth'; o1.frequency.value = freq;
-        const o2 = ac.createOscillator(); o2.type = 'sawtooth'; o2.frequency.value = freq * 1.502;
-        const o3 = ac.createOscillator(); o3.type = 'sawtooth'; o3.frequency.value = freq * 2.001;
-        const f = ac.createBiquadFilter(); f.type = 'lowpass';
-        f.frequency.setValueAtTime(2800, t); f.frequency.exponentialRampToValueAtTime(180, t + 0.14); f.Q.value = 3;
+        const ns = [freq, freq * 1.2, freq * 1.5];
+        const sf = ac.createBiquadFilter(); sf.type = 'lowpass';
+        sf.frequency.setValueAtTime(3200, t); sf.frequency.exponentialRampToValueAtTime(160, t + 0.20); sf.Q.value = 2;
         const g = ac.createGain();
-        g.gain.setValueAtTime(0.05, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.16);
-        o1.connect(f); o2.connect(f); o3.connect(f); f.connect(g); g.connect(comp); g.connect(dly);
-        o1.start(t); o2.start(t); o3.start(t);
-        o1.stop(t + 0.20); o2.stop(t + 0.20); o3.stop(t + 0.20);
+        g.gain.setValueAtTime(0.035, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+        sf.connect(g); g.connect(comp); g.connect(dly);
+        for (const n of ns){
+          const o = ac.createOscillator(); o.type = 'sawtooth'; o.frequency.value = n;
+          o.connect(sf); o.start(t); o.stop(t + 0.26);
+        }
       }
 
       function doPerc(t){
         const o = ac.createOscillator(); const g = ac.createGain();
         o.type = 'triangle';
-        o.frequency.setValueAtTime(800, t);
-        o.frequency.exponentialRampToValueAtTime(300, t + 0.03);
-        g.gain.setValueAtTime(0.06, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
-        o.connect(g); g.connect(comp); o.start(t); o.stop(t + 0.06);
+        o.frequency.setValueAtTime(950, t);
+        o.frequency.exponentialRampToValueAtTime(380, t + 0.018);
+        g.gain.setValueAtTime(0.035, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.035);
+        o.connect(g); g.connect(comp); o.start(t); o.stop(t + 0.04);
       }
 
-      const padNotes = [130.81, 164.81, 196.00, 261.63];
+      const padNotes = [220, 261.63, 329.63, 392];
       const padF = ac.createBiquadFilter();
-      padF.type = 'lowpass'; padF.frequency.value = 280; padF.Q.value = 2.5;
-      _padG = ac.createGain(); _padG.gain.value = 0.032;
+      padF.type = 'lowpass'; padF.frequency.value = 200; padF.Q.value = 1.5;
+      _padG = ac.createGain(); _padG.gain.value = 0.026;
       padF.connect(_padG); _padG.connect(comp);
       const padOscs = [];
       for (const n of padNotes){
         const o1 = ac.createOscillator(); o1.type = 'sawtooth'; o1.frequency.value = n;
-        const o2 = ac.createOscillator(); o2.type = 'sawtooth'; o2.frequency.value = n * 1.005;
+        const o2 = ac.createOscillator(); o2.type = 'sawtooth'; o2.frequency.value = n * 1.006;
         o1.connect(padF); o2.connect(padF); o1.start(); o2.start();
         padOscs.push(o1, o2);
       }
-      const alphaLFO = ac.createOscillator();
-      alphaLFO.type = 'sine'; alphaLFO.frequency.value = 10;
-      const alphaG = ac.createGain(); alphaG.gain.value = 0.20;
-      alphaLFO.connect(alphaG);
-      for (const o of padOscs) alphaG.connect(o.frequency);
-      alphaLFO.start(); padOscs.push(alphaLFO);
+      const vibLFO = ac.createOscillator();
+      vibLFO.type = 'sine'; vibLFO.frequency.value = 5;
+      const vibG = ac.createGain(); vibG.gain.value = 0.12;
+      vibLFO.connect(vibG);
+      for (const o of padOscs) vibG.connect(o.frequency);
+      vibLFO.start(); padOscs.push(vibLFO);
 
       const binL = ac.createOscillator(); binL.type = 'sine'; binL.frequency.value = 200;
       const binR = ac.createOscillator(); binR.type = 'sine'; binR.frequency.value = 210;
       const merger = ac.createChannelMerger(2);
       binL.connect(merger, 0, 0); binR.connect(merger, 0, 1);
-      const binG = ac.createGain(); binG.gain.value = 0.018;
+      const binG = ac.createGain(); binG.gain.value = 0.014;
       merger.connect(binG); binG.connect(master);
       binL.start(); binR.start(); padOscs.push(binL, binR);
 
       const sweepLFO = ac.createOscillator();
-      sweepLFO.type = 'sine'; sweepLFO.frequency.value = BPM / (60 * 16);
-      const sweepDepth = ac.createGain(); sweepDepth.gain.value = 380;
+      sweepLFO.type = 'sine'; sweepLFO.frequency.value = BPM / (60 * 32);
+      const sweepDepth = ac.createGain(); sweepDepth.gain.value = 260;
       sweepLFO.connect(sweepDepth); sweepDepth.connect(padF.frequency);
       sweepLFO.start(); padOscs.push(sweepLFO);
 
-      const kickP = [1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0];
-      const clapP = [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0];
-      const chP   = [0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,1];
-      const ohP   = [0,0,0,0, 0,0,0,1, 0,0,0,0, 0,0,0,0];
-      const percP = [0,0,0,1, 0,0,0,0, 0,0,0,1, 0,0,0,0];
-      const bassP = [87.31,0,0,87.31, 0,0,87.31,0, 0,87.31,0,0, 87.31,0,0,0];
-      const stabP = [
-        0,0,0,0, 0,0,0,0, 261.63,0,0,0, 0,0,0,0,
-        0,0,0,0, 0,0,0,0, 0,0,0,0, 196.00,0,0,0
+      const kickP  = [1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0];
+      const clapP  = [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0];
+      const chP    = [0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0];
+      const chVel  = [0,0,.65,0, 0,0,1,0, 0,0,.65,0, 0,0,1,0];
+      const ohP    = [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,1];
+      const percP  = [0,0,0,0, 0,0,0,1, 0,0,0,0, 0,0,0,0];
+      const bassN  = [55,0,0,55, 0,0,65.41,0, 82.41,0,0,0, 55,0,0,0];
+      const bassD  = s16 * 1.8;
+      const stabP  = [
+        0,0,0,0, 0,0,0,0, 220,0,0,0, 0,0,0,0,
+        0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0
       ];
 
       let step = 0, next = ac.currentTime + 0.05;
@@ -201,10 +228,10 @@
           const ts = (s % 2 === 1) ? next + swingAmt : next;
           if (kickP[s]) doKick(next);
           if (clapP[s]) doClap(next);
-          if (chP[s]) doHat(ts, false);
-          if (ohP[s]) doHat(ts, true);
+          if (chP[s]) doHat(ts, false, chVel[s]);
+          if (ohP[s]) doHat(ts, true, 1);
           if (percP[s]) doPerc(ts);
-          if (bassP[s]) doBass(next, bassP[s]);
+          if (bassN[s]) doBass(next, bassN[s], bassD);
           if (stabP[s2]) doStab(next, stabP[s2]);
           step++; next += s16;
         }

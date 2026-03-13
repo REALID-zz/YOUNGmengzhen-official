@@ -205,6 +205,23 @@ a:focus{outline:2px solid rgba(200,176,122,.40); outline-offset:2px}
   .title{ font-size: 28px; }
 }
 
+.nameFlip{
+  display: inline-block;
+  transition: opacity 500ms cubic-bezier(.4,0,.2,1), transform 500ms cubic-bezier(.4,0,.2,1);
+}
+.dreamQuote{
+  margin: 22px 0 0;
+  font-size: 12px;
+  max-width: 52ch;
+  color: rgba(255,255,255,.38);
+  line-height: 2;
+  letter-spacing: .04em;
+}
+.dreamQuote em{
+  font-style: italic;
+  color: rgba(255,255,255,.28);
+  font-size: 11px;
+}
 .subtitle{
   margin: 20px 0 0;
   font-size: 13px;
