@@ -383,47 +383,61 @@ a:hover{text-decoration:underline}
   gap: 24px;
   flex-wrap: wrap;
 }
-.soundToggle{
-  flex-shrink: 0;
-  padding: 10px 20px;
-  border: 1px solid rgba(173,203,65,.20);
-  background: rgba(0,0,0,.50);
-  backdrop-filter: blur(10px);
-  color: rgba(255,255,255,.45);
+.muteBtn{
+  position: fixed;
+  top: 18px;
+  left: 18px;
+  z-index: 9999;
+  padding: 8px 18px;
+  border: 1px solid rgba(173,203,65,.35);
+  border-radius: 20px;
+  background: rgba(0,0,0,.65);
+  backdrop-filter: blur(14px);
+  color: rgba(173,203,65,.9);
   font-family: var(--sans);
   font-size: 10px;
-  font-weight: 600;
-  letter-spacing: .20em;
+  font-weight: 700;
+  letter-spacing: .22em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: border-color 250ms ease, color 250ms ease, box-shadow 250ms ease;
-  position: relative;
   overflow: hidden;
+  transition: all 350ms cubic-bezier(.4,0,.2,1);
+  box-shadow: 0 0 12px rgba(173,203,65,.15), inset 0 0 8px rgba(173,203,65,.05);
 }
-.soundToggle::before{
+.muteBtn::before{
   content: "";
   position: absolute;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: rgba(255,255,255,.20);
-  transition: background 250ms ease, box-shadow 250ms ease;
+  inset: -1px;
+  border-radius: 20px;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(173,203,65,.6), rgba(65,210,190,.4), rgba(160,90,220,.3), rgba(173,203,65,.6));
+  background-size: 300% 300%;
+  animation: muteBtnGlow 4s ease infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
-.soundToggle{ padding-left: 24px; }
-.soundToggle.active{
-  border-color: rgba(173,203,65,.45);
-  color: rgba(173,203,65,.85);
+@keyframes muteBtnGlow{
+  0%,100%{ background-position: 0% 50%; }
+  50%{ background-position: 100% 50%; }
 }
-.soundToggle.active::before{
-  background: rgba(173,203,65,.80);
-  box-shadow: 0 0 8px rgba(173,203,65,.40);
+.muteBtn.active{
+  color: rgba(173,203,65,.95);
+  box-shadow: 0 0 18px rgba(173,203,65,.25), 0 0 40px rgba(173,203,65,.08), inset 0 0 10px rgba(173,203,65,.08);
 }
-.soundToggle:hover{
-  border-color: rgba(173,203,65,.40);
-  color: rgba(255,255,255,.70);
+.muteBtn:not(.active){
+  color: rgba(255,255,255,.35);
+  border-color: rgba(255,255,255,.12);
+  box-shadow: none;
+}
+.muteBtn:not(.active)::before{
+  background: linear-gradient(135deg, rgba(255,255,255,.1), rgba(255,255,255,.05));
+  animation: none;
+}
+.muteBtn:hover{
+  transform: scale(1.06);
+  box-shadow: 0 0 24px rgba(173,203,65,.35), 0 0 50px rgba(65,210,190,.12);
 }
 .visualsTitle{
   margin: 12px 0 0;

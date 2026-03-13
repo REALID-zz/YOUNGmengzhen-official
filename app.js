@@ -538,25 +538,21 @@
       requestAnimationFrame(frame);
     }
 
-    // ── Visibility observer (auto-start audio, pause canvas off-screen) ──
+    // ── Auto-start audio on page load ──
+    initAudio();
+
+    // ── Visibility observer (pause canvas off-screen) ──
     const section = canvas.closest('.visualsSection');
     if (section && 'IntersectionObserver' in window){
       const io = new IntersectionObserver((entries) => {
         const vis = !!entries[0]?.isIntersecting;
-        if (vis && !running){
-          running = true;
-          requestAnimationFrame(frame);
-          if (!audioOn) initAudio();
-        }
-        else if (!vis){
-          running = false;
-        }
+        if (vis && !running){ running = true; requestAnimationFrame(frame); }
+        else if (!vis){ running = false; }
       }, { threshold: 0.02 });
       io.observe(section);
     } else {
       running = true;
       requestAnimationFrame(frame);
-      if (!audioOn) initAudio();
     }
 
     const vGrid = document.getElementById('visualsGrid');
