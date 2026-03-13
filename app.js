@@ -298,136 +298,140 @@
 
       ctx.globalCompositeOperation = 'lighter';
 
-      // Beams (multi-color, beat-reactive)
-      for (const b of beams){
-        const ang = beamAngle(b, t) * Math.PI / 180;
-        const sx = b.ox * W, sy = -30;
-        const len = Math.hypot(W, H) * 1.3;
-        const ex = sx + Math.sin(ang) * len;
-        const ey = sy + Math.cos(ang) * len;
-        const br = b.bright * beatMul;
-        drawBeam(sx, sy, ex, ey, 100, 0.005 * br, b.c);
-        drawBeam(sx, sy, ex, ey, 48, 0.012 * br, b.c);
-        drawBeam(sx, sy, ex, ey, 20, 0.032 * br, b.c);
-        drawBeam(sx, sy, ex, ey, 8, 0.085 * br, b.c);
-        drawBeam(sx, sy, ex, ey, 2.5, 0.22 * br, b.c);
-      }
-
-      // Horizontal scanner beam
-      const scanY = (Math.sin(t * 0.00038) * 0.5 + 0.5) * H;
-      const scanG = ctx.createLinearGradient(0, scanY - 55, 0, scanY + 55);
-      scanG.addColorStop(0, 'rgba(173,203,65,0)');
-      scanG.addColorStop(0.42, `rgba(173,203,65,${0.014 * beatMul})`);
-      scanG.addColorStop(0.5, `rgba(173,203,65,${0.04 * beatMul})`);
-      scanG.addColorStop(0.58, `rgba(173,203,65,${0.014 * beatMul})`);
-      scanG.addColorStop(1, 'rgba(173,203,65,0)');
-      ctx.fillStyle = scanG; ctx.fillRect(0, scanY - 55, W, 110);
-
-      // Atmospheric haze (dual layer, mouse-reactive)
-      ctx.globalCompositeOperation = 'screen';
-      const hx = W * mx, hy = H * 0.52;
-      const haze = ctx.createRadialGradient(hx, hy, 0, hx, hy, W * 0.45);
-      haze.addColorStop(0, `rgba(${G[0]},${G[1]},${G[2]},${0.010 * beatMul})`);
-      haze.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = haze; ctx.fillRect(0, 0, W, H);
-
-      const haze2 = ctx.createRadialGradient(W * 0.5, H * 0.72, 0, W * 0.5, H * 0.72, W * 0.55);
-      haze2.addColorStop(0, `rgba(${G[0]},${G[1]},${G[2]},${0.005 * beatMul})`);
-      haze2.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = haze2; ctx.fillRect(0, 0, W, H);
-
-      // ── Hero character (dynamic, beat-reactive) ──
+      // ── Morphing visual system ──
       if (heroReady){
-        const charScale = 0.2;
-        const charW = heroImg.naturalWidth * charScale;
-        const charH = heroImg.naturalHeight * charScale;
+        const cx = W * 0.5, cy = H * 0.5;
+        const hue = (t * 0.02) % 360;
 
-        const cx = W * 0.50 + Math.sin(t * 0.0005) * W * 0.06 + Math.cos(t * 0.00073) * W * 0.025;
-        const cy = H * 0.44 + Math.sin(t * 0.00068) * H * 0.04 + Math.cos(t * 0.0004) * H * 0.018;
+        const viewScale = Math.min(W, H) / Math.max(heroImg.naturalWidth, heroImg.naturalHeight);
+        const baseScale = viewScale * 0.7;
+        const breathe = 1 + Math.sin(t * 0.0008) * 0.04 + Math.sin(t * 0.0005) * 0.02;
+        const beatPump = 1 + bt.pulse * 0.18 * (bt.isBar ? 2.5 : 0.8);
+        const fScale = baseScale * breathe * beatPump;
+        const charW = heroImg.naturalWidth * fScale;
+        const charH = heroImg.naturalHeight * fScale;
 
-        let gx = 0, gy = 0;
-        if (bt.isDrop){ gx = (Math.random() - 0.5) * W * 0.10; gy = (Math.random() - 0.5) * H * 0.06; }
-        else if (bt.isBar && bt.pulse > 0.85){ gx = (Math.random() - 0.5) * 14; gy = (Math.random() - 0.5) * 10; }
+        // Expanding ghost echoes — fill the entire screen
+        for (let i = 0; i < 10; i++){
+          const echoT = ((t * 0.00012 + i * 0.1) % 1);
+          const echoS = fScale * (1 + echoT * 5);
+          const echoA = Math.pow(1 - echoT, 3) * 0.055 * beatMul;
+          const rot = echoT * (i % 2 ? 0.35 : -0.35);
+          const ew = heroImg.naturalWidth * echoS, eh = heroImg.naturalHeight * echoS;
+          ctx.save();
+          ctx.globalCompositeOperation = 'screen';
+          ctx.globalAlpha = echoA;
+          ctx.translate(cx, cy);
+          ctx.rotate(rot);
+          ctx.filter = `blur(${echoT * 35 + 5}px) hue-rotate(${hue + i * 36}deg)`;
+          ctx.drawImage(heroImg, -ew * 0.5, -eh * 0.5, ew, eh);
+          ctx.restore();
+        }
 
-        const fx = cx + gx, fy = cy + gy;
-        const beatScale = 1 + bt.pulse * 0.14 * (bt.isBar ? 2.0 : 1);
-        const tilt = Math.sin(t * 0.0008) * 5 + (bt.isDrop ? (Math.random() - 0.5) * 18 : 0);
-        const hue = (t * 0.025) % 360;
+        // Radial energy pulse rings
+        for (let i = 0; i < 5; i++){
+          const phase = ((t * 0.00028 + i * 0.2) % 1);
+          const r = phase * Math.max(W, H) * 0.75;
+          const a = Math.pow(1 - phase, 2.5) * 0.04 * beatMul;
+          const grad = ctx.createRadialGradient(cx, cy, r * 0.9, cx, cy, r);
+          grad.addColorStop(0, 'rgba(255,255,255,0)');
+          grad.addColorStop(0.5, `rgba(255,255,255,${a})`);
+          grad.addColorStop(1, 'rgba(255,255,255,0)');
+          ctx.fillStyle = grad;
+          ctx.globalCompositeOperation = 'lighter';
+          ctx.fillRect(0, 0, W, H);
+        }
 
-        charTrail.push({ x: fx, y: fy, s: beatScale, r: tilt });
-        if (charTrail.length > 8) charTrail.shift();
+        // Central atmospheric glow
+        ctx.globalCompositeOperation = 'screen';
+        const glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(W, H) * 0.5);
+        glow.addColorStop(0, `rgba(255,255,255,${0.025 * beatMul})`);
+        glow.addColorStop(0.4, `rgba(200,210,255,${0.008 * beatMul})`);
+        glow.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
 
-        if (bt.pulse > 0.7){
-          const cnt = bt.isBar ? 6 : 2;
+        // Wave-sliced liquid distortion
+        const sliceH = 3;
+        const numSlices = Math.ceil(charH / sliceH);
+        ctx.save();
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.globalAlpha = 0.92;
+        for (let s = 0; s < numSlices; s++){
+          const srcY = (s / numSlices) * heroImg.naturalHeight;
+          const srcSliceH = heroImg.naturalHeight / numSlices;
+          const waveAmt = 5 + bt.pulse * 22 * (bt.isBar ? 2.2 : 1);
+          const wave = Math.sin(t * 0.0025 + s * 0.13) * waveAmt;
+          const glitch = (bt.isBar && bt.pulse > 0.6 && Math.random() > 0.72)
+            ? (Math.random() - 0.5) * 55 * bt.pulse : 0;
+          ctx.drawImage(heroImg,
+            0, srcY, heroImg.naturalWidth, srcSliceH,
+            cx - charW * 0.5 + wave + glitch, cy - charH * 0.5 + s * sliceH,
+            charW, sliceH);
+        }
+        ctx.restore();
+
+        // Chromatic aberration (RGB split)
+        const abr = 2.5 + bt.pulse * 12 * (bt.isDrop ? 4 : 1);
+        ctx.save();
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.globalAlpha = 0.2;
+        ctx.filter = `blur(1.5px) hue-rotate(${hue - 90}deg) saturate(4)`;
+        ctx.drawImage(heroImg, cx - charW * 0.5 + abr, cy - charH * 0.5, charW, charH);
+        ctx.restore();
+        ctx.save();
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.globalAlpha = 0.2;
+        ctx.filter = `blur(1.5px) hue-rotate(${hue + 90}deg) saturate(4)`;
+        ctx.drawImage(heroImg, cx - charW * 0.5 - abr, cy - charH * 0.5 - abr * 0.4, charW, charH);
+        ctx.restore();
+
+        // Core glow layers
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.globalCompositeOperation = 'screen';
+        ctx.globalAlpha = 0.12 + bt.pulse * 0.08;
+        ctx.filter = 'blur(28px)';
+        ctx.drawImage(heroImg, -charW * 0.5, -charH * 0.5, charW, charH);
+        ctx.filter = `blur(12px) hue-rotate(${hue}deg)`;
+        ctx.globalAlpha = 0.16 + bt.pulse * 0.12;
+        ctx.drawImage(heroImg, -charW * 0.5, -charH * 0.5, charW, charH);
+        ctx.filter = 'none';
+        ctx.globalAlpha = 1;
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.drawImage(heroImg, -charW * 0.5, -charH * 0.5, charW, charH);
+        if (bt.isBar && bt.pulse > 0.5){
+          ctx.globalAlpha = bt.pulse * 0.55;
+          ctx.filter = 'blur(14px) brightness(3)';
+          ctx.drawImage(heroImg, -charW * 0.5, -charH * 0.5, charW, charH);
+        }
+        ctx.filter = 'none';
+        ctx.globalAlpha = 1;
+        ctx.restore();
+
+        // Character sparks
+        if (bt.pulse > 0.55){
+          const cnt = bt.isBar ? 10 : 3;
           for (let i = 0; i < cnt; i++){
             const ang = Math.random() * Math.PI * 2;
-            const spd = 0.6 + Math.random() * 2.8;
-            const cols = [G, CY, WW, [255,220,100]];
+            const spd = 1.2 + Math.random() * 4;
             charSparks.push({
-              x: fx, y: fy,
-              vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd - 1,
-              life: 1, size: 0.8 + Math.random() * 2.2,
-              c: cols[Math.floor(Math.random() * cols.length)]
+              x: cx + (Math.random() - 0.5) * charW * 0.4,
+              y: cy + (Math.random() - 0.5) * charH * 0.4,
+              vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd - 1.8,
+              life: 1, size: 1.2 + Math.random() * 3,
+              c: WW
             });
           }
         }
         for (let i = charSparks.length - 1; i >= 0; i--){
           const sp = charSparks[i];
-          sp.x += sp.vx; sp.y += sp.vy; sp.vy += 0.03;
-          sp.life -= 0.016;
+          sp.x += sp.vx; sp.y += sp.vy; sp.vy += 0.02;
+          sp.life -= 0.011;
           if (sp.life <= 0) charSparks.splice(i, 1);
         }
-
-        for (let i = 0; i < charTrail.length - 1; i++){
-          const tr = charTrail[i];
-          ctx.save();
-          ctx.globalCompositeOperation = 'screen';
-          ctx.globalAlpha = (i / charTrail.length) * 0.13;
-          ctx.translate(tr.x, tr.y);
-          ctx.rotate(tr.r * Math.PI / 180);
-          ctx.scale(tr.s, tr.s);
-          ctx.filter = `blur(${(8 - i) * 1.5}px) hue-rotate(${i * 30 + hue}deg)`;
-          ctx.drawImage(heroImg, -charW * 0.5, -charH * 0.5, charW, charH);
-          ctx.restore();
-        }
-
-        ctx.save();
-        ctx.translate(fx, fy);
-        ctx.rotate(tilt * Math.PI / 180);
-        ctx.scale(beatScale, beatScale);
-
-        ctx.globalCompositeOperation = 'screen';
-        ctx.globalAlpha = 0.08 + bt.pulse * 0.06;
-        ctx.filter = `blur(22px) hue-rotate(${hue}deg)`;
-        ctx.drawImage(heroImg, -charW * 0.5, -charH * 0.5, charW, charH);
-
-        ctx.filter = `blur(9px) hue-rotate(${hue * 0.5}deg)`;
-        ctx.globalAlpha = 0.16 + bt.pulse * 0.10;
-        ctx.drawImage(heroImg, -charW * 0.5, -charH * 0.5, charW, charH);
-
-        ctx.filter = 'none';
-        ctx.globalAlpha = 0.90 + bt.pulse * 0.10;
-        ctx.globalCompositeOperation = 'lighter';
-        ctx.drawImage(heroImg, -charW * 0.5, -charH * 0.5, charW, charH);
-
-        ctx.globalAlpha = 0.08 + bt.pulse * 0.14;
-        ctx.filter = `blur(3px) brightness(1.8) hue-rotate(${hue + 180}deg)`;
-        ctx.drawImage(heroImg, -charW * 0.5, -charH * 0.5, charW, charH);
-
-        if (bt.isBar && bt.pulse > 0.8){
-          ctx.globalAlpha = bt.pulse * 0.38;
-          ctx.filter = 'blur(14px) brightness(3)';
-          ctx.globalCompositeOperation = 'lighter';
-          ctx.drawImage(heroImg, -charW * 0.5, -charH * 0.5, charW, charH);
-        }
-
-        ctx.filter = 'none';
-        ctx.globalAlpha = 1;
-        ctx.restore();
-
         ctx.globalCompositeOperation = 'lighter';
         for (const sp of charSparks){
-          ctx.globalAlpha = sp.life * 0.75;
+          ctx.globalAlpha = sp.life * 0.85;
           ctx.fillStyle = `rgb(${sp.c[0]},${sp.c[1]},${sp.c[2]})`;
           ctx.beginPath();
           ctx.arc(sp.x, sp.y, sp.size * sp.life, 0, Math.PI * 2);
@@ -437,25 +441,18 @@
         ctx.globalCompositeOperation = 'source-over';
       }
 
-      // Particles (colored by nearest beam)
+      // Ambient particles (white, proximity-lit)
       ctx.globalCompositeOperation = 'lighter';
       for (const p of particles){
         p.x += p.vx; p.y += p.vy;
         if (p.y > 1){ p.y = 0; p.x = Math.random(); }
         if (p.x < 0 || p.x > 1) p.vx *= -1;
         const px = p.x * W, py = p.y * H;
-        let illum = 0, bestC = G;
-        for (const b of beams){
-          const ang = beamAngle(b, t) * Math.PI / 180;
-          const dx = px - b.ox * W, dy = py + 30;
-          const cross = Math.abs(dx * Math.cos(ang) - dy * Math.sin(ang));
-          if (cross < 55){
-            const contribution = (1 - cross / 55) * 0.22 * b.bright;
-            if (contribution > illum){ illum = contribution; bestC = b.c; }
-          }
-        }
-        const alpha = Math.min(0.50, p.base + illum * beatMul);
-        ctx.fillStyle = `rgba(${bestC[0]},${bestC[1]},${bestC[2]},${alpha})`;
+        const dx = px - W * 0.5, dy = py - H * 0.5;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const proximity = Math.max(0, 1 - dist / (Math.max(W, H) * 0.5));
+        const alpha = Math.min(0.55, p.base + proximity * 0.18 * beatMul);
+        ctx.fillStyle = `rgba(255,255,255,${alpha})`;
         ctx.beginPath(); ctx.arc(px, py, p.size, 0, 6.283); ctx.fill();
       }
 
