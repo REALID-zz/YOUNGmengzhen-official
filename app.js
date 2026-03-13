@@ -298,6 +298,21 @@
 
       ctx.globalCompositeOperation = 'lighter';
 
+      // Vertical beams (green, beat-reactive)
+      for (const b of beams){
+        const ang = beamAngle(b, t) * Math.PI / 180;
+        const sx = b.ox * W, sy = -30;
+        const len = Math.hypot(W, H) * 1.3;
+        const ex = sx + Math.sin(ang) * len;
+        const ey = sy + Math.cos(ang) * len;
+        const br = b.bright * beatMul;
+        drawBeam(sx, sy, ex, ey, 100, 0.005 * br, b.c);
+        drawBeam(sx, sy, ex, ey, 48, 0.012 * br, b.c);
+        drawBeam(sx, sy, ex, ey, 20, 0.032 * br, b.c);
+        drawBeam(sx, sy, ex, ey, 8, 0.085 * br, b.c);
+        drawBeam(sx, sy, ex, ey, 2.5, 0.22 * br, b.c);
+      }
+
       // ── Morphing visual system ──
       if (heroReady){
         const cx = W * 0.5, cy = H * 0.5;
