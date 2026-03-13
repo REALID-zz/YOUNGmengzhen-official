@@ -4,9 +4,9 @@
   --line:rgba(255,255,255,.08);
   --text:rgba(255,255,255,.88);
   --muted:rgba(255,255,255,.50);
-  --accent:#c8b07a;
-  --accent2:#a89060;
-  --gold:#c8b07a;
+  --accent:rgba(255,255,255,.55);
+  --accent2:rgba(255,255,255,.40);
+  --gold:rgba(255,255,255,.55);
   --shadow: 0 28px 90px rgba(0,0,0,.55);
   --shadow2: 0 18px 60px rgba(0,0,0,.36);
   --radius: 2px;
@@ -177,7 +177,7 @@ a:focus{outline:2px solid rgba(200,176,122,.40); outline-offset:2px}
   display:inline-flex;
   align-items:center;
   gap: 12px;
-  color: rgba(255,255,255,.35);
+  color: rgba(255,255,255,.25);
   font-size: 10px;
   letter-spacing: .36em;
   text-transform: uppercase;
@@ -187,22 +187,21 @@ a:focus{outline:2px solid rgba(200,176,122,.40); outline-offset:2px}
   content:"";
   height: 1px;
   width: 60px;
-  background: linear-gradient(90deg, rgba(255,255,255,.20), transparent);
+  background: linear-gradient(90deg, rgba(255,255,255,.12), transparent);
 }
 
 .title{
   margin: 16px 0 0;
   font-family: var(--sans);
-  font-weight: 700;
+  font-weight: 300;
   font-size: 42px;
-  letter-spacing: .18em;
+  letter-spacing: .22em;
   line-height: 1.15;
-  color: rgba(255,255,255,.90);
+  color: rgba(255,255,255,.85);
   text-transform: uppercase;
-  text-shadow: 0 4px 40px rgba(0,0,0,.60);
 }
 @media (max-width: 640px){
-  .title{ font-size: 28px; }
+  .title{ font-size: 26px; }
 }
 
 .nameFlip{
@@ -264,7 +263,7 @@ a:focus{outline:2px solid rgba(200,176,122,.40); outline-offset:2px}
   transition: background 200ms ease;
 }
 .heroLinks a:hover::after{
-  background: rgba(200,176,122,.60);
+  background: rgba(255,255,255,.40);
 }
 
 /* Scroll hint line at bottom of hero */
@@ -325,12 +324,12 @@ section[data-hidden="true"]{
 
 /* ─── Main wrapper ─── */
 .wrap{max-width:1200px; margin:0 auto; padding:24px 18px 72px}
-a{color:var(--accent); text-decoration:none}
-a:hover{text-decoration:underline}
+a{color:rgba(255,255,255,.55); text-decoration:none}
+a:hover{color:rgba(255,255,255,.80); text-decoration:none}
 
 /* ─── Hero outer ─── */
 .hero{
-  min-height: 100vh;
+  min-height: 180vh;
   margin-top: 0;
   border-radius: 0;
   border: 0;
@@ -344,8 +343,8 @@ a:hover{text-decoration:underline}
 .hero::after{ content:none; }
 .heroInner{
   align-content: end;
-  min-height: 100vh;
-  padding: 56px 0 140px;
+  min-height: 180vh;
+  padding: 56px 0 120px;
   display:grid;
   grid-template-columns: 1fr;
   gap:18px;
@@ -406,55 +405,30 @@ a:hover{text-decoration:underline}
   left: 18px;
   z-index: 9999;
   padding: 8px 18px;
-  border: 1px solid rgba(173,203,65,.35);
-  border-radius: 20px;
-  background: rgba(0,0,0,.65);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 0;
+  background: rgba(0,0,0,.50);
   backdrop-filter: blur(14px);
-  color: rgba(173,203,65,.9);
+  color: rgba(255,255,255,.50);
   font-family: var(--sans);
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 400;
   letter-spacing: .22em;
   text-transform: uppercase;
   cursor: pointer;
-  overflow: hidden;
-  transition: all 350ms cubic-bezier(.4,0,.2,1);
-  box-shadow: 0 0 12px rgba(173,203,65,.15), inset 0 0 8px rgba(173,203,65,.05);
-}
-.muteBtn::before{
-  content: "";
-  position: absolute;
-  inset: -1px;
-  border-radius: 20px;
-  padding: 1px;
-  background: linear-gradient(135deg, rgba(173,203,65,.6), rgba(65,210,190,.4), rgba(160,90,220,.3), rgba(173,203,65,.6));
-  background-size: 300% 300%;
-  animation: muteBtnGlow 4s ease infinite;
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-}
-@keyframes muteBtnGlow{
-  0%,100%{ background-position: 0% 50%; }
-  50%{ background-position: 100% 50%; }
+  transition: color 250ms ease, border-color 250ms ease;
 }
 .muteBtn.active{
-  color: rgba(173,203,65,.95);
-  box-shadow: 0 0 18px rgba(173,203,65,.25), 0 0 40px rgba(173,203,65,.08), inset 0 0 10px rgba(173,203,65,.08);
+  color: rgba(255,255,255,.70);
+  border-color: rgba(255,255,255,.22);
 }
 .muteBtn:not(.active){
-  color: rgba(255,255,255,.35);
-  border-color: rgba(255,255,255,.12);
-  box-shadow: none;
-}
-.muteBtn:not(.active)::before{
-  background: linear-gradient(135deg, rgba(255,255,255,.1), rgba(255,255,255,.05));
-  animation: none;
+  color: rgba(255,255,255,.30);
+  border-color: rgba(255,255,255,.10);
 }
 .muteBtn:hover{
-  transform: scale(1.06);
-  box-shadow: 0 0 24px rgba(173,203,65,.35), 0 0 50px rgba(65,210,190,.12);
+  color: rgba(255,255,255,.85);
+  border-color: rgba(255,255,255,.30);
 }
 .visualsTitle{
   margin: 12px 0 0;
@@ -464,7 +438,6 @@ a:hover{text-decoration:underline}
   letter-spacing: .24em;
   color: rgba(255,255,255,.78);
   text-transform: uppercase;
-  text-shadow: 0 0 60px rgba(173,203,65,.18);
 }
 .visualsSub{
   margin: 12px 0 0;
@@ -486,15 +459,14 @@ a:hover{text-decoration:underline}
 }
 .visualsItem{
   position: relative;
-  border: 1px solid rgba(173,203,65,.10);
+  border: 1px solid rgba(255,255,255,.08);
   background: rgba(0,0,0,.50);
   overflow: hidden;
   cursor: pointer;
-  transition: border-color 280ms ease, box-shadow 280ms ease;
+  transition: border-color 280ms ease;
 }
 .visualsItem:hover{
-  border-color: rgba(173,203,65,.30);
-  box-shadow: 0 0 40px rgba(173,203,65,.08);
+  border-color: rgba(255,255,255,.20);
 }
 .visualsThumb{
   width: 100%;
@@ -521,7 +493,7 @@ a:hover{text-decoration:underline}
   height: 48px;
   border-radius: 50%;
   background: rgba(0,0,0,.60);
-  border: 1px solid rgba(173,203,65,.40);
+  border: 1px solid rgba(255,255,255,.25);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -536,7 +508,7 @@ a:hover{text-decoration:underline}
   width: 0; height: 0;
   border-style: solid;
   border-width: 8px 0 8px 14px;
-  border-color: transparent transparent transparent rgba(173,203,65,.80);
+  border-color: transparent transparent transparent rgba(255,255,255,.60);
   margin-left: 3px;
 }
 .visualsCap{
@@ -933,7 +905,6 @@ a:hover{text-decoration:underline}
 }
 
 .deskMarqueeBtn{
-  --deskGreen: #ADCB41;
   position: relative;
   display:inline-flex;
   align-items:center;
@@ -943,56 +914,25 @@ a:hover{text-decoration:underline}
   border-radius: 0;
   border: 1px solid rgba(255,255,255,.10);
   background: rgba(0,0,0,.50);
-  backdrop-filter: blur(12px) saturate(1.08);
-  -webkit-backdrop-filter: blur(12px) saturate(1.08);
-  box-shadow: 0 12px 40px rgba(0,0,0,.30);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   cursor: pointer;
   user-select: none;
   white-space: nowrap;
   overflow: hidden;
-  transition: border-color 200ms ease, box-shadow 200ms ease;
+  transition: border-color 200ms ease;
 }
 .deskMarqueeBtn:hover{
   border-color: rgba(255,255,255,.22);
-  box-shadow: 0 14px 48px rgba(0,0,0,.35);
 }
 .deskMarqueeBtn:active{ transform: translateY(0px); }
-.deskMarqueeBtnThings,
-.deskMarqueeBtnInterview{
-  box-shadow: 0 12px 40px rgba(0,0,0,.30);
-}
-.deskMarqueeBtn::before{
-  content:"";
-  position:absolute;
-  inset:-1px;
-  border-radius: inherit;
-  background:
-    conic-gradient(from 180deg,
-      rgba(200,176,122,.30),
-      rgba(160,144,96,.20),
-      rgba(200,176,122,.30)
-    );
-  filter: blur(12px);
-  opacity: .25;
-  pointer-events:none;
-  animation: hueSpin 8s linear infinite;
-}
-.deskMarqueeBtn::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,0) 46%);
-  opacity: .35;
-  pointer-events:none;
-}
 .deskMarqueeDot{
   position: relative;
   z-index: 1;
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background: rgba(173, 203, 65, .80);
-  box-shadow: 0 0 8px rgba(173, 203, 65, .25);
+  background: rgba(255,255,255,.45);
 }
 .deskMarqueeViewport{
   position: relative;
@@ -1019,18 +959,13 @@ a:hover{text-decoration:underline}
   color: rgba(255,255,255,.60);
   white-space: nowrap;
 }
-.deskMarqueeEm{ color: rgba(173,203,65,.80); font-weight:600; }
+.deskMarqueeEm{ color: rgba(255,255,255,.75); font-weight:600; }
 
 @keyframes marqueeX{
   from{ transform: translate3d(0,0,0); }
   to{ transform: translate3d(-50%,0,0); }
 }
-@keyframes hueSpin{
-  from{ filter: blur(12px) hue-rotate(0deg); }
-  to{ filter: blur(12px) hue-rotate(360deg); }
-}
 @media (prefers-reduced-motion: reduce){
-  .deskMarqueeBtn::before,
   .deskMarqueeTrack{ animation: none; }
   .scrollLine{ animation:none; }
 }

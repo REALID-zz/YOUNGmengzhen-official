@@ -290,22 +290,21 @@
       return { pulse, isBar: (num % 4 === 0), isDrop: (num % 32 === 0) && frac < 0.06, frac };
     }
 
-    // ── Multi-color beams ──
-    const G  = [173, 203, 65];
-    const CY = [65, 210, 190];
-    const WW = [255, 245, 225];
-    const PU = [160, 90, 220];
+    // ── Monochrome beams (unified white tones) ──
+    const WW = [255, 255, 255];
+    const WS = [220, 220, 230];
+    const WD = [200, 200, 210];
 
     const beams = [
-      { ox: 0.06, sweep: 28, speed: 0.30, phase: 0.0, bright: 0.88, c: G },
-      { ox: 0.20, sweep: 14, speed: 0.18, phase: 0.9, bright: 0.42, c: CY },
-      { ox: 0.34, sweep: 22, speed: 0.24, phase: 1.8, bright: 0.78, c: G },
-      { ox: 0.48, sweep: 32, speed: 0.36, phase: 2.6, bright: 1.00, c: G },
-      { ox: 0.56, sweep: 10, speed: 0.14, phase: 3.3, bright: 0.26, c: WW },
-      { ox: 0.66, sweep: 24, speed: 0.28, phase: 4.0, bright: 0.72, c: G },
-      { ox: 0.78, sweep: 18, speed: 0.32, phase: 4.8, bright: 0.50, c: CY },
-      { ox: 0.88, sweep: 20, speed: 0.40, phase: 5.6, bright: 0.82, c: G },
-      { ox: 0.42, sweep: 12, speed: 0.12, phase: 6.2, bright: 0.18, c: PU },
+      { ox: 0.06, sweep: 28, speed: 0.30, phase: 0.0, bright: 0.88, c: WW },
+      { ox: 0.20, sweep: 14, speed: 0.18, phase: 0.9, bright: 0.42, c: WS },
+      { ox: 0.34, sweep: 22, speed: 0.24, phase: 1.8, bright: 0.78, c: WW },
+      { ox: 0.48, sweep: 32, speed: 0.36, phase: 2.6, bright: 1.00, c: WW },
+      { ox: 0.56, sweep: 10, speed: 0.14, phase: 3.3, bright: 0.26, c: WD },
+      { ox: 0.66, sweep: 24, speed: 0.28, phase: 4.0, bright: 0.72, c: WW },
+      { ox: 0.78, sweep: 18, speed: 0.32, phase: 4.8, bright: 0.50, c: WS },
+      { ox: 0.88, sweep: 20, speed: 0.40, phase: 5.6, bright: 0.82, c: WW },
+      { ox: 0.42, sweep: 12, speed: 0.12, phase: 6.2, bright: 0.18, c: WD },
     ];
 
     // ── Particles (180) ──
@@ -370,7 +369,7 @@
 
       ctx.globalCompositeOperation = 'lighter';
 
-      // Vertical beams (green, beat-reactive)
+      // Vertical beams (white, beat-reactive)
       for (const b of beams){
         const ang = beamAngle(b, t) * Math.PI / 180;
         const sx = b.ox * W, sy = -30;
@@ -413,39 +412,39 @@
           ctx.restore();
         }
 
-        // Radial energy pulse rings (green)
+        // Radial energy pulse rings
         for (let i = 0; i < 5; i++){
           const phase = ((t * 0.00028 + i * 0.2) % 1);
           const r = phase * Math.max(W, H) * 0.75;
           const a = Math.pow(1 - phase, 2.5) * 0.04 * beatMul;
           const grad = ctx.createRadialGradient(cx, cy, r * 0.9, cx, cy, r);
-          grad.addColorStop(0, 'rgba(173,203,65,0)');
-          grad.addColorStop(0.5, `rgba(173,203,65,${a})`);
-          grad.addColorStop(1, 'rgba(173,203,65,0)');
+          grad.addColorStop(0, 'rgba(255,255,255,0)');
+          grad.addColorStop(0.5, `rgba(255,255,255,${a})`);
+          grad.addColorStop(1, 'rgba(255,255,255,0)');
           ctx.fillStyle = grad;
           ctx.globalCompositeOperation = 'lighter';
           ctx.fillRect(0, 0, W, H);
         }
 
-        // Green atmospheric haze (dual layer, mouse-reactive)
+        // Atmospheric haze (dual layer, mouse-reactive)
         ctx.globalCompositeOperation = 'screen';
         const hx = W * mx, hy = H * 0.52;
         const haze = ctx.createRadialGradient(hx, hy, 0, hx, hy, W * 0.45);
-        haze.addColorStop(0, `rgba(173,203,65,${0.012 * beatMul})`);
+        haze.addColorStop(0, `rgba(255,255,255,${0.010 * beatMul})`);
         haze.addColorStop(1, 'rgba(0,0,0,0)');
         ctx.fillStyle = haze; ctx.fillRect(0, 0, W, H);
 
         const haze2 = ctx.createRadialGradient(W * 0.5, H * 0.72, 0, W * 0.5, H * 0.72, W * 0.55);
-        haze2.addColorStop(0, `rgba(173,203,65,${0.006 * beatMul})`);
+        haze2.addColorStop(0, `rgba(255,255,255,${0.005 * beatMul})`);
         haze2.addColorStop(1, 'rgba(0,0,0,0)');
         ctx.fillStyle = haze2; ctx.fillRect(0, 0, W, H);
 
-        // Central atmospheric glow (green core)
+        // Central atmospheric glow
         ctx.globalCompositeOperation = 'screen';
         const glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(W, H) * 0.5);
-        glow.addColorStop(0, `rgba(173,203,65,${0.028 * beatMul})`);
-        glow.addColorStop(0.35, `rgba(65,210,190,${0.010 * beatMul})`);
-        glow.addColorStop(0.7, `rgba(173,203,65,${0.004 * beatMul})`);
+        glow.addColorStop(0, `rgba(255,255,255,${0.025 * beatMul})`);
+        glow.addColorStop(0.35, `rgba(220,220,230,${0.008 * beatMul})`);
+        glow.addColorStop(0.7, `rgba(255,255,255,${0.003 * beatMul})`);
         glow.addColorStop(1, 'rgba(0,0,0,0)');
         ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
 
@@ -504,10 +503,10 @@
         ctx.globalAlpha = 1;
         ctx.restore();
 
-        // Character sparks (green/cyan/white mix)
+        // Character sparks (white)
         if (bt.pulse > 0.8){
           const cnt = bt.isBar ? 4 : 1;
-          const sparkCols = [G, CY, WW, [200,220,80]];
+          const sparkCols = [WW, [220,220,225], [200,200,210], [240,240,245]];
           for (let i = 0; i < cnt; i++){
             const ang = Math.random() * Math.PI * 2;
             const spd = 1.2 + Math.random() * 4;
@@ -538,9 +537,9 @@
         ctx.globalCompositeOperation = 'source-over';
       }
 
-      // Ambient particles (green-tinted, proximity-lit)
+      // Ambient particles (white, proximity-lit)
       ctx.globalCompositeOperation = 'lighter';
-      const pCols = [[173,203,65],[65,210,190],[255,245,225]];
+      const pCols = [[255,255,255],[220,220,230],[240,240,245]];
       for (let pi = 0; pi < particles.length; pi++){
         const p = particles[pi];
         p.x += p.vx; p.y += p.vy;
