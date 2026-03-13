@@ -144,6 +144,22 @@
       for (const o of padOscs) alphaG.connect(o.frequency);
       alphaLFO.start(); padOscs.push(alphaLFO);
 
+      // Binaural alpha beats (200Hz L / 210Hz R = 10Hz diff → focus & memory)
+      const binL = ac.createOscillator(); binL.type = 'sine'; binL.frequency.value = 200;
+      const binR = ac.createOscillator(); binR.type = 'sine'; binR.frequency.value = 210;
+      const merger = ac.createChannelMerger(2);
+      binL.connect(merger, 0, 0); binR.connect(merger, 0, 1);
+      const binG = ac.createGain(); binG.gain.value = 0.022;
+      merger.connect(binG); binG.connect(master);
+      binL.start(); binR.start(); padOscs.push(binL, binR);
+
+      // Slow pad filter sweep (1 cycle per 4 bars → classic deep house build)
+      const sweepLFO = ac.createOscillator();
+      sweepLFO.type = 'sine'; sweepLFO.frequency.value = BPM / (60 * 16);
+      const sweepDepth = ac.createGain(); sweepDepth.gain.value = 320;
+      sweepLFO.connect(sweepDepth); sweepDepth.connect(padF.frequency);
+      sweepLFO.start(); padOscs.push(sweepLFO);
+
       const kickP = [1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0];
       const clapP = [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0];
       const chP   = [0,1,0,1, 0,1,0,1, 0,1,0,1, 0,1,0,1];
@@ -320,7 +336,7 @@
       // ── Hero character (dynamic, beat-reactive) ──
       if (heroReady){
         ctx.save();
-        const charScale = Math.min(W, H) * 0.00056;
+        const charScale = 0.2;
         const charW = heroImg.naturalWidth * charScale;
         const charH = heroImg.naturalHeight * charScale;
         const cx = W * 0.50;
