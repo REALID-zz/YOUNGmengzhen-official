@@ -198,6 +198,21 @@
     });
   })();
 
+  // ── Auto-start music on first interaction (global) ──
+  (function(){
+    function _autoStart(){
+      if(!_audioOn){ _playTrack(_trackIdx); _syncMusicUI(); }
+      document.removeEventListener('click',_autoStart);
+      document.removeEventListener('touchstart',_autoStart);
+      document.removeEventListener('keydown',_autoStart);
+      document.removeEventListener('pointerdown',_autoStart);
+    }
+    document.addEventListener('click',_autoStart);
+    document.addEventListener('touchstart',_autoStart);
+    document.addEventListener('keydown',_autoStart);
+    document.addEventListener('pointerdown',_autoStart);
+  })();
+
   // ─── Visuals / Laser Canvas ───
   (function initVisuals(){
     const canvas = document.getElementById('laserCanvas');
@@ -527,16 +542,7 @@
       requestAnimationFrame(frame);
     }
 
-    // Auto-start music on first user interaction
-    function _autoStart(){
-      if(!_audioOn){ _playTrack(_trackIdx); _syncMusicUI(); }
-      document.removeEventListener('click',_autoStart);
-      document.removeEventListener('touchstart',_autoStart);
-      document.removeEventListener('keydown',_autoStart);
-    }
-    document.addEventListener('click',_autoStart);
-    document.addEventListener('touchstart',_autoStart);
-    document.addEventListener('keydown',_autoStart);
+    // (auto-start moved to global scope)
 
     // ── Visibility observer (pause canvas off-screen) ──
     const section = canvas.closest('.visualsSection');
