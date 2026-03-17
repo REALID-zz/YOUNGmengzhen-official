@@ -1308,5 +1308,19 @@
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') modal.classList.remove('open'); });
 
   load();
+
+  // Load site-config.json for module visibility
+  fetch('site-config.json').then(r => r.json()).then(cfg => {
+    if (!cfg || !cfg.modules) return;
+    const m = cfg.modules;
+    ['visuals','works','about','highlights','references','faq','contact'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el && m[id] === false) el.setAttribute('data-hidden', 'true');
+      if (el && m[id] === true) el.removeAttribute('data-hidden');
+    });
+    if (m.dockDigital === false){ const d = document.getElementById('deskBtn'); if (d) d.style.display = 'none'; }
+    if (m.dockThings === false){ const d = document.getElementById('thingsBtn'); if (d) d.style.display = 'none'; }
+    if (m.dockInterview === false){ const d = document.getElementById('interviewBtn'); if (d) d.style.display = 'none'; }
+  }).catch(() => {});
 })();
 

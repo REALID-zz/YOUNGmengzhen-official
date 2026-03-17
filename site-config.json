@@ -1,0 +1,14 @@
+{
+  "modules": {
+    "visuals": true,
+    "works": true,
+    "about": true,
+    "highlights": false,
+    "references": false,
+    "faq": false,
+    "contact": true,
+    "dockDigital": true,
+    "dockThings": true,
+    "dockInterview": true
+  }
+}
