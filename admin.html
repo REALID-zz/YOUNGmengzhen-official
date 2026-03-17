@@ -97,6 +97,41 @@ input,select,textarea{font-family:inherit;font-size:inherit}
 .connStatus.ok{color:var(--accent)}
 .connStatus.err{color:#e44}
 
+/* Capsule */
+.capsuleWrap{display:flex;flex-direction:column;gap:24px}
+.capsuleHead{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:18px;border:1px solid var(--border);background:var(--card)}
+.capsuleBadge{display:inline-flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.capsuleBadge .icon{font-size:18px}
+.capsuleHead h3{font-size:18px;color:#fff;margin:10px 0 0}
+.capsuleHead p{color:var(--dim);font-size:12px;max-width:68ch}
+.capsuleBtn,.capsuleStatusBtn{background:transparent;border:1px solid var(--border);color:var(--text);padding:9px 16px;font-size:12px;letter-spacing:.06em;transition:.2s}
+.capsuleBtn:hover,.capsuleStatusBtn:hover{border-color:var(--accent);color:var(--accent)}
+.capsuleGrid{display:grid;grid-template-columns:1.2fr 1fr;gap:20px}
+.capsuleCard{border:1px solid var(--border);background:var(--card);padding:18px}
+.capsuleCard h3{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#fff;margin-bottom:16px}
+.capsuleToolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+.capsuleToggle{display:inline-flex;gap:8px;align-items:center;border:1px solid var(--border);padding:8px 12px;font-size:12px;color:var(--dim)}
+.capsuleFinderList,.capsuleWorkList{display:flex;flex-direction:column;gap:12px}
+.capsuleItem{border:1px solid var(--border);background:rgba(255,255,255,.02);padding:14px}
+.capsuleItem h4{font-size:14px;color:#fff;margin:0 0 8px}
+.capsuleMeta{font-size:11px;color:var(--dim);line-height:1.7}
+.capsulePills{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.capsulePill{display:inline-flex;padding:5px 10px;border:1px solid rgba(173,203,65,.25);color:var(--accent);font-size:11px}
+.capsuleActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.capsuleForm{display:grid;gap:14px}
+.capsuleTwo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.capsuleField label{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+.capsuleField input,.capsuleField textarea{width:100%;background:transparent;border:1px solid var(--border);color:#fff;padding:10px 12px;font-size:13px;outline:none}
+.capsuleField input:focus,.capsuleField textarea:focus{border-color:var(--accent)}
+.capsuleField.full{grid-column:1/-1}
+.capsuleListHead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.capsuleMini{font-size:11px;color:var(--dim)}
+.capsuleWorkItem{padding:12px 14px;border:1px solid var(--border);background:rgba(255,255,255,.02);cursor:pointer}
+.capsuleWorkItem.active{border-color:var(--accent);background:rgba(173,203,65,.06)}
+.capsuleShortlist{white-space:pre-wrap;font-size:12px;color:var(--dim);border:1px solid var(--border);padding:12px;min-height:120px;background:rgba(255,255,255,.02)}
+.capsuleDanger{color:#e44;border-color:#4a1d1d}
+iframe.capsuleFrame{width:100%;min-height:74vh;border:1px solid var(--border);background:#0b0b0b}
+
 /* Toast */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:10px 24px;font-size:12px;letter-spacing:.04em;border:1px solid var(--border);opacity:0;transition:opacity .3s;pointer-events:none;z-index:999}
 .toast.show{opacity:1}
@@ -105,6 +140,7 @@ input,select,textarea{font-family:inherit;font-size:inherit}
   .worksGrid{grid-template-columns:repeat(auto-fill,minmax(100px,1fr))}
   .catSelect{flex-wrap:wrap}
   .tabs button{padding:8px 10px;font-size:11px}
+  .capsuleGrid,.capsuleTwo{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -126,6 +162,7 @@ input,select,textarea{font-family:inherit;font-size:inherit}
     <button class="active" data-tab="upload">作品管理</button>
     <button data-tab="modules">模块设置</button>
     <button data-tab="github">GitHub 配置</button>
+    <button data-tab="capsule">艺术胶囊</button>
   </div>
 
   <!-- Upload -->
@@ -181,6 +218,81 @@ input,select,textarea{font-family:inherit;font-size:inherit}
     <button class="testBtn" id="testBtn">测试连接</button>
     <div class="connStatus" id="connStatus"></div>
   </div>
+
+  <!-- Capsule -->
+  <div class="tabContent" id="tab-capsule">
+    <div class="capsuleWrap">
+      <div class="capsuleHead">
+        <div>
+          <div class="capsuleBadge"><span class="icon">💴</span><span>Private Art Capsule</span></div>
+          <h3>高奖金驻留检索 + 作品工作台</h3>
+          <p>这个模块只在你的管理后台里可见。它会帮你筛前 5 个高价值国际艺术项目，并维护一套可自由编辑的作品清单。</p>
+        </div>
+        <div class="capsuleActions">
+          <button class="capsuleBtn" id="capsuleRefresh" type="button">刷新 Top 5</button>
+          <button class="capsuleBtn" id="capsuleCopyShortlist" type="button">复制作品清单</button>
+        </div>
+      </div>
+
+      <div class="capsuleGrid">
+        <section class="capsuleCard">
+          <h3>Residency Finder</h3>
+          <div class="capsuleToolbar">
+            <label class="capsuleToggle"><input id="capsuleOpenOnly" type="checkbox" checked/>只看开放</label>
+            <label class="capsuleToggle"><input id="capsuleFeeFreeOnly" type="checkbox" checked/>优先免申请费</label>
+            <label class="capsuleToggle"><input id="capsuleVisualOnly" type="checkbox" checked/>视觉艺术优先</label>
+          </div>
+          <div class="capsuleFinderList" id="capsuleFinderList"></div>
+        </section>
+
+        <section class="capsuleCard">
+          <div class="capsuleListHead">
+            <div>
+              <h3>Artwork Workbench</h3>
+              <div class="capsuleMini">自由编辑作品条目，并自动保存在本地浏览器。</div>
+            </div>
+            <div class="capsuleActions">
+              <button class="capsuleBtn" id="capsuleNewArtwork" type="button">新增</button>
+              <button class="capsuleBtn" id="capsuleExportArtworks" type="button">导出</button>
+            </div>
+          </div>
+          <div class="capsuleField">
+            <label>搜索作品</label>
+            <input id="capsuleArtworkSearch" type="search" placeholder="标题 / 系列 / 媒介"/>
+          </div>
+          <div class="capsuleWorkList" id="capsuleWorkList"></div>
+          <div style="margin-top:14px">
+            <div class="capsuleMini" style="margin-bottom:8px">Shortlist Preview</div>
+            <div class="capsuleShortlist" id="capsuleShortlist"></div>
+          </div>
+        </section>
+      </div>
+
+      <section class="capsuleCard">
+        <h3>当前作品编辑</h3>
+        <form class="capsuleForm" id="capsuleArtworkForm">
+          <input id="capsuleArtworkId" type="hidden"/>
+          <div class="capsuleTwo">
+            <div class="capsuleField"><label>标题</label><input id="capsuleArtworkTitle" type="text" required/></div>
+            <div class="capsuleField"><label>年份</label><input id="capsuleArtworkYear" type="text"/></div>
+            <div class="capsuleField"><label>媒介</label><input id="capsuleArtworkMedium" type="text"/></div>
+            <div class="capsuleField"><label>尺寸</label><input id="capsuleArtworkSize" type="text"/></div>
+            <div class="capsuleField"><label>系列</label><input id="capsuleArtworkSeries" type="text"/></div>
+            <div class="capsuleField"><label>作品链接</label><input id="capsuleArtworkLink" type="url" placeholder="https://..."/></div>
+            <div class="capsuleField full"><label>图片链接</label><input id="capsuleArtworkImage" type="url" placeholder="https://..."/></div>
+            <div class="capsuleField full"><label>适投标签</label><input id="capsuleArtworkTags" type="text" placeholder="painting, residency, prize"/></div>
+            <div class="capsuleField full"><label>简介</label><textarea id="capsuleArtworkSummary" rows="4"></textarea></div>
+            <div class="capsuleField full"><label>投递记录</label><textarea id="capsuleArtworkSubmissions" rows="4"></textarea></div>
+          </div>
+          <div class="capsuleActions">
+            <button class="capsuleBtn" type="submit">保存作品</button>
+            <button class="capsuleBtn" id="capsuleDuplicateArtwork" type="button">复制当前作品</button>
+            <button class="capsuleBtn capsuleDanger" id="capsuleDeleteArtwork" type="button">删除作品</button>
+          </div>
+        </form>
+      </section>
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -189,7 +301,11 @@ input,select,textarea{font-family:inherit;font-size:inherit}
 const PIN_KEY = 'dct_admin_pin';
 const TOKEN_KEY = 'dct_gh_token';
 const REPO_KEY = 'dct_gh_repo';
+const TAB_KEY = 'dct_tab';
 const DEFAULT_REPO = 'REALID-zz/YOUNGmengzhen-official';
+const CAPSULE_ARTWORKS_KEY = 'dct_capsule_artworks';
+const CAPSULE_STATUS_KEY = 'dct_capsule_status';
+const CAPSULE_DATE = new Date('2026-03-17T00:00:00Z');
 
 const MODULES = [
   { id: 'visuals',       label: 'VISUALS 视觉交互区', desc: '激光动画 + 音频引擎' },
@@ -207,6 +323,24 @@ const MODULES = [
 let uploadQueue = [];
 let currentCat = 'works';
 let browseCat = 'works';
+let activeCapsuleArtworkId = null;
+
+const CAPSULE_OPPORTUNITIES = [
+  { id:'fundacion-botin-2026', title:'Fundacion Botin Art Grants 2026/2027', location:'Santander, Spain', deadline:'2026-05-08', category:'Grant', disciplines:['visual','painting','digital','cross-media'], feeFree:true, cash:23000, support:92, stipend:'EUR 23,000 grant', benefits:'Travel, accommodation, living, studio, production, insurance', link:'https://fundacionbotin.org/en/press-room/applications-now-open-for-the-six-fundacion-botin-art-grants/', notes:'High-value international grant; registration plus hard-copy mailing.', fit:'Strong for long-form cross-media research.' },
+  { id:'saari-2027', title:'Saari Residence 2027', location:'Mynamaki, Finland', deadline:'2026-03-31', category:'Residency', disciplines:['visual','painting','digital','cross-media'], feeFree:true, cash:7600, support:90, stipend:'EUR 2,700-3,800/month + accommodation', benefits:'2 months, grant, accommodation, travel support', link:'https://koneensaatio.fi/en/news/open-call-for-artists-saari-residence-2027/', notes:'International and artist-friendly.', fit:'Excellent for painting studies and digital editing.' },
+  { id:'galveston-2026', title:'Galveston Artist Residency 2026-2027', location:'Texas, USA', deadline:'2026-03-28', category:'Residency', disciplines:['visual','painting','digital'], feeFree:true, cash:14000, support:87, stipend:'USD 1,400/month x 10 + travel', benefits:'Apartment, studio, utilities, travel stipend', link:'https://galvestonartistresidency.org/residency-program-1', notes:'Requires US base or valid US visa.', fit:'Strong long-duration studio option.' },
+  { id:'arcus-2026', title:'ARCUS Project 2026', location:'Moriya, Japan', deadline:'2026-03-19', category:'Residency', disciplines:['visual','painting','digital','cross-media'], feeFree:true, cash:3300, support:86, stipend:'JPY 540,000 + airfare + accommodation + studio', benefits:'90 days, curator support, research-driven', link:'https://www.arcus-project.com/en/open-call/', notes:'For artists residing outside Japan.', fit:'Very strong match for cross-media narrative work.' },
+  { id:'serlachius-2027', title:'Serlachius Residency 2027', location:'Mantta, Finland', deadline:'2026-03-31', category:'Residency', disciplines:['visual','painting','digital','cross-media'], feeFree:true, cash:2400, support:74, stipend:'Free accommodation + studio', benefits:'1-4 months, studio, accommodation', link:'https://serlachius.fi/en/applications-for-the-serlachius-residency-are-now-open/', notes:'No living stipend.', fit:'Good for quiet development and studio concentration.' },
+  { id:'headlands-2026', title:'Headlands Artist in Residence', location:'California, USA', deadline:'2026-04-01', category:'Residency', disciplines:['visual','painting','digital'], feeFree:true, cash:3600, support:83, stipend:'Approx. USD 1,000/month + housing + studio', benefits:'Housing, support, studio, network', link:'https://www.headlands.org/program/air/', notes:'Verify exact cycle details before submitting.', fit:'Useful for US network expansion.' },
+];
+
+const CAPSULE_DEFAULT_ARTWORKS = [
+  { id:genId(), title:'Crimson Sovereign', year:'2026', medium:'Oil on canvas, palette knife impasto', size:'Approx. 120 x 180 cm', series:'Physical Paintings', link:'https://realid-zz.github.io/pencil/', image:'', tags:'painting, impasto, residency, figurative', summary:'A monumental fox-centered oil painting built through thick palette knife strokes and deep crimson atmosphere.', submissions:'Recommended for: ARCUS, Saari, Serlachius, Galveston' },
+  { id:genId(), title:'I Am a Growth', year:'2015-2019', medium:'Oil on canvas', size:'26 x 24 x 1 in', series:'Physical Paintings', link:'https://realid-zz.github.io/pencil/', image:'', tags:'painting, impasto, growth, long-form', summary:'A three-year painting centered on organic growth and accumulated paint.', submissions:'Recommended for: Fundacion Botin, Saari, Serlachius' },
+  { id:genId(), title:'Jungle Descent', year:'2026', medium:'Oil on canvas', size:'', series:'Physical Paintings', link:'https://realid-zz.github.io/pencil/', image:'', tags:'painting, atmosphere, jungle, prize', summary:'A dense tropical composition using deep blue and green narrative space with layered motion and white drips.', submissions:'Recommended for: Fundacion Botin, ARCUS, Galveston' },
+  { id:genId(), title:'Portrait Glitch Series', year:'2025-2026', medium:'Charcoal + digital mixed media', size:'', series:'Portrait Glitch', link:'https://realid-zz.github.io/pencil/', image:'', tags:'portrait, digital, mixed media, identity', summary:'Hand-drawn portraits pushed through digital overlays and glitch fragments to examine identity fracture.', submissions:'Recommended for: ARCUS, Fundacion Botin, digital-focused calls' },
+  { id:genId(), title:'Crimson Spirit', year:'2026', medium:'Generative art, JavaScript Canvas', size:'2400 x 2400', series:'Generative Art', link:'https://realid-zz.github.io/pencil/', image:'', tags:'generative, code, digital, cross-media', summary:'A code-driven translation of painterly gesture into generative digital movement.', submissions:'Recommended for: ARCUS, Fundacion Botin, tech-art opportunities' }
+];
 
 function toast(msg, dur = 2500){
   const el = document.getElementById('toast');
@@ -281,13 +415,19 @@ function unlock(){
 
 /* ── Tabs ── */
 document.querySelectorAll('.tabs button').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tabContent').forEach(c => c.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-  });
+  btn.addEventListener('click', () => selectTab(btn.dataset.tab));
 });
+
+function selectTab(name){
+  document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tabContent').forEach(c => c.classList.remove('active'));
+  const btn = document.querySelector(`.tabs button[data-tab="${name}"]`);
+  const tab = document.getElementById('tab-' + name);
+  if (!btn || !tab) return;
+  btn.classList.add('active');
+  tab.classList.add('active');
+  localStorage.setItem(TAB_KEY, name);
+}
 
 /* ── Category selectors ── */
 document.querySelectorAll('.catSelect').forEach(group => {
@@ -493,10 +633,213 @@ testBtn.addEventListener('click', async () => {
 
 /* ── Init ── */
 function initPanel(){
+  initCapsule();
   if (getToken()){
     loadWorks(browseCat);
     loadModuleConfig();
   }
+  const initialTab = location.hash.replace('#tab-','') || localStorage.getItem(TAB_KEY) || 'upload';
+  selectTab(initialTab);
+}
+
+/* ── Capsule ── */
+function genId(){
+  return `cap-${Date.now()}-${Math.random().toString(16).slice(2, 10)}`;
+}
+function capsuleClone(v){ return JSON.parse(JSON.stringify(v)); }
+function capsuleLoad(key, fallback){
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : capsuleClone(fallback);
+  } catch { return capsuleClone(fallback); }
+}
+function capsuleSave(key, value){
+  localStorage.setItem(key, JSON.stringify(value));
+}
+function capsuleEsc(v){
+  return String(v || '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'", '&#39;');
+}
+function capsuleScore(item){
+  const daysLeft = Math.max(1, Math.ceil((new Date(item.deadline) - CAPSULE_DATE) / 86400000));
+  return item.cash + item.support * 50 + (item.feeFree ? 15 : 0) + Math.max(0, 45 - daysLeft) + (item.disciplines.includes('cross-media') ? 10 : 4);
+}
+function capsuleStatusCycle(id){
+  const map = capsuleLoad(CAPSULE_STATUS_KEY, {});
+  const order = ['待投','已投','跟进','放弃'];
+  const cur = map[id] || order[0];
+  map[id] = order[(order.indexOf(cur) + 1) % order.length];
+  capsuleSave(CAPSULE_STATUS_KEY, map);
+  renderCapsuleFinder();
+}
+function getCapsuleArtworks(){
+  const list = capsuleLoad(CAPSULE_ARTWORKS_KEY, CAPSULE_DEFAULT_ARTWORKS);
+  if (!list.length) return capsuleClone(CAPSULE_DEFAULT_ARTWORKS);
+  return list;
+}
+function setCapsuleArtworks(list){
+  capsuleSave(CAPSULE_ARTWORKS_KEY, list);
+}
+function buildCapsuleShortlist(list){
+  if (!list.length) return '还没有作品。';
+  return list.slice(0, 8).map((item, idx) => {
+    const details = [item.year, item.medium, item.size].filter(Boolean).join(' · ');
+    return `${idx + 1}. ${item.title}${details ? ` — ${details}` : ''}`;
+  }).join('\n');
+}
+function renderCapsuleFinder(){
+  const openOnly = document.getElementById('capsuleOpenOnly').checked;
+  const feeOnly = document.getElementById('capsuleFeeFreeOnly').checked;
+  const visualOnly = document.getElementById('capsuleVisualOnly').checked;
+  const statusMap = capsuleLoad(CAPSULE_STATUS_KEY, {});
+  const list = CAPSULE_OPPORTUNITIES
+    .filter(item => {
+      if (openOnly && new Date(item.deadline) < CAPSULE_DATE) return false;
+      if (feeOnly && !item.feeFree) return false;
+      if (visualOnly && !item.disciplines.includes('visual')) return false;
+      return true;
+    })
+    .map(item => ({ ...item, score: capsuleScore(item) }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 5);
+  document.getElementById('capsuleFinderList').innerHTML = list.map(item => `
+    <article class="capsuleItem">
+      <div class="capsuleMeta">${capsuleEsc(item.category)} · ${capsuleEsc(item.location)} · 截止 ${capsuleEsc(item.deadline)}</div>
+      <h4>${capsuleEsc(item.title)}</h4>
+      <div class="capsulePills">
+        <span class="capsulePill">${item.feeFree ? '免申请费' : '收费'}</span>
+        <span class="capsulePill">${capsuleEsc(item.stipend)}</span>
+        <span class="capsulePill">${capsuleEsc(statusMap[item.id] || '待投')}</span>
+      </div>
+      <div class="capsuleMeta">${capsuleEsc(item.benefits)}</div>
+      <div style="margin-top:8px">${capsuleEsc(item.fit)}</div>
+      <div class="capsuleMeta" style="margin-top:8px">${capsuleEsc(item.notes)}</div>
+      <div class="capsuleActions">
+        <a class="capsuleBtn" href="${item.link}" target="_blank" rel="noreferrer">打开官网</a>
+        <button class="capsuleStatusBtn" type="button" data-status="${item.id}">切换状态</button>
+      </div>
+    </article>
+  `).join('') || '<div class="capsuleMini">没有匹配结果。</div>';
+  document.querySelectorAll('[data-status]').forEach(btn => btn.onclick = () => capsuleStatusCycle(btn.dataset.status));
+}
+function renderCapsuleArtworkList(){
+  const all = getCapsuleArtworks();
+  const q = document.getElementById('capsuleArtworkSearch').value.trim().toLowerCase();
+  const filtered = all.filter(item => [item.title, item.series, item.medium, item.tags].join(' ').toLowerCase().includes(q));
+  if (!filtered.some(item => item.id === activeCapsuleArtworkId)) activeCapsuleArtworkId = filtered[0]?.id || all[0]?.id || null;
+  document.getElementById('capsuleWorkList').innerHTML = filtered.map(item => `
+    <div class="capsuleWorkItem ${item.id === activeCapsuleArtworkId ? 'active' : ''}" data-aid="${item.id}">
+      <div style="font-size:13px;color:#fff">${capsuleEsc(item.title)}</div>
+      <div class="capsuleMini">${capsuleEsc(item.year || '未填写')} · ${capsuleEsc(item.medium || '未填写')}</div>
+    </div>
+  `).join('') || '<div class="capsuleMini">没有匹配作品。</div>';
+  document.getElementById('capsuleShortlist').textContent = buildCapsuleShortlist(filtered.length ? filtered : all);
+  document.querySelectorAll('[data-aid]').forEach(node => node.onclick = () => {
+    activeCapsuleArtworkId = node.dataset.aid;
+    renderCapsuleArtworkList();
+    fillCapsuleArtworkForm();
+  });
+}
+function fillCapsuleArtworkForm(){
+  const all = getCapsuleArtworks();
+  const item = all.find(v => v.id === activeCapsuleArtworkId) || all[0];
+  if (!item) return;
+  document.getElementById('capsuleArtworkId').value = item.id || '';
+  document.getElementById('capsuleArtworkTitle').value = item.title || '';
+  document.getElementById('capsuleArtworkYear').value = item.year || '';
+  document.getElementById('capsuleArtworkMedium').value = item.medium || '';
+  document.getElementById('capsuleArtworkSize').value = item.size || '';
+  document.getElementById('capsuleArtworkSeries').value = item.series || '';
+  document.getElementById('capsuleArtworkLink').value = item.link || '';
+  document.getElementById('capsuleArtworkImage').value = item.image || '';
+  document.getElementById('capsuleArtworkTags').value = item.tags || '';
+  document.getElementById('capsuleArtworkSummary').value = item.summary || '';
+  document.getElementById('capsuleArtworkSubmissions').value = item.submissions || '';
+}
+function saveCapsuleArtwork(ev){
+  ev.preventDefault();
+  const all = getCapsuleArtworks();
+  const payload = {
+    id: document.getElementById('capsuleArtworkId').value || genId(),
+    title: document.getElementById('capsuleArtworkTitle').value.trim(),
+    year: document.getElementById('capsuleArtworkYear').value.trim(),
+    medium: document.getElementById('capsuleArtworkMedium').value.trim(),
+    size: document.getElementById('capsuleArtworkSize').value.trim(),
+    series: document.getElementById('capsuleArtworkSeries').value.trim(),
+    link: document.getElementById('capsuleArtworkLink').value.trim(),
+    image: document.getElementById('capsuleArtworkImage').value.trim(),
+    tags: document.getElementById('capsuleArtworkTags').value.trim(),
+    summary: document.getElementById('capsuleArtworkSummary').value.trim(),
+    submissions: document.getElementById('capsuleArtworkSubmissions').value.trim()
+  };
+  const idx = all.findIndex(v => v.id === payload.id);
+  if (idx >= 0) all[idx] = payload; else all.unshift(payload);
+  activeCapsuleArtworkId = payload.id;
+  setCapsuleArtworks(all);
+  renderCapsuleArtworkList();
+  fillCapsuleArtworkForm();
+  toast('作品已保存');
+}
+function newCapsuleArtwork(){
+  const all = getCapsuleArtworks();
+  const item = { id: genId(), title:'Untitled Work', year:'', medium:'', size:'', series:'', link:'', image:'', tags:'', summary:'', submissions:'' };
+  all.unshift(item);
+  activeCapsuleArtworkId = item.id;
+  setCapsuleArtworks(all);
+  renderCapsuleArtworkList();
+  fillCapsuleArtworkForm();
+}
+function duplicateCapsuleArtwork(){
+  const all = getCapsuleArtworks();
+  const item = all.find(v => v.id === activeCapsuleArtworkId);
+  if (!item) return;
+  const copy = { ...item, id: genId(), title: `${item.title} Copy` };
+  all.unshift(copy);
+  activeCapsuleArtworkId = copy.id;
+  setCapsuleArtworks(all);
+  renderCapsuleArtworkList();
+  fillCapsuleArtworkForm();
+}
+function deleteCapsuleArtwork(){
+  let all = getCapsuleArtworks();
+  if (!activeCapsuleArtworkId) return;
+  all = all.filter(v => v.id !== activeCapsuleArtworkId);
+  activeCapsuleArtworkId = all[0]?.id || null;
+  setCapsuleArtworks(all);
+  renderCapsuleArtworkList();
+  fillCapsuleArtworkForm();
+}
+function exportCapsuleArtworks(){
+  const blob = new Blob([JSON.stringify(getCapsuleArtworks(), null, 2)], { type:'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'fineart-capsule-artworks.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+async function copyCapsuleShortlist(){
+  await navigator.clipboard.writeText(buildCapsuleShortlist(getCapsuleArtworks()));
+  toast('作品清单已复制');
+}
+let capsuleReady = false;
+function initCapsule(){
+  if (capsuleReady) return;
+  capsuleReady = true;
+  activeCapsuleArtworkId = getCapsuleArtworks()[0]?.id || null;
+  document.getElementById('capsuleRefresh').addEventListener('click', renderCapsuleFinder);
+  document.getElementById('capsuleOpenOnly').addEventListener('change', renderCapsuleFinder);
+  document.getElementById('capsuleFeeFreeOnly').addEventListener('change', renderCapsuleFinder);
+  document.getElementById('capsuleVisualOnly').addEventListener('change', renderCapsuleFinder);
+  document.getElementById('capsuleArtworkSearch').addEventListener('input', renderCapsuleArtworkList);
+  document.getElementById('capsuleArtworkForm').addEventListener('submit', saveCapsuleArtwork);
+  document.getElementById('capsuleNewArtwork').addEventListener('click', newCapsuleArtwork);
+  document.getElementById('capsuleDuplicateArtwork').addEventListener('click', duplicateCapsuleArtwork);
+  document.getElementById('capsuleDeleteArtwork').addEventListener('click', deleteCapsuleArtwork);
+  document.getElementById('capsuleExportArtworks').addEventListener('click', exportCapsuleArtworks);
+  document.getElementById('capsuleCopyShortlist').addEventListener('click', copyCapsuleShortlist);
+  renderCapsuleFinder();
+  renderCapsuleArtworkList();
+  fillCapsuleArtworkForm();
 }
 </script>
 </body>
