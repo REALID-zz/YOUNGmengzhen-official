@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /admin.html
 
-Sitemap: https://realid-zz.github.io/YOUNGmengzhen-official/sitemap.xml
+Sitemap: https://fineart.icu/sitemap.xml
