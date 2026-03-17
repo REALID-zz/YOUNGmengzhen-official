@@ -140,6 +140,52 @@
     }
   }
 
+  // ── Owner Mode (triple-click title to activate) ──
+  const OWNER_KEY = 'dct_owner', PIN_KEY = 'dct_admin_pin';
+  let _ownerMode = localStorage.getItem(OWNER_KEY) === 'true';
+
+  function applyOwnerMode(){
+    if (_ownerMode) document.body.classList.add('owner');
+    else document.body.classList.remove('owner');
+  }
+
+  function enterOwner(){
+    const stored = localStorage.getItem(PIN_KEY);
+    const pin = prompt(stored ? '输入管理密码' : '首次使用 — 请设置管理密码');
+    if (!pin) return;
+    if (!stored){
+      localStorage.setItem(PIN_KEY, pin);
+      _ownerMode = true; localStorage.setItem(OWNER_KEY, 'true');
+      applyOwnerMode();
+    } else if (pin === stored){
+      _ownerMode = true; localStorage.setItem(OWNER_KEY, 'true');
+      applyOwnerMode();
+    } else { alert('密码错误'); }
+  }
+
+  function exitOwner(){
+    _ownerMode = false; localStorage.removeItem(OWNER_KEY);
+    applyOwnerMode();
+  }
+
+  applyOwnerMode();
+
+  // Triple-click title to toggle owner mode
+  (function(){
+    const title = document.querySelector('.title');
+    if (!title) return;
+    let clicks = 0, timer = 0;
+    title.style.cursor = 'default';
+    title.addEventListener('click', () => {
+      clicks++; clearTimeout(timer);
+      timer = setTimeout(() => { clicks = 0; }, 600);
+      if (clicks >= 3){ clicks = 0; _ownerMode ? exitOwner() : enterOwner(); }
+    });
+  })();
+
+  const logoutBtn = $('ownerLogout');
+  if (logoutBtn) logoutBtn.addEventListener('click', exitOwner);
+
   // Mini controls (settings + music)
   (function initMiniControls(){
     const mb=$('miniMusic'), nx=$('miniTrackNext');

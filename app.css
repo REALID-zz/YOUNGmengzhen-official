@@ -1050,6 +1050,17 @@ a:hover{color:rgba(255,255,255,.80); text-decoration:none}
   letter-spacing: .04em;
 }
 
+/* ─── Owner Mode ─── */
+.ownerBar{display:none;position:fixed;top:0;left:0;right:0;height:34px;background:rgba(0,0,0,.88);backdrop-filter:blur(10px);border-bottom:1px solid rgba(173,203,65,.12);align-items:center;padding:0 16px;gap:14px;z-index:9999;font-family:var(--sans)}
+body.owner .ownerBar{display:flex}
+body.owner{padding-top:34px}
+.ownerBadge{color:var(--accent);font-weight:700;font-size:10px;letter-spacing:.14em}
+.ownerLink{background:none;border:none;color:rgba(255,255,255,.45);font-size:11px;letter-spacing:.06em;cursor:pointer;text-decoration:none;padding:4px 8px;transition:.2s;font-family:var(--sans)}
+.ownerLink:hover{color:var(--accent)}
+.ownerSpacer{flex:1}
+#ownerLogout{color:rgba(255,255,255,.25);font-size:10px}
+#ownerLogout:hover{color:#e44}
+
 /* ─── Mini Controls (settings + music) ─── */
 .miniControls{position:fixed;bottom:18px;right:18px;display:flex;gap:5px;z-index:900}
 .miniBtn{height:26px;border:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.40);color:rgba(255,255,255,.30);display:flex;align-items:center;justify-content:center;padding:0 9px;font-size:11px;cursor:pointer;backdrop-filter:blur(6px);text-decoration:none;transition:.2s;border-radius:0;font-family:var(--sans)}

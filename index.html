@@ -406,9 +406,18 @@
       </div>
     </div>
 
+    <!-- Owner Toolbar (hidden until authenticated) -->
+    <div class="ownerBar" id="ownerBar">
+      <span class="ownerBadge">OWNER</span>
+      <a href="admin.html" class="ownerLink">管理后台</a>
+      <a href="admin.html#tab-upload" class="ownerLink" onclick="localStorage.setItem('dct_tab','upload')">上传作品</a>
+      <a href="admin.html#tab-modules" class="ownerLink" onclick="localStorage.setItem('dct_tab','modules')">模块设置</a>
+      <div class="ownerSpacer"></div>
+      <button class="ownerLink" id="ownerLogout">退出管理</button>
+    </div>
+
     <!-- Mini Controls -->
     <div class="miniControls" id="miniControls">
-      <a href="admin.html" class="miniBtn" title="管理后台">⚙</a>
       <button class="miniBtn miniMusic" id="miniMusic" type="button" title="音乐">
         <span>♫</span>
         <span class="miniTrackName" id="miniTrackName"></span>
