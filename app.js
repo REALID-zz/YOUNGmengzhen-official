@@ -527,7 +527,16 @@
       requestAnimationFrame(frame);
     }
 
-    // Audio auto-start removed — user controls via buttons
+    // Auto-start music on first user interaction
+    function _autoStart(){
+      if(!_audioOn){ _playTrack(_trackIdx); _syncMusicUI(); }
+      document.removeEventListener('click',_autoStart);
+      document.removeEventListener('touchstart',_autoStart);
+      document.removeEventListener('keydown',_autoStart);
+    }
+    document.addEventListener('click',_autoStart);
+    document.addEventListener('touchstart',_autoStart);
+    document.addEventListener('keydown',_autoStart);
 
     // ── Visibility observer (pause canvas off-screen) ──
     const section = canvas.closest('.visualsSection');
