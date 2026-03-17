@@ -1050,6 +1050,16 @@ a:hover{color:rgba(255,255,255,.80); text-decoration:none}
   letter-spacing: .04em;
 }
 
+/* ─── Mini Controls (settings + music) ─── */
+.miniControls{position:fixed;bottom:18px;right:18px;display:flex;gap:5px;z-index:900}
+.miniBtn{height:26px;border:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.40);color:rgba(255,255,255,.30);display:flex;align-items:center;justify-content:center;padding:0 9px;font-size:11px;cursor:pointer;backdrop-filter:blur(6px);text-decoration:none;transition:.2s;border-radius:0;font-family:var(--sans)}
+.miniBtn:hover{border-color:rgba(255,255,255,.22);color:rgba(255,255,255,.55)}
+.miniMusic{gap:5px}
+.miniMusic.playing{border-color:var(--accent);color:var(--accent)}
+.miniTrackName{font-size:9px;letter-spacing:.12em}
+.miniNext{padding:0 7px;font-size:10px}
+.miniNext:hover{color:var(--accent);border-color:var(--accent)}
+
 /* ─── Legacy classes (kept for compatibility) ─── */
 .hrGlow{ display:none; }
 .creditStrip{ display:none; }
