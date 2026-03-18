@@ -30,13 +30,16 @@
   const modalDesc = $('modalDesc');
   const closeBtn = $('closeModal');
 
-  // ── Music Engine — real audio files (Dom Dolla style house) ──
+  // ── Music Engine — pro house loops (CC BY 4.0, royalty-free) ──
   const TRACKS = [
-    { name:'RHYME', src:'./assets/music/rhyme.wav' },
-    { name:'MOVE',  src:'./assets/music/move.wav'  },
-    { name:'PULSE', src:'./assets/music/pulse.wav' },
+    { name:'GROOVE',  src:'./assets/music/techhouse_130.mp3' },
+    { name:'CHILL',   src:'./assets/music/chill_116.mp3'     },
+    { name:'SYNTH',   src:'./assets/music/synth_122.mp3'     },
+    { name:'BASS',    src:'./assets/music/bass_130.mp3'      },
+    { name:'ELECTRO', src:'./assets/music/electro_126.mp3'   },
+    { name:'BEAT',    src:'./assets/music/beat_130.mp3'      },
   ];
-  let _audio = null, _audioOn = false, _trackIdx = 0, _currentBPM = 126;
+  let _audio = null, _audioOn = false, _trackIdx = 0;
 
   function _playTrack(idx){
     if(_audioOn) _stopTrack();
