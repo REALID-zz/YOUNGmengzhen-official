@@ -242,6 +242,10 @@
     const sD=_ac.createGain(); sD.gain.value=280;
     sLFO.connect(sD); sD.connect(padF.frequency); sLFO.start(); pOscs.push(sLFO);
 
+    // Must set BEFORE starting the sequencer loop
+    _audioOn=true;
+    _audioRefs={master,padG,pOscs};
+
     // Sequencer
     let step=0, next=_ac.currentTime+.05;
     (function loop(){
@@ -259,7 +263,6 @@
       }
       _kickTmr=setTimeout(loop,50);
     })();
-    _audioRefs={master,padG,pOscs}; _audioOn=true;
   }
 
   function _stopTrack(){
