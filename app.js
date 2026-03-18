@@ -85,7 +85,10 @@
     _trackIdx = idx % TRACKS.length;
     const T = TRACKS[_trackIdx];
     _currentBPM = T.bpm;
-    try{ _ac = new (window.AudioContext||window.webkitAudioContext)(); }catch{ return; }
+    try{
+      _ac = new (window.AudioContext||window.webkitAudioContext)();
+      if(_ac.state==='suspended') _ac.resume();
+    }catch{ return; }
     const s16 = 60/T.bpm/4, sw = s16*T.swing;
     const comp = _ac.createDynamicsCompressor();
     comp.threshold.value=-14; comp.knee.value=10; comp.ratio.value=4;
@@ -200,17 +203,23 @@
 
   // ── Auto-start music on first interaction (global) ──
   (function(){
+    let _started = false;
     function _autoStart(){
-      if(!_audioOn){ _playTrack(_trackIdx); _syncMusicUI(); }
-      document.removeEventListener('click',_autoStart);
-      document.removeEventListener('touchstart',_autoStart);
-      document.removeEventListener('keydown',_autoStart);
-      document.removeEventListener('pointerdown',_autoStart);
+      if(_started) return;
+      _started = true;
+      _remove();
+      try{
+        if(!_audioOn){ _playTrack(_trackIdx); _syncMusicUI(); }
+      }catch(e){ console.warn('audio-start error',e); }
     }
-    document.addEventListener('click',_autoStart);
-    document.addEventListener('touchstart',_autoStart);
-    document.addEventListener('keydown',_autoStart);
-    document.addEventListener('pointerdown',_autoStart);
+    function _remove(){
+      ['click','touchstart','touchend','keydown','pointerdown','mousedown'].forEach(ev=>
+        document.removeEventListener(ev,_autoStart,true)
+      );
+    }
+    ['click','touchstart','touchend','keydown','pointerdown','mousedown'].forEach(ev=>
+      document.addEventListener(ev,_autoStart,true)
+    );
   })();
 
   // ─── Visuals / Laser Canvas ───
@@ -223,6 +232,7 @@
     let W, H, dpr;
     let running = false;
     let mx = 0.5, my = 0.5;
+    const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth < 768;
 
     function resize(){
       dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -275,8 +285,8 @@
       { ox: 0.42, sweep: 12, speed: 0.12, phase: 6.2, bright: 0.18, c: WD },
     ];
 
-    // ── Particles (180) ──
-    const PCNT = 180;
+    // ── Particles (reduced on mobile) ──
+    const PCNT = isMobile ? 60 : 180;
     const particles = [];
     for (let i = 0; i < PCNT; i++){
       particles.push({
@@ -366,7 +376,8 @@
         const charH = heroImg.naturalHeight * fScale;
 
         // Soft expanding echoes
-        for (let i = 0; i < 6; i++){
+        const echoCount = isMobile ? 3 : 6;
+        for (let i = 0; i < echoCount; i++){
           const echoT = ((t * 0.00008 + i * 0.167) % 1);
           const echoS = fScale * (1 + echoT * 3);
           const echoA = Math.pow(1 - echoT, 4) * 0.03;
@@ -381,7 +392,8 @@
         }
 
         // Radial energy pulse rings
-        for (let i = 0; i < 5; i++){
+        const ringCount = isMobile ? 2 : 5;
+        for (let i = 0; i < ringCount; i++){
           const phase = ((t * 0.00028 + i * 0.2) % 1);
           const r = phase * Math.max(W, H) * 0.75;
           const a = Math.pow(1 - phase, 2.5) * 0.04 * beatMul;
@@ -416,22 +428,24 @@
         glow.addColorStop(1, 'rgba(0,0,0,0)');
         ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
 
-        // Gentle wave distortion
-        const sliceH = 4;
-        const numSlices = Math.ceil(charH / sliceH);
-        ctx.save();
-        ctx.globalCompositeOperation = 'lighter';
-        ctx.globalAlpha = 0.95;
-        for (let s = 0; s < numSlices; s++){
-          const srcY = (s / numSlices) * heroImg.naturalHeight;
-          const srcSliceH = heroImg.naturalHeight / numSlices;
-          const wave = Math.sin(t * 0.0008 + s * 0.08) * 2.5;
-          ctx.drawImage(heroImg,
-            0, srcY, heroImg.naturalWidth, srcSliceH,
-            cx - charW * 0.5 + wave, cy - charH * 0.5 + s * sliceH,
-            charW, sliceH);
+        // Gentle wave distortion (skip on mobile for performance)
+        if (!isMobile){
+          const sliceH = 4;
+          const numSlices = Math.ceil(charH / sliceH);
+          ctx.save();
+          ctx.globalCompositeOperation = 'lighter';
+          ctx.globalAlpha = 0.95;
+          for (let s = 0; s < numSlices; s++){
+            const srcY = (s / numSlices) * heroImg.naturalHeight;
+            const srcSliceH = heroImg.naturalHeight / numSlices;
+            const wave = Math.sin(t * 0.0008 + s * 0.08) * 2.5;
+            ctx.drawImage(heroImg,
+              0, srcY, heroImg.naturalWidth, srcSliceH,
+              cx - charW * 0.5 + wave, cy - charH * 0.5 + s * sliceH,
+              charW, sliceH);
+          }
+          ctx.restore();
         }
-        ctx.restore();
 
         // Subtle chromatic aberration
         const abr = 1 + bt.pulse * 2.5;

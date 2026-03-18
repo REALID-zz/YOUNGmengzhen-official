@@ -1071,6 +1071,16 @@ body.owner{padding-top:34px}
 .miniNext{padding:0 7px;font-size:10px}
 .miniNext:hover{color:var(--accent);border-color:var(--accent)}
 
+/* ─── Mobile performance ─── */
+@media (max-width: 768px){
+  .visualsSection canvas{ will-change:transform; contain:strict; }
+  .bgMedia{ transform:translateZ(0); will-change:transform; }
+  body{ -webkit-overflow-scrolling: touch; }
+  .hero{ min-height: 80vh; }
+  .miniControls{ bottom:12px; right:12px; }
+  .miniBtn{ height:32px; padding:0 12px; font-size:13px; }
+}
+
 /* ─── Legacy classes (kept for compatibility) ─── */
 .hrGlow{ display:none; }
 .creditStrip{ display:none; }
