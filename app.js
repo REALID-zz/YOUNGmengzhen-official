@@ -32,9 +32,9 @@
 
   // ── Music Engine — complete house tracks (CC BY 4.0) ──
   const TRACKS = [
+    { name:'LOUNGE',  src:'./assets/music/lounge.mp3'      },
     { name:'HOUSE',   src:'./assets/music/house_main.mp3'  },
     { name:'GROOVY',  src:'./assets/music/groovy.mp3'      },
-    { name:'LOUNGE',  src:'./assets/music/lounge.mp3'      },
     { name:'CHILL',   src:'./assets/music/chill_116.mp3'   },
     { name:'VIBE',    src:'./assets/music/house_loop.mp3'  },
   ];
