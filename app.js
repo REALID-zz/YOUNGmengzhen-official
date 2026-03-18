@@ -242,6 +242,9 @@
     const sD=_ac.createGain(); sD.gain.value=280;
     sLFO.connect(sD); sD.connect(padF.frequency); sLFO.start(); pOscs.push(sLFO);
 
+    // Ensure AudioContext is running
+    if(_ac.state!=='running') _ac.resume();
+
     // Must set BEFORE starting the sequencer loop
     _audioOn=true;
     _audioRefs={master,padG,pOscs};
@@ -350,26 +353,17 @@
     });
   })();
 
-  // ── Auto-start music on first interaction (global) ──
-  (function(){
-    let _started = false;
-    function _autoStart(){
-      if(_started) return;
-      _started = true;
-      _remove();
-      try{
-        if(!_audioOn){ _playTrack(_trackIdx); _syncMusicUI(); }
-      }catch(e){ console.warn('audio-start error',e); }
+  // ── Auto-start music on first user interaction ──
+  let _musicTriggered = false;
+  function _triggerMusic(){
+    if(_musicTriggered) return;
+    _musicTriggered = true;
+    if(!_audioOn){
+      try{ _playTrack(_trackIdx); _syncMusicUI(); }catch(e){ console.warn('[music]',e); }
     }
-    function _remove(){
-      ['click','touchstart','touchend','keydown','pointerdown','mousedown'].forEach(ev=>
-        document.removeEventListener(ev,_autoStart,true)
-      );
-    }
-    ['click','touchstart','touchend','keydown','pointerdown','mousedown'].forEach(ev=>
-      document.addEventListener(ev,_autoStart,true)
-    );
-  })();
+  }
+  document.addEventListener('click', _triggerMusic);
+  document.addEventListener('touchend', _triggerMusic);
 
   // ─── Visuals / Laser Canvas ───
   (function initVisuals(){
