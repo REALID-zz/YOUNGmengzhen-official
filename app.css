@@ -906,9 +906,6 @@ a:hover{color:rgba(255,255,255,.80); text-decoration:none}
   transform: translateY(-10px);
   pointer-events: none;
 }
-@media (max-width: 640px){
-  .deskDock{ top:10px; right:10px; gap:6px; }
-}
 
 .deskMarqueeBtn{
   position: relative;
@@ -1071,14 +1068,72 @@ body.owner{padding-top:34px}
 .miniNext{padding:0 7px;font-size:10px}
 .miniNext:hover{color:var(--accent);border-color:var(--accent)}
 
-/* ─── Mobile performance ─── */
+/* ─── Mobile layout & performance ─── */
 @media (max-width: 768px){
   .visualsSection canvas{ will-change:transform; contain:strict; }
   .bgMedia{ transform:translateZ(0); will-change:transform; }
   body{ -webkit-overflow-scrolling: touch; }
   .hero{ min-height: 80vh; }
-  .miniControls{ bottom:12px; right:12px; }
-  .miniBtn{ height:32px; padding:0 12px; font-size:13px; }
+
+  /* Hide redundant SOUND button on mobile — miniControls handles music */
+  .muteBtn{ display:none !important; }
+
+  /* Dock: switch to vertical column, smaller buttons, tucked into top-right */
+  .deskDock{
+    top: auto;
+    bottom: 56px;
+    right: 10px;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+  }
+  .deskMarqueeBtn{
+    height: 30px;
+    padding: 0 10px 0 8px;
+  }
+  .deskMarqueeViewport{
+    width: 140px;
+  }
+  .deskMarqueeItem{
+    font-size: 9px;
+    letter-spacing: .10em;
+  }
+  .deskMarqueeDot{
+    width: 5px;
+    height: 5px;
+  }
+
+  /* Mini controls: slightly larger tap targets, above dock */
+  .miniControls{ bottom:12px; right:10px; }
+  .miniBtn{ height:30px; padding:0 10px; font-size:12px; min-width:36px; }
+
+  /* Drawer panel: full width on mobile */
+  .deskDrawerPanel{
+    right: 0;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    max-height: 70vh;
+    border-radius: 0;
+  }
+
+  /* Top nav: ensure it doesn't clash with fixed elements */
+  .topInner{ padding: 10px 14px; }
+  .brand h1{ font-size: 12px; }
+  .brand span{ display:none; }
+  .nav{ gap: 10px; }
+  .nav a{ font-size: 10px; letter-spacing: .06em; }
+
+  /* Sections spacing */
+  .sectionHead{ padding: 0 14px; }
+  .section{ padding-left: 14px; padding-right: 14px; }
+
+  /* Contact */
+  .contactInner{ padding: 40px 14px; }
+
+  /* Modal */
+  .modalCard{ grid-template-columns: 1fr; }
+  .modalInfo{ border-left:0; border-top:1px solid rgba(255,255,255,.06); }
 }
 
 /* ─── Legacy classes (kept for compatibility) ─── */
