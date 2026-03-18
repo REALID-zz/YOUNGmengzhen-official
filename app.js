@@ -30,16 +30,17 @@
   const modalDesc = $('modalDesc');
   const closeBtn = $('closeModal');
 
-  // ── Music Engine — pro house loops (CC BY 4.0, royalty-free) ──
+  // ── Music Engine — drum-focused house loops (CC BY 4.0) ──
   const TRACKS = [
-    { name:'GROOVE',  src:'./assets/music/techhouse_130.mp3' },
-    { name:'CHILL',   src:'./assets/music/chill_116.mp3'     },
-    { name:'SYNTH',   src:'./assets/music/synth_122.mp3'     },
-    { name:'BASS',    src:'./assets/music/bass_130.mp3'      },
-    { name:'ELECTRO', src:'./assets/music/electro_126.mp3'   },
-    { name:'BEAT',    src:'./assets/music/beat_130.mp3'      },
+    { name:'TR-505',   src:'./assets/music/drums_124.mp3'   },
+    { name:'GROOVE',   src:'./assets/music/groove_116.mp3'   },
+    { name:'DRUMS',    src:'./assets/music/drums_126.mp3'    },
+    { name:'BEAT',     src:'./assets/music/drums_130.mp3'    },
+    { name:'KICK',     src:'./assets/music/tr505_130.mp3'    },
+    { name:'CLAP',     src:'./assets/music/kickclap_130.mp3' },
+    { name:'CHILL',    src:'./assets/music/chill_116.mp3'    },
   ];
-  let _audio = null, _audioOn = false, _trackIdx = 0;
+  let _audio = null, _audioOn = false, _trackIdx = 0, _currentBPM = 126;
 
   function _playTrack(idx){
     if(_audioOn) _stopTrack();
