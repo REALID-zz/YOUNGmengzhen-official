@@ -30,15 +30,13 @@
   const modalDesc = $('modalDesc');
   const closeBtn = $('closeModal');
 
-  // ── Music Engine — drum-focused house loops (CC BY 4.0) ──
+  // ── Music Engine — complete house tracks (CC BY 4.0) ──
   const TRACKS = [
-    { name:'TR-505',   src:'./assets/music/drums_124.mp3'   },
-    { name:'GROOVE',   src:'./assets/music/groove_116.mp3'   },
-    { name:'DRUMS',    src:'./assets/music/drums_126.mp3'    },
-    { name:'BEAT',     src:'./assets/music/drums_130.mp3'    },
-    { name:'KICK',     src:'./assets/music/tr505_130.mp3'    },
-    { name:'CLAP',     src:'./assets/music/kickclap_130.mp3' },
-    { name:'CHILL',    src:'./assets/music/chill_116.mp3'    },
+    { name:'HOUSE',   src:'./assets/music/house_main.mp3'  },
+    { name:'GROOVY',  src:'./assets/music/groovy.mp3'      },
+    { name:'LOUNGE',  src:'./assets/music/lounge.mp3'      },
+    { name:'CHILL',   src:'./assets/music/chill_116.mp3'   },
+    { name:'VIBE',    src:'./assets/music/house_loop.mp3'  },
   ];
   let _audio = null, _audioOn = false, _trackIdx = 0, _currentBPM = 126;
 
@@ -48,14 +46,22 @@
     const T = TRACKS[_trackIdx];
     _audio = new Audio(T.src);
     _audio.loop = true;
-    _audio.volume = 0.85;
-    _audio.play().then(()=>{ _audioOn=true; _syncMusicUI(); }).catch(()=>{});
+    _audio.volume = 0.8;
+    _audio.setAttribute('playsinline','');
+    _audio.setAttribute('webkit-playsinline','');
+    const p = _audio.play();
+    if(p && p.then){
+      p.then(()=>{ _audioOn=true; _syncMusicUI(); })
+       .catch(()=>{ _audioOn=false; _syncMusicUI(); });
+    }
     _audioOn = true;
+    _syncMusicUI();
   }
 
   function _stopTrack(){
     _audioOn = false;
     if(_audio){ _audio.pause(); _audio.currentTime=0; _audio=null; }
+    _syncMusicUI();
   }
 
   function _nextTrack(){
@@ -136,15 +142,21 @@
     });
   })();
 
-  // ── Auto-start music on first user interaction ──
+  // ── Auto-start music on first user interaction (mobile compatible) ──
   let _musicTriggered = false;
-  function _triggerMusic(){
+  function _triggerMusic(e){
     if(_musicTriggered) return;
     _musicTriggered = true;
-    if(!_audioOn){ _playTrack(_trackIdx); _syncMusicUI(); }
+    document.removeEventListener('click', _triggerMusic, true);
+    document.removeEventListener('touchstart', _triggerMusic, true);
+    document.removeEventListener('touchend', _triggerMusic, true);
+    document.removeEventListener('pointerdown', _triggerMusic, true);
+    if(!_audioOn){ _playTrack(_trackIdx); }
   }
-  document.addEventListener('click', _triggerMusic);
-  document.addEventListener('touchend', _triggerMusic);
+  document.addEventListener('click', _triggerMusic, true);
+  document.addEventListener('touchstart', _triggerMusic, true);
+  document.addEventListener('touchend', _triggerMusic, true);
+  document.addEventListener('pointerdown', _triggerMusic, true);
 
   // ─── Visuals / Laser Canvas ───
   (function initVisuals(){
